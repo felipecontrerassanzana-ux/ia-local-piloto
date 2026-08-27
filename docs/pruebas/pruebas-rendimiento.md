@@ -24,12 +24,14 @@ El mismo prompt, veinte veces seguidas sin pausa. El objetivo es detectar **degr
 
 ### 3. Rampa de contexto — el pendiente que quedó abierto en `../modelo/modelo-elegido.md`
 
-Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 8K, 32K, 64K y 100K+ tokens — Ollama mismo informa el conteo real vía `prompt_eval_count`, no hace falta adivinarlo) y pide un resumen corto de cada uno. Esto responde directamente la pregunta que quedó pendiente: **¿el modelo realmente sostiene más de 32K de contexto en la práctica, o el límite de 32K que muestra la página de Ollama es real?**
+Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 8K, 32K, 64K y 100K+ tokens — Ollama mismo informa el conteo real vía `prompt_eval_count`, no hace falta adivinarlo) y pide un resumen corto de cada uno.
 
-**Cómo interpretar el resultado:**
-- Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa sin error: el modelo sí acepta más de 32K, confirmando que ese número era solo el default de fábrica, no un techo real. Registrar el resultado en `../modelo/modelo-elegido.md` (actualizar el pendiente marcado ahí).
-- Si el script falla o corta en un tamaño específico (ej. justo pasando 32K): eso es el límite real de esta instalación — hay que documentarlo como el contexto verdadero utilizable, no los 100K que se habían proyectado, y ajustar `OLLAMA_CONTEXT_LENGTH` acorde en `02-configurar-ollama.ps1`.
-- **Esta prueba no evalúa si el modelo "recuerda bien" el contenido largo** (eso sería una prueba de calidad, no de estrés) — solo si la petición se procesa técnicamente. Para saber si realmente usa bien un contexto largo, agregar ese caso a `plan-pruebas.md` con una persona revisando la respuesta.
+**Actualizado 2026-08-27 — esta prueba ya no responde toda la pregunta por sí sola.** Investigado a fondo (ver `../referencia/qwen-2.5-coder-7b.md`): el `config.json` real del modelo confirma que **32K es el contexto con el que fue entrenado** (`max_position_embeddings: 32768`), no un default arbitrario de Ollama — para llegar a 128K/131K hace falta activar YaRN explícitamente, algo que Ollama todavía no expone de forma completa. Esto significa que "no tira error" y "sostiene el contexto sin perder calidad" son dos preguntas distintas:
+
+**Cómo interpretar el resultado, con esta distinción en mente:**
+- Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa **sin error**: solo confirma que Ollama acepta la configuración — **no confirma que la calidad se mantenga**. No asumir automáticamente que "sostiene el contexto en la práctica" solo por no fallar.
+- Si el script falla o corta en un tamaño específico: eso sí es un límite duro real, documentar como tal.
+- **El paso que falta y que esta prueba no cubre:** evaluar si el resumen generado a 64K/100K+ es tan bueno como el de 8K/32K — eso es una pregunta de calidad, no de estrés técnico. Agregar ese caso a `plan-pruebas.md` con una persona revisando si el modelo realmente "recordó" el contenido lejano del texto largo, no solo si respondió algo. Registrar ambos resultados (técnico y de calidad) en `resultados.md`.
 
 ## Qué hacer con los resultados
 

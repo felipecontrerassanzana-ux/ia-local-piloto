@@ -284,3 +284,18 @@ Felipe planteó que el frontend de cualquier app generada "queda cojo" frente al
 - **Corrección relacionada, encontrada al planear esto:** el criterio de `arquitectura/almacenamiento.md` decía que los modelos van al HDD porque "se leen una sola vez al cargar" — esa asunción ya no aplica con el diseño de intercambio de modelos bajo demanda (se lee el disco varias veces por sesión, no una vez). Se corrigió el criterio y el default de `02-configurar-ollama.ps1` (`-LetraNVMe` en vez de `-LetraHDD`) para que los modelos vayan al NVMe.
 - Se creó `arquitectura/capa-diseno.md` con el detalle completo (incluyendo el loop generar→revisar→corregir, documentado como procedimiento — formalizarlo como Skill queda pendiente de verificar el formato exacto que usan Qwen Code/Goose).
 - Se corrigió de paso una referencia obsoleta encontrada en `AGENTS.md` que seguía diciendo que Tailscale era solo respaldo del acceso remoto, cuando ya se había decidido como el camino principal para agentes de código (entrada anterior de esta misma bitácora).
+
+## 2026-08-27 (mismo día) — Reordenamiento de `docs/` en subcarpetas por categoría
+
+Felipe pidió, como requerimiento adicional al material de estudio, que `docs/` (18 archivos sueltos) quedara organizado en categorías con un índice por carpeta.
+
+- Se crearon 6 subcarpetas temáticas: `arquitectura/`, `modelo/`, `herramientas/`, `instalacion/`, `pruebas/`, `operacion/` — cada una con su propio `README.md` como índice. `decisiones.md` queda en la raíz de `docs/` (se consulta todo el tiempo, no le convenía dos niveles adentro).
+- Se corrigieron todas las referencias cruzadas (`AGENTS.md`, `README.md`, `DESIGN.md`, los 15 scripts, y entre los propios documentos) — verificado con una búsqueda exhaustiva que no quedó ninguna referencia rota, incluyendo las que apuntaban desde el repo hermano `ia-local` hacia archivos movidos acá.
+- Se dejó reservado `docs/referencia/` (mencionado en el README principal) para el material de estudio por herramienta/modelo, a construirse en la siguiente pasada.
+
+## 2026-08-27 (mismo día) — Material de referencia: Ollama y Qwen 2.5 Coder 7B, y un hallazgo real sobre el límite de contexto
+
+Primera pasada del material de estudio pedido (por herramienta/modelo, paso a paso). Se crearon `docs/referencia/ollama.md` (CLI completo, API, variables de entorno de rendimiento no cubiertas antes en el proyecto: `keep_alive`, Flash Attention, cuantización de KV cache) y `docs/referencia/qwen-2.5-coder-7b.md`.
+
+- **Hallazgo real, no solo de referencia:** investigando el `config.json` oficial del modelo (`huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct`), se confirmó que `max_position_embeddings` es `32768` — **32K es el contexto real de entrenamiento del modelo, no un default arbitrario de Ollama**. Los 131K/128K citados en `fundamentacion-modelo.md`/`modelo-elegido.md` como "contexto completo" requieren activar YaRN explícitamente (confirmado textual en la ficha oficial), algo que Ollama todavía no expone de forma completa (`github.com/ollama/ollama/issues/11871`). Extender el contexto sin YaRN no da error, pero es esperable que degrade la calidad de las respuestas que usan ese contexto extra — no solo un tema de que "no se caiga".
+- Se actualizó `modelo/modelo-elegido.md` (el pendiente sobre 32K vs 100K, marcado ahora como investigado a fondo) y `pruebas/pruebas-rendimiento.md` (la prueba de rampa de contexto debe evaluar calidad además de si la petición se procesa, no alcanza con "no tira error").
