@@ -5,6 +5,10 @@
   Ver docs/herramientas-trabajo.md § "extensión Qwen para VS Code".
 
   IDs/paquetes verificados 2026-08-26: OpenJS.NodeJS.LTS (winget), @qwen-code/qwen-code (npm).
+  generationConfig verificado 2026-08-27 contra el ejemplo oficial de la doc de Qwen Code para
+  "Local Self-Hosted Models (via OpenAI-compatible API)" — timeout/streamIdleTimeoutMs/maxRetries
+  más generosos que el default, porque un modelo local en hardware modesto puede tardar más en
+  responder que un modelo en la nube, y sin esto Qwen Code podría cortar la espera antes de tiempo.
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -47,8 +51,11 @@ if (Test-Path $configPath) {
                     envKey         = "OLLAMA_API_KEY"
                     baseUrl        = "http://localhost:11434/v1"
                     generationConfig = @{
-                        contextWindowSize = 32000
-                        samplingParams    = @{ temperature = 0.7; top_p = 0.9; max_tokens = 4096 }
+                        timeout             = 300000
+                        streamIdleTimeoutMs = 600000
+                        maxRetries          = 1
+                        contextWindowSize   = 32000
+                        samplingParams      = @{ temperature = 0.7; top_p = 0.9; max_tokens = 4096 }
                     }
                 }
             )

@@ -86,6 +86,16 @@ En vez de exponer Ollama, Qwen Code se conecta al **endpoint OpenAI-compatible q
 
 **Recomendación:** usar **Tailscale (C1)** como el camino principal para Qwen Code/Goose remotos — es más simple, tiene menos piezas moviéndose, y ya estaba planeado instalarlo igual como respaldo del acceso por navegador. Cloudflare Tunnel + Access queda enfocado en lo que ya se decidió que resuelve mejor: **el acceso por navegador a Open WebUI**, para cuando Felipe no tiene su propio dispositivo con Tailscale instalado a mano (ej. un equipo prestado). No son excluyentes — cada uno cubre un caso de uso distinto, y ambos pueden convivir sin conflicto.
 
+### Un cuarto camino que existe pero todavía no está maduro: `qwen serve` (verificado 2026-08-27)
+
+Investigando más a fondo cómo opera Qwen Code se encontró una función que no estaba mapeada: **modo daemon** (`qwen serve`) — Qwen Code puede correr como un servidor HTTP local, y varios clientes (una IDE, un navegador, un script) comparten **una sola sesión de agente** en vez de que cada uno abra la suya. Trae una interfaz web propia (Web Shell UI, `http://127.0.0.1:4170/`) con chat, diffs, historial de commits y permisos de herramientas — parecido en espíritu a lo que hace Open WebUI para el chat, pero para el agente de código en sí.
+
+**Por qué no se suma como quinto escenario de conexión todavía:** confirmado en la propia doc oficial que es una función **alpha (`v0.16-alpha`)** — el bind por defecto es solo `127.0.0.1` (ni siquiera la red local), y la propia documentación dice textualmente que **"el endurecimiento remoto/multi-daemon llega en un parche posterior"** — es decir, Qwen mismo todavía no lo da por listo para exponerlo más allá del propio equipo. Queda anotado acá como algo a revisar más adelante (podría simplificar el acceso remoto — un solo daemon en la casa, cualquier dispositivo entra por navegador vía Tailscale/túnel, sin configurar `settings.json` en cada uno) pero no como parte del plan de instalación actual.
+
+### Ajuste real encontrado en la doc oficial: timeouts para modelos locales
+
+La propia documentación de Qwen Code, en su ejemplo oficial de configuración para "Local Self-Hosted Models" (Ollama/vLLM/LM Studio), incluye tres campos que la configuración generada por `13-instalar-qwen-code.ps1` no traía: `timeout: 300000`, `streamIdleTimeoutMs: 600000`, `maxRetries: 1` — pensados justo para el caso de un modelo local en hardware modesto, que puede tardar más en responder que un modelo en la nube. **Corregido:** se agregaron esos tres campos al script, con los mismos valores del ejemplo oficial.
+
 ## Qué falta para ejecutar esto
 
 - [x] `14-instalar-tailscale.ps1`/`.bat` — resuelto 2026-08-27, instala Tailscale vía winget y detecta si falta autenticar.
@@ -100,3 +110,5 @@ En vez de exponer Ollama, Qwen Code se conecta al **endpoint OpenAI-compatible q
 - [API Endpoints — Open WebUI](https://docs.openwebui.com/reference/api-endpoints/) — endpoint OpenAI-compatible `/api/chat/completions`.
 - [Service Tokens — Cloudflare Access](https://developers.cloudflare.com/cloudflare-one/identity/service-tokens/) — headers `CF-Access-Client-Id`/`CF-Access-Client-Secret`, política "Service Auth".
 - [Tailscale Pricing](https://tailscale.com/pricing) — plan Personal gratis, dispositivos ilimitados.
+- [Qwen3-Coder — GitHub oficial](https://github.com/QwenLM/Qwen3-Coder) — confirma que no existe variante bajo los 30B en esta línea.
+- [Daemon mode (qwen serve) — Qwen Code Docs](https://qwenlm.github.io/qwen-code-docs/en/users/qwen-serve/) — modo servidor HTTP local, estado alpha, endurecimiento remoto pendiente.
