@@ -1,0 +1,87 @@
+# Arquitectura completa de este piloto
+
+Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersas en los demás archivos — es el "esquema estructural del montaje" del proyecto, para no tener que reconstruirlo leyendo documento por documento. Cada pieza enlaza al documento que la fundamenta en detalle.
+
+## Diagrama del stack completo
+
+```
+                                    ┌─────────────────────────────┐
+                                    │   Usuario (Felipe, remoto)   │
+                                    │   navegador o celular        │
+                                    └──────────────┬───────────────┘
+                                                    │ HTTPS
+                                                    ▼
+                                    ┌─────────────────────────────┐
+                                    │  Cloudflare Access           │  ← gate 1: verifica el correo
+                                    │  (lista de correos autorizados)│    autorizado antes de dejar pasar
+                                    └──────────────┬───────────────┘
+                                                    │
+                                    ┌─────────────────────────────┐
+                                    │  Cloudflare Tunnel           │  ← conexión saliente desde la casa,
+                                    │  (cloudflared, dominio propio)│    sin exponer el router
+                                    └──────────────┬───────────────┘
+                                                    │
+════════════════════════════════════ red de la casa (Movistar 800 megas, sin CGNAT) ═══════════════
+                                                    │
+                                                    ▼
+                                    ┌─────────────────────────────┐
+                                    │  Open WebUI                  │  ← gate 2: login propio (correo/clave,
+                                    │  (interfaz web, RAG, historial)│   se cierra solo tras el primer usuario)
+                                    └──────────────┬───────────────┘
+                                                    │ API compatible OpenAI
+                                                    ▼
+                                    ┌─────────────────────────────┐
+                                    │  Ollama                      │
+                                    │  Qwen 2.5 Coder 7B (Q4_K_M/Q8_0)│
+                                    │  OLLAMA_CONTEXT_LENGTH configurado│
+                                    └──────────────┬───────────────┘
+                                                    │
+                                    ┌─────────────────────────────┐
+                                    │  Stack RAG                   │
+                                    │  BGE-M3 (embeddings) + Qdrant │
+                                    └───────────────────────────────┘
+
+   (en paralelo, uso LOCAL — no pasa por el túnel ni necesita login)
+                                    ┌─────────────────────────────┐
+   Felipe, en el equipo mismo  ───▶ │  Goose (agente CLI/desktop)   │──┐
+   o VS Code local             ───▶ │  Continue.dev (extensión)     │──┤──▶ Ollama (mismo servidor de arriba)
+                                    └─────────────────────────────┘
+```
+
+## Piezas y de dónde sale cada decisión
+
+| Capa | Decisión | Documento fuente |
+|---|---|---|
+| Hardware | RTX 5070 12GB / 16GB RAM / Ryzen 5 3600 | `hardware-real.md` |
+| Modelo | Qwen 2.5 Coder 7B (Q4_K_M para partir, probar Q8_0) | `modelo-elegido.md`, `fundamentacion-modelo.md` |
+| Motor de inferencia | Ollama (LocalAI como escalón futuro si hace falta voz/imagen) | `motor-alternativas.md` |
+| Interfaz web + RAG | Open WebUI | `motor-alternativas.md` |
+| Agente para iniciar/gestionar proyectos | Goose | `herramientas-trabajo.md` |
+| Asistente dentro del editor | Continue.dev (+ Aider como alternativa de terminal) | `herramientas-trabajo.md` |
+| Memoria persistente | Nivel 1: reglas estáticas (`.continue/rules`). Nivel 2 (futuro): Mem0 | `herramientas-trabajo.md` |
+| Red / acceso remoto | Cloudflare Tunnel + dominio propio (sin CGNAT confirmado) | `acceso-remoto.md` |
+| Autenticación | Open WebUI (automática) + Cloudflare Access (correo autorizado) | `acceso-remoto.md` |
+| Embeddings | BGE-M3 | `../ia-local/docs/modelos.md` |
+| Base vectorial | Qdrant (o Chroma) | `plan-instalacion.md` |
+| Continuidad, backup y actualizaciones | BIOS auto-encendido + servicios en inicio, backup a Drive, checklist mensual | `mantenimiento.md` |
+
+## Puntos proactivos — estado tras las respuestas de Felipe (2026-08-26)
+
+- [x] **¿Equipo exclusivo o compartido?** Resuelto: uso compartido, no exclusivo. Ollama libera la VRAM cuando no está en uso, así que no compite de forma permanente — el riesgo real es de continuidad (si alguien más reinicia/apaga el equipo, el piloto se cae con él), no de recursos. Ver `hardware-real.md`.
+- [x] **Sistema operativo:** resuelto 2026-08-26 — Windows 11 Pro 25H2. Ver `plan-instalacion.md` y `almacenamiento.md` (dos discos: NVMe + HDD, con guía de qué va en cada uno).
+- [~] **Ancho de banda de subida:** Felipe cree que el plan es "800 sincrónico" (simétrico) — se toma como supuesto de trabajo razonable, no bloqueante; queda como verificación de baja prioridad (ver `acceso-remoto.md`).
+- [x] **Continuidad tras reinicio/corte de luz:** resuelto arquitectónicamente — BIOS configurada para reencender solo tras un corte, todos los servicios (`cloudflared`, Ollama, Open WebUI) configurados para iniciar con el sistema sin necesitar sesión abierta. No hay UPS todavía (mejora futura). Detalle completo en `mantenimiento.md` §1.
+- [x] **Backup:** resuelto — carpeta de Google Drive personal, mecanismo y qué respaldar detallado en `mantenimiento.md` §2.
+- [x] **Actualizaciones (el "P5"):** formulado en detalle como checklist mensual en `mantenimiento.md` §3, ya no es una idea vaga.
+- [ ] **Protección contra abuso a nivel de red (rate limiting en Cloudflare):** sigue pendiente de activar, no requiere nada nuevo (ya se cuenta con Cloudflare por el Tunnel).
+
+**Costos — confirmado 2026-08-26 que toda la estructura es gratuita**, pieza por pieza (tabla completa en `mantenimiento.md` §4): Ollama, Qwen, Goose, Continue.dev, Aider, Open WebUI, BGE-M3, Qdrant y Mem0 son gratis/self-hosted; **Cloudflare Tunnel no tiene costo aparte** y **Cloudflare Access es gratis hasta 50 usuarios** (Felipe solo necesita 1) — verificado directo en la página oficial de precios de Cloudflare, no de memoria.
+
+## Próximos pasos sugeridos (orden propuesto, actualizado)
+
+- [ ] Definir sistema operativo (único bloqueante real que queda).
+- [ ] (Baja prioridad) Test de velocidad de subida real de la conexión.
+- [ ] Configurar BIOS + servicios de inicio automático (`mantenimiento.md` §1) durante la instalación misma, no después.
+- [ ] Configurar el backup a Drive (`mantenimiento.md` §2) como parte de la instalación, no como tarea "para después".
+- [ ] Activar rate limiting básico en Cloudflare al configurar el Tunnel.
+- [ ] Recién después de esto, pasar de `plan-instalacion.md` (planificado) a instalación real.

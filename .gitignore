@@ -1,0 +1,21 @@
+# Modelos descargados (pesan mucho, no van al repo)
+*.gguf
+*.safetensors
+*.bin
+models/
+
+# Bases vectoriales locales (datos, no configuración)
+*.qdrant/
+chroma_data/
+*.sqlite3
+
+# Configs locales con secretos/tokens
+.env
+*.local
+
+# Logs y reportes generados localmente por los scripts (no son documentación del proyecto)
+logs/
+
+# SO
+.DS_Store
+Thumbs.db
