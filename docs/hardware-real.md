@@ -12,14 +12,14 @@
 
 ## Qué confirma esto contra la investigación ya hecha en `ia-local`
 
-Según la tabla de velocidad real medida en `../ia-local/docs/modelos.md` (§ "Velocidad real medida por GPU", willitrunai.com, 2026-08-23), para el candidato generalista de la empresa (Qwen3.6-27B en Q4_K_M):
+Según la tabla de velocidad real medida en `../ia-local/docs/modelos.md` (§ "Velocidad real medida por GPU", willitrunai.com, 2026-08-23), para el modelo generalista más grande de la familia Qwen (Qwen3.6-27B en Q4_K_M):
 
 | Hardware | VRAM | Velocidad | ¿Cabe? |
 |---|---|---|---|
 | RTX 4070 12GB | 12GB | 3,2 tok/s | **Too big** |
 | RTX 3060 12GB | 12GB | 2,2 tok/s | **Too big** |
 
-12GB queda confirmado como insuficiente para ese modelo — este equipo **no es** un sustituto del hardware recomendado en `ia-tecnoingenieria` para el piloto compartido de la empresa. No es su objetivo serlo: este proyecto es para un modelo más chico y especializado (ver `modelo-elegido.md`), no para el generalista de 27B.
+12GB queda confirmado como insuficiente para ese modelo — este equipo es para un modelo más chico y especializado (ver `modelo-elegido.md`), no para el generalista de 27B.
 
 ## Para qué sí alcanza
 

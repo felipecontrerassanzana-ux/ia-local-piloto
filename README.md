@@ -1,14 +1,14 @@
 # IA Local Piloto
 
-Piloto real de un LLM autoalojado sobre un equipo concreto que ya se tiene: **RTX 5070 12GB / 16GB RAM / AMD Ryzen 5 3600, Windows 11 Pro 25H2**. Es un proyecto **independiente**, no una carpeta ni una extensión de los otros tres repos de `Documents/Proyectos IA/`.
+Piloto real de un LLM autoalojado sobre un equipo concreto que ya se tiene: **RTX 5070 12GB / 16GB RAM / AMD Ryzen 5 3600, Windows 11 Pro 25H2**. Es un proyecto **independiente**, autocontenido.
+
+**Uso principal:** asistente de programación local — por eso se eligió un modelo especializado en código (Qwen 2.5 Coder 7B) en vez de uno generalista.
 
 Repositorio: [github.com/felipecontrerassanzana-ux/ia-local-piloto](https://github.com/felipecontrerassanzana-ux/ia-local-piloto) (privado).
 
 ## Por qué es un proyecto aparte
 
-- **No es `ia-local`:** ese repo es investigación teórica transversal (modelos, hardware, arquitectura, conceptos) — nunca ejecuta nada, es reutilizable para cualquier proyecto de IA local futuro. Este repo sí ejecuta, y lo hace sobre un equipo específico y real, no sobre proyecciones.
-- **No es `ia-tecnoingenieria`:** ese repo es el caso de negocio del servidor compartido de la empresa (hardware recomendado: RTX 5070 Ti 16GB, ~$2,6M CLP, para el modelo generalista Qwen3.6-27B, con las 8 áreas de la empresa como usuarios). Este equipo (12GB de VRAM) no alcanza para ese candidato — confirmado en `ia-local/docs/modelos.md`, donde 12GB queda etiquetado "Too big" para Qwen3.6-27B (2,2–3,2 tok/s). Es un equipo distinto, para un objetivo distinto.
-- **No es `cumplimiento-tecnoingenieria`:** no aplica, es un proyecto técnico sin relación con cumplimiento legal de la empresa.
+Es un proyecto **independiente y autocontenido** — no depende de nada externo para tener sentido por sí solo. La única relación real con otro repo es con `ia-local`, la base teórica transversal (modelos, hardware, arquitectura, conceptos) que nunca ejecuta nada — este repo sí ejecuta, sobre un equipo específico y real. Esa base teórica es genérica (no contiene nada específico de ningún proyecto en particular), así que se puede referenciar sin arrastrar contexto ajeno a este piloto.
 
 ## Qué usa de `ia-local` (sin duplicar)
 

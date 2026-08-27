@@ -4,7 +4,7 @@
 
 El objetivo de este proyecto no es solo llegar a correr `ollama run qwen2.5-coder:7b` — es entender lo suficiente como para explicarlo si alguien pregunta. Contexto completo (quién hace Qwen, de dónde viene, por qué existe esta familia) en [`../ia-local/docs/modelos.md` § "Quién está detrás de cada modelo"](../ia-local/docs/modelos.md#quién-está-detrás-de-cada-modelo--contexto-y-origen-agregado-2026-08-26) — resumen aplicado acá:
 
-**Qwen 2.5 Coder 7B lo hace Alibaba Cloud** (China) — es la variante especializada en programación de la familia Qwen (una de las más prolíficas y con licencias más permisivas del mundo open-weight, Apache 2.0). No es un modelo aislado: es parte de la misma familia que Qwen3.6-27B, el candidato generalista elegido para el proyecto de la empresa (`ia-tecnoingenieria`) — se eligió Qwen dos veces, en dos proyectos distintos, en parte porque la licencia permisiva de esta familia no restringe uso comercial, a diferencia de otras (ver la tabla completa en `modelos.md`).
+**Qwen 2.5 Coder 7B lo hace Alibaba Cloud** (China) — es la variante especializada en programación de la familia Qwen (una de las más prolíficas y con licencias más permisivas del mundo open-weight, Apache 2.0), lo cual además no restringe el uso (ver la tabla completa en `modelos.md`).
 
 ## Candidato principal: Qwen 2.5 Coder 7B
 

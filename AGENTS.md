@@ -4,7 +4,7 @@ Este archivo lo leen automáticamente Goose y Qwen Code al empezar una sesión e
 
 ## Qué es este proyecto
 
-Piloto real de un LLM autoalojado (Qwen 2.5 Coder 7B vía Ollama) sobre un equipo concreto de Felipe. Es un proyecto **independiente** de `../ia-local` (teoría transversal) y de `../ia-tecnoingenieria` (caso de negocio de la empresa) — no mezclar contenido entre los tres. Ver `README.md` y `docs/arquitectura-piloto.md` para el panorama completo antes de proponer cambios grandes.
+Piloto real de un LLM autoalojado (Qwen 2.5 Coder 7B vía Ollama) sobre un equipo concreto de Felipe. Es un proyecto **independiente y autocontenido** — solo se apoya en `../ia-local` (teoría transversal genérica, sin contenido de ningún proyecto en particular). Ver `README.md` y `docs/arquitectura-piloto.md` para el panorama completo antes de proponer cambios grandes.
 
 ## Decisiones ya tomadas — no reabrir sin una razón nueva y concreta
 

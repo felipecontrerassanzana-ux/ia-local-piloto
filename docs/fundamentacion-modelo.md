@@ -18,7 +18,7 @@ Verificado contra el blog oficial de Qwen (qwen.ai/blog) el 2026-08-26:
 | **18 de septiembre de 2024** | **Qwen 2.5** — anunciado por el propio equipo como *"posiblemente el lanzamiento open-source más grande de la historia"* hasta ese momento. Trae de entrada **Qwen2.5-Coder** (inicialmente solo 1.5B y 7B, con 32B "en camino") y **Qwen2.5-Math**, como líneas especializadas separadas del modelo generalista. |
 | **11 de noviembre de 2024** | **Familia completa de Qwen2.5-Coder** (0.5B / 1.5B / 3B / 7B / 14B / 32B — seis tamaños). El insignia, Qwen2.5-Coder-32B-Instruct, es presentado como el modelo de código open-source más fuerte del momento, con desempeño comparable a GPT-4o en generación y reparación de código (benchmarks propios: EvalPlus, LiveCodeBench, BigCodeBench, Aider). **Qwen2.5-Coder-7B** (el tamaño de este proyecto): 7,61 mil millones de parámetros, contexto de 128K, licencia Apache 2.0. |
 | 2025 | Qwen 3 — introduce modos híbridos de razonamiento ("thinking"/"non-thinking") en el mismo modelo. |
-| Abril 2026 (dato ya verificado en `ia-local/docs/modelos.md`) | Qwen 3.6-27B — el candidato generalista elegido para el proyecto de la empresa (`ia-tecnoingenieria`), de la misma familia que el modelo de este piloto. |
+| Abril 2026 (dato ya verificado en `ia-local/docs/modelos.md`) | Qwen 3.6-27B — modelo generalista más grande de la misma familia, no cabe en la GPU de este equipo (12GB) — por eso este piloto usa la línea Coder especializada y más chica. |
 
 **Fuente:** blog oficial de Qwen — [qwen.ai/blog?id=qwen2.5](https://qwen.ai/blog?id=qwen2.5) (anuncio de Qwen2.5, 2024-09-18) y [qwen.ai/blog?id=qwen2.5-coder-family](https://qwen.ai/blog?id=qwen2.5-coder-family) (familia completa de Qwen2.5-Coder, 2024-11-11) — navegados con el motor de navegador real disponible en este entorno, no de memoria sin verificar.
 
@@ -41,8 +41,7 @@ Sobreviven: modelos de ~7-9B en cuantización Q4/Q8
         │
         ▼
 Filtro 2 — ¿El caso de uso es programación específicamente?
-        │  (ver ia-tecnoingenieria/docs/05-casos-de-uso/por-area.md, TI: "asistente
-        │  de código para desarrollo interno/automatizaciones")
+        │  (uso principal confirmado de este equipo: programar, ver README.md)
         │  Esto separa dos caminos: modelo generalista (ej. Qwen 3.5 9B) vs.
         │  modelo especializado en código (ej. Qwen 2.5 Coder 7B, StarCoder,
         │  DevStral, CodeLlama).
@@ -76,4 +75,4 @@ Cada filtro de este esquema tiene su hallazgo documentado por separado — este 
 - *"¿Por qué no el modelo con mejor benchmark?"* → porque el benchmark más alto (StarCoder/DevStral/CodeLlama) viene con un contexto mucho más corto, y en programación real el contexto importa más que un par de puntos de benchmark (ver `../ia-local/docs/conceptos-fundamentales.md` §7).
 - *"¿Por qué no el modelo más grande de Qwen (Qwen3.6-27B)?"* → no cabe en esta GPU (12GB) — confirmado, no supuesto.
 - *"¿Es un modelo de fiar / con historial?"* → sí: casi dos años de desarrollo continuo de la línea Coder, reporte técnico publicado, probado en herramientas de industria antes de publicarse (ver historia arriba).
-- *"¿Hay algún problema de licencia para usarlo en un contexto de piloto de empresa?"* → no, Apache 2.0, sin restricciones de uso comercial.
+- *"¿Hay algún problema de licencia para usarlo?"* → no, Apache 2.0, sin restricciones de uso comercial ni personal.

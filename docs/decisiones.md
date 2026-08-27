@@ -264,3 +264,11 @@ El usuario preguntó, a partir de una experiencia real documentada en su repo `s
 - La escala tampoco es comparable: 38 bases de producción de un ERP vs. el historial de conversación de un solo usuario en su propio equipo.
 
 Documentado en `docs/como-funcionan-los-agentes.md` — el objetivo es dejar registrado que se investigó y por qué no hace falta acción, no solo omitirlo en silencio.
+
+## 2026-08-27 (mismo día) — Corrección: referencias a Tecnoingeniería no debían estar en la documentación en vivo
+
+Felipe notó que el `README.md` y varios documentos vivos del proyecto mencionaban detalles del caso de negocio de la empresa (presupuesto, áreas, el documento interno de casos de uso por área) — información que no aporta nada para entender o usar este piloto de forma independiente, y que no tiene sentido que quede a la vista de alguien que solo quiere leer/usar este repo puntual (ej. su hijo, dueño del equipo).
+
+- Se corrigieron `README.md`, `AGENTS.md`, `fundamentacion-modelo.md`, `hardware-real.md`, `modelo-elegido.md` y `motor-alternativas.md` — se quitaron las referencias a `ia-tecnoingenieria`/presupuesto/áreas de la empresa, manteniendo el razonamiento técnico (por qué 12GB no alcanza para un modelo de 27B, por qué se eligió una línea especializada en código) parado sobre sus propios pies, sin necesitar ese contexto ajeno.
+- Un caso encontrado no era solo de tono: `motor-alternativas.md` justificaba la elección de Ollama citando el documento interno de casos de uso de TI de la empresa como fuente del "uso principal" de este equipo — corregido para que el uso principal (programación) se declare como una decisión propia de este proyecto, en `README.md`, no heredada de otro documento ajeno.
+- **Lo que no se tocó, a propósito:** las entradas ya escritas de esta misma bitácora (incluyendo la del 2026-08-26 sobre por qué nace como proyecto independiente) — son registro histórico de cómo se llegó a las decisiones en su momento, y el patrón de este archivo es append-only, no se reescribe. La corrección aplica hacia adelante, a la documentación que alguien lee para entender/usar el proyecto hoy.

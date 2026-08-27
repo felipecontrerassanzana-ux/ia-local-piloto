@@ -17,7 +17,7 @@ Formulado a pedido explícito de Felipe ("tiene que estar todo en orden y actual
 
 ## 2. Backup
 
-**Destino confirmado:** una carpeta de Google Drive personal (de Felipe, no el Drive corporativo de Tecnoingeniería — este es un proyecto aparte, ver `README.md`).
+**Destino confirmado:** una carpeta de Google Drive personal (de Felipe, no un Drive del trabajo — este es un proyecto personal, ver `README.md`).
 
 **Qué respaldar (lo que no está en git, ver `arquitectura-piloto.md` punto 4):**
 - Base de datos de Open WebUI (cuentas, historial de conversaciones, API keys).

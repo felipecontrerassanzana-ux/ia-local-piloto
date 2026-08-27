@@ -43,7 +43,7 @@ Independiente de qué motor se use abajo (Ollama o LocalAI, ambos hablan API com
 
 ## Decisión final (2026-08-26, cerrada)
 
-**Motor: Ollama.** El uso principal confirmado de este equipo es programación (ver `por-area.md` de `ia-tecnoingenieria` y el caso de uso de TI) — para eso, Ollama tiene mejor soporte directo en las herramientas ya evaluadas (Continue.dev y Aider documentan `ollama`/`ollama_chat` como integración de primera clase, sin capas extra). Es más simple de instalar y mantener que LocalAI, que suma alcance (voz/imagen/visión) a costa de más piezas moviéndose.
+**Motor: Ollama.** El uso principal confirmado de este equipo es programación (ver `README.md`) — para eso, Ollama tiene mejor soporte directo en las herramientas ya evaluadas (Continue.dev y Aider documentan `ollama`/`ollama_chat` como integración de primera clase, sin capas extra). Es más simple de instalar y mantener que LocalAI, que suma alcance (voz/imagen/visión) a costa de más piezas moviéndose.
 
 **Escalamiento (no ahora, solo si se necesita de verdad):** migrar a LocalAI si aparece una necesidad real y concreta de otra función (imágenes, voz) — no antes. El costo de migrar después es bajo porque LocalAI habla el mismo tipo de API (Ollama-compatible) — las herramientas ya configuradas solo necesitarían apuntar a otra URL, no reconfigurarse desde cero. Mismo criterio que ya se aplicó con el hardware: no sumar alcance/infraestructura antes de que el uso real lo pida (ver [[feedback-no-sobredimensionar]]).
 
