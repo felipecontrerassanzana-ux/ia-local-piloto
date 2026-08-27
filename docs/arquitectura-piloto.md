@@ -77,11 +77,15 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 
 **Costos — confirmado 2026-08-26 que toda la estructura es gratuita**, pieza por pieza (tabla completa en `mantenimiento.md` §4): Ollama, Qwen, Goose, Continue.dev, Aider, Open WebUI, BGE-M3, Qdrant y Mem0 son gratis/self-hosted; **Cloudflare Tunnel no tiene costo aparte** y **Cloudflare Access es gratis hasta 50 usuarios** (Felipe solo necesita 1) — verificado directo en la página oficial de precios de Cloudflare, no de memoria.
 
-## Próximos pasos sugeridos (orden propuesto, actualizado)
+## Próximos pasos sugeridos (orden propuesto, actualizado 2026-08-27)
 
-- [ ] Definir sistema operativo (único bloqueante real que queda).
-- [ ] (Baja prioridad) Test de velocidad de subida real de la conexión.
-- [ ] Configurar BIOS + servicios de inicio automático (`mantenimiento.md` §1) durante la instalación misma, no después.
-- [ ] Configurar el backup a Drive (`mantenimiento.md` §2) como parte de la instalación, no como tarea "para después".
+Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y documentado. Lo que queda es **ejecución real en el equipo**, siguiendo `plan-instalacion.md` (Pasos 0 a 6) con los scripts 00 a 13 de `scripts/`:
+
+- [ ] Correr los scripts en orden (ver `scripts/README.md`), empezando por `00-verificar-equipo` y `12-instalar-herramientas-dev` (git/gh/Python).
+- [ ] Manual, cuenta propia: crear el túnel en el dashboard de Cloudflare Zero Trust, obtener el token, elegir el subdominio.
+- [ ] Manual: `gh auth login`, e instalar desde el Marketplace de VS Code las extensiones Qwen Code y Continue.dev (los scripts dejan la CLI/config lista, pero la extensión del editor se instala a mano).
+- [ ] Configurar BIOS + confirmar servicios de inicio automático (`09-configurar-inicio-automatico`, `mantenimiento.md` §1) como parte de la instalación misma, no después.
+- [ ] Configurar el backup a Drive (`10-configurar-backup`, `mantenimiento.md` §2) también como parte de la instalación.
 - [ ] Activar rate limiting básico en Cloudflare al configurar el Tunnel.
-- [ ] Recién después de esto, pasar de `plan-instalacion.md` (planificado) a instalación real.
+- [ ] Correr `11-prueba-estres.ps1` (rendimiento real, incluye verificar si el contexto real llega a 100K o se queda en 32K) y las pruebas de calidad de `plan-pruebas.md` — volcar todo en `resultados.md`.
+- [ ] (Baja prioridad, no bloqueante) Test de velocidad de subida real de la conexión.
