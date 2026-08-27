@@ -32,24 +32,18 @@ Descarga los pesos del modelo desde la biblioteca de Ollama (que a su vez los to
 
 A diferencia de Ollama, Goose no está en winget — se instala con `Invoke-WebRequest` (el equivalente de PowerShell a `curl`, descarga un archivo desde una URL) para bajar el script oficial de instalación, y después se ejecuta ese script. Es un patrón común en herramientas de código abierto que priorizan tener un solo instalador multiplataforma en vez de mantener paquetes separados para cada gestor.
 
-## 05-instalar-docker — por qué hace falta Docker
+## 05-instalar-docker — respaldo opcional, no el camino por defecto (revisado 2026-08-27)
 
-Open WebUI y Qdrant no tienen instalador nativo de Windows — se distribuyen como **imágenes de contenedor** (un paquete que incluye el programa y todo lo que necesita para correr, aislado del resto del sistema). Docker Desktop es el programa que sabe ejecutar esos contenedores en Windows. Sin Docker, esos dos pasos no se pueden hacer.
+Este script instalaba Docker Desktop porque en un principio parecía la única forma de correr Open WebUI y Qdrant en Windows. Al verificar en profundidad (`docker-y-recursos.md`) resultó que **ambos tienen forma nativa oficial** para Windows — así que este script pasó a ser opcional, solo un respaldo por si la instalación nativa da problemas. Vale la pena entender igual el hallazgo que motivó revisarlo: WSL2 (la máquina virtual Linux sobre la que corre Docker Desktop en Windows) **reserva por defecto el 50% de la RAM total del equipo**, confirmado en la documentación oficial de Microsoft — 8GB de los 16GB de este equipo, solo por existir Docker Desktop, antes de correr una sola imagen. Si de todas formas se usa este script, crea `%UserProfile%\.wslconfig` con `memory=4GB` para no dejar ese 50% por defecto.
 
-## 05-instalar-docker — el límite de RAM de WSL2 (agregado 2026-08-27)
+## 06-desplegar-qdrant y 07-desplegar-openwebui — instalación nativa, sin contenedores (reescritos 2026-08-27)
 
-Además de instalar Docker Desktop, este script crea `%UserProfile%\.wslconfig` con `memory=4GB`. Esto no es un capricho: WSL2 (la máquina virtual Linux sobre la que corre Docker Desktop en Windows) **reserva por defecto el 50% de la RAM total del equipo** — confirmado en la documentación oficial de Microsoft. En un equipo de 16GB, eso son 8GB solo para la capa de Docker, antes de correr una sola imagen. Ver `docker-y-recursos.md` para el presupuesto completo de RAM y por qué esto importa en este equipo específico (compartido, sin margen de sobra).
+Ambos siguen el mismo patrón: descargar el binario/paquete oficial, y dejarlo corriendo con una **Tarea Programada** (no un servicio de Windows real, porque ninguno de los dos trae un instalador de servicio — ver la nota sobre esa diferencia más abajo, en el script 10).
 
-## 06-desplegar-qdrant y 07-desplegar-openwebui — `docker run` explicado
-
-Ambos scripts usan el mismo patrón de comando, vale la pena entenderlo una vez:
-
-- `--name` le pone un nombre fijo al contenedor (para poder referirse a él después, en vez de un ID random).
-- `--memory="1g"` limita cuánta RAM puede usar ese contenedor como máximo — una segunda defensa además del límite de WSL2 de arriba, para que ningún contenedor se coma todo el margen asignado (ver `docker-y-recursos.md`).
-- `--restart unless-stopped` es la política de reinicio — le dice a Docker "si este contenedor se cae o el equipo se reinicia, vuelve a levantarlo solo, salvo que alguien lo haya detenido a propósito". Es la pieza que resuelve la continuidad de estos dos servicios (ver `mantenimiento.md`).
-- `-p 6333:6333` (o `3000:8080`) conecta un puerto de tu equipo real (izquierda) a un puerto dentro del contenedor (derecha) — así `localhost:3000` en tu navegador llega al Open WebUI que vive aislado dentro del contenedor.
-- `-v nombre:/ruta` es un **volumen** — una carpeta que Docker gestiona por fuera del contenedor, para que los datos (la base de datos de Open WebUI, el índice de Qdrant) sobrevivan aunque el contenedor se borre y se vuelva a crear.
-- En Open WebUI, `--add-host=host.docker.internal:host-gateway` + `OLLAMA_BASE_URL=http://host.docker.internal:11434` es lo que le permite al contenedor (que vive "aislado") hablarle al Ollama que corre directo en Windows, fuera de cualquier contenedor.
+- **Qdrant:** se descarga el ZIP de la última release desde la API de GitHub (`api.github.com/repos/qdrant/qdrant/releases/latest`, buscando el asset que termina en `pc-windows-msvc.zip` — es la build real de Windows, no un contenedor), se descomprime en `C:\QdrantLocal`, y `qdrant.exe` guarda sus datos en una carpeta `storage` al lado, sin nada especial que aprender ahí — es un programa de Windows como cualquier otro.
+- **Open WebUI:** `pip install open-webui` (el mismo gestor de paquetes de Python que ya se usa para librerías) y después `open-webui serve` — la variable de entorno `DATA_DIR` le dice dónde guardar sus datos (`C:\OpenWebUIData`), igual que `OLLAMA_MODELS` le dice a Ollama dónde guardar los modelos.
+- **La Tarea Programada** en ambos usa un disparador "al iniciar el sistema" (`New-ScheduledTaskTrigger -AtStartup`) y corre como usuario `SYSTEM` — así no depende de que alguien inicie sesión en Windows, igual que el servicio de `cloudflared`. Se le suma un reintento automático (`-RestartCount 3 -RestartInterval ...`) por si el proceso se cae solo — una Tarea Programada, a diferencia de un servicio real de Windows, no reinicia el proceso automáticamente sin decírselo explícitamente.
+- **Por qué ya no hace falta `host.docker.internal`:** eso solo existía para que un contenedor Docker "aislado" pudiera alcanzar servicios fuera de sí mismo. Con todo nativo en el mismo Windows, todo se habla por `localhost` normal.
 
 ## 08-instalar-cloudflared — servicio de Windows con token
 
@@ -57,14 +51,11 @@ Un **servicio de Windows** es un programa que corre en segundo plano sin necesit
 
 ## 09-configurar-inicio-automatico — auditoría de continuidad
 
-No instala nada nuevo — revisa que las piezas de los pasos anteriores queden efectivamente configuradas para sobrevivir un reinicio: el `StartType` del servicio de `cloudflared`, si existe una entrada de arranque para Ollama (`Win32_StartupCommand`, otra tabla de WMI), y si Docker Desktop tiene activado "iniciar con Windows" revisando su archivo de configuración interno. Deja además, como texto, el único paso que ningún script puede tocar: la configuración de la BIOS (vive fuera de Windows, antes de que el sistema operativo arranque).
+No instala nada nuevo — revisa que las piezas de los pasos anteriores queden efectivamente configuradas para sobrevivir un reinicio: el `StartType` del servicio de `cloudflared`, si existe una entrada de arranque para Ollama (`Win32_StartupCommand`, otra tabla de WMI), y (desde 2026-08-27) si las Tareas Programadas `Qdrant-Local` y `OpenWebUI-Local` tienen el disparador correcto — revisando el tipo exacto del disparador (`MSFT_TaskBootTrigger`, el nombre interno de "al iniciar el sistema"). Deja además, como texto, el único paso que ningún script puede tocar: la configuración de la BIOS (vive fuera de Windows, antes de que el sistema operativo arranque).
 
-## 10-configurar-backup — Tareas Programadas + volúmenes de Docker
+## 10-configurar-backup — Tareas Programadas, y por qué el backup se simplificó
 
-Dos conceptos nuevos acá:
-
-- Los volúmenes de Docker (`open-webui`, `qdrant_storage`) no son carpetas normales que se puedan copiar con `Copy-Item` — viven dentro de la infraestructura interna de Docker (una máquina virtual Linux ligera, WSL2, por debajo). Por eso el backup usa un contenedor temporal de `alpine` (una distribución de Linux muy chica, se descarga en segundos) solo para leer ese volumen y empaquetarlo en un `.tar.gz` (el equivalente Linux de un .zip) hacia la carpeta de Drive — el contenedor se borra solo al terminar (`--rm`).
-- Una **Tarea Programada** (`Register-ScheduledTask`) es el mecanismo de Windows para correr algo automáticamente en un horario, sin que nadie lo recuerde — el equivalente de `cron` en Linux. Acá se configura para los domingos a las 3 AM.
+Una **Tarea Programada** (`Register-ScheduledTask`) es el mecanismo de Windows para correr algo automáticamente en un horario, sin que nadie lo recuerde — el equivalente de `cron` en Linux. Acá se configura para los domingos a las 3 AM. Antes de que Qdrant/Open WebUI pasaran a ser nativos, el backup necesitaba un contenedor temporal de `alpine` para leer sus volúmenes de Docker (carpetas especiales que Docker gestiona por dentro de la máquina virtual WSL2, no accesibles directo desde Windows). Con todo nativo, sus datos son carpetas normales de Windows (`C:\QdrantLocal\storage`, `C:\OpenWebUIData`) — el backup se simplificó a `Compress-Archive` (el cmdlet nativo de PowerShell para crear .zip), sin necesitar nada de Docker.
 
 ## 11-prueba-estres — medición real vía la API de Ollama
 

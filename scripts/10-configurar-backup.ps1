@@ -1,7 +1,11 @@
 ﻿<#
 .SINOPSIS
-  Crea el script de backup real (volúmenes Docker de Open WebUI y Qdrant -> carpeta de Drive)
+  Crea el script de backup real (carpetas nativas de Open WebUI y Qdrant -> carpeta de Drive)
   y lo registra como Tarea Programada semanal. Ver docs/mantenimiento.md §2.
+
+  Actualizado 2026-08-27: como Open WebUI y Qdrant ahora corren nativos (sin Docker, ver
+  06/07), sus datos son carpetas normales de Windows — ya no hace falta un contenedor
+  temporal de Alpine para leerlas, es una copia directa.
 
 .PARAMETER CarpetaDrive
   Ruta local de la carpeta sincronizada con Google Drive donde se guardan los backups.
@@ -18,20 +22,18 @@ param(
 
 New-Item -ItemType Directory -Force -Path $CarpetaDrive | Out-Null
 
-# Script real de backup — usa un contenedor temporal de Alpine para leer los volúmenes de Docker
-# (los volúmenes nombrados no son carpetas normales accesibles directo desde Windows con Docker Desktop/WSL2).
 $backupScriptPath = "$PSScriptRoot\_backup-real.ps1"
 
 @"
 `$fecha = Get-Date -Format 'yyyy-MM-dd'
 `$destino = '$CarpetaDrive'
 
-docker run --rm -v open-webui:/data -v "`${destino}:/backup" alpine tar czf "/backup/open-webui-`$fecha.tar.gz" -C /data .
-docker run --rm -v qdrant_storage:/data -v "`${destino}:/backup" alpine tar czf "/backup/qdrant-`$fecha.tar.gz" -C /data .
+Compress-Archive -Path "C:\OpenWebUIData\*" -DestinationPath "`$destino\open-webui-`$fecha.zip" -Force
+Compress-Archive -Path "C:\QdrantLocal\storage\*" -DestinationPath "`$destino\qdrant-`$fecha.zip" -Force
 
 # Mantener solo los últimos 8 backups de cada uno (2 meses aprox, con frecuencia semanal)
-Get-ChildItem "`$destino\open-webui-*.tar.gz" | Sort-Object LastWriteTime -Descending | Select-Object -Skip 8 | Remove-Item -Force
-Get-ChildItem "`$destino\qdrant-*.tar.gz" | Sort-Object LastWriteTime -Descending | Select-Object -Skip 8 | Remove-Item -Force
+Get-ChildItem "`$destino\open-webui-*.zip" | Sort-Object LastWriteTime -Descending | Select-Object -Skip 8 | Remove-Item -Force
+Get-ChildItem "`$destino\qdrant-*.zip" | Sort-Object LastWriteTime -Descending | Select-Object -Skip 8 | Remove-Item -Force
 
 Add-Content -Path "$PSScriptRoot\..\logs\backup.log" -Value "`$(Get-Date): backup completado -> `$destino"
 "@ | Out-File -FilePath $backupScriptPath -Encoding utf8

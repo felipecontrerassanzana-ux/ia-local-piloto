@@ -13,9 +13,9 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 | 02 | `02-configurar-ollama.bat` | Configura contexto largo y mueve modelos al HDD | Confirmar la letra del HDD (te la pide al correrlo) |
 | 03 | `03-descargar-modelo.bat` | Descarga Qwen 2.5 Coder 7B (Q4 y Q8_0) | No (correr después del 02) |
 | 04 | `04-instalar-goose.bat` | Instala Goose CLI | No |
-| 05 | `05-instalar-docker.bat` | Instala Docker Desktop | No |
-| 06 | `06-desplegar-qdrant.bat` | Levanta Qdrant (RAG) | No (correr después del 05) |
-| 07 | `07-desplegar-openwebui.bat` | Levanta Open WebUI | No (correr después del 05) |
+| 05 | `05-instalar-docker.bat` | **Opcional/respaldo** — instala Docker Desktop solo si algo nativo (06/07) da problemas. Ver `../docs/docker-y-recursos.md` | No, y normalmente no hace falta |
+| 06 | `06-desplegar-qdrant.bat` | Levanta Qdrant **nativo** (binario oficial de Windows, sin Docker) | No |
+| 07 | `07-desplegar-openwebui.bat` | Levanta Open WebUI **nativo** (vía pip, sin Docker) — puerto 8080 | No (requiere Python del paso 12) |
 | 08 | `08-instalar-cloudflared.bat` | Instala cloudflared como servicio | **Sí** — el token del túnel, creado a mano en el dashboard de Cloudflare (instrucciones dentro del script) |
 | 09 | `09-configurar-inicio-automatico.bat` | Verifica/ajusta que todo arranque solo con Windows | No (correr al final, después de 01-08) |
 | 10 | `10-configurar-backup.bat` | Crea la tarea programada de backup a Drive | **Sí** — la ruta de tu carpeta de Google Drive |

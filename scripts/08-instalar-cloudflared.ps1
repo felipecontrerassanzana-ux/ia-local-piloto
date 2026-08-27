@@ -11,7 +11,7 @@
     3. En el paso de instalación, Cloudflare muestra un comando para Windows con un token largo
        (empieza con "eyJ..."). Copiar SOLO el valor del token y pasarlo acá.
     4. En "Public Hostname", apuntar el subdominio elegido (ver almacenamiento.md) al servicio
-       local http://localhost:3000 (Open WebUI, no Ollama directo).
+       local http://localhost:8080 (Open WebUI nativo, ver docker-y-recursos.md — no Ollama directo).
 #>
 
 param(

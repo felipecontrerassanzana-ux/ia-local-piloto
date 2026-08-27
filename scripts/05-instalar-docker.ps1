@@ -1,9 +1,17 @@
 ﻿<#
 .SINOPSIS
-  Instala Docker Desktop si no está presente. Necesario para Open WebUI y Qdrant (Paso 2).
+  OPCIONAL — no forma parte del camino por defecto (ver docs/docker-y-recursos.md, actualizado
+  2026-08-27). Open WebUI y Qdrant ahora corren NATIVOS en Windows sin Docker (06/07), lo que
+  evita la sobrecarga de RAM de WSL2 en un equipo de 16GB. Correr este script solo si:
+  (a) se prefiere Docker por algún motivo, o (b) la instalación nativa de Qdrant/Open WebUI
+  da problemas y se quiere usar la alternativa en contenedor documentada como respaldo.
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
+
+Write-Host "Este script es OPCIONAL — Open WebUI y Qdrant ya corren nativos sin Docker (ver 06/07)." -ForegroundColor Yellow
+Write-Host "Instalar Docker Desktop solo si se necesita como respaldo. Continuar? (Ctrl+C para cancelar)" -ForegroundColor Yellow
+Start-Sleep -Seconds 3
 
 $docker = Get-Command docker -ErrorAction SilentlyContinue
 if ($docker) {

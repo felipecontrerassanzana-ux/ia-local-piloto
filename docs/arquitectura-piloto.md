@@ -55,14 +55,14 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 | Hardware | RTX 5070 12GB / 16GB RAM / Ryzen 5 3600 | `hardware-real.md` |
 | Modelo | Qwen 2.5 Coder 7B (Q4_K_M para partir, probar Q8_0) | `modelo-elegido.md`, `fundamentacion-modelo.md` |
 | Motor de inferencia | Ollama (LocalAI como escalón futuro si hace falta voz/imagen) | `motor-alternativas.md` |
-| Interfaz web + RAG | Open WebUI | `motor-alternativas.md` |
+| Interfaz web + RAG | Open WebUI — **nativo vía pip, no Docker** (puerto 8080) | `motor-alternativas.md`, `docker-y-recursos.md` |
 | Agente para iniciar/gestionar proyectos | Goose | `herramientas-trabajo.md` |
 | Asistente dentro del editor | Continue.dev (+ Aider como alternativa de terminal) | `herramientas-trabajo.md` |
 | Memoria persistente | Nivel 1: reglas estáticas (`.continue/rules`). Nivel 2 (futuro): Mem0 | `herramientas-trabajo.md` |
 | Red / acceso remoto | Cloudflare Tunnel + dominio propio (sin CGNAT confirmado) | `acceso-remoto.md` |
 | Autenticación | Open WebUI (automática) + Cloudflare Access (correo autorizado) | `acceso-remoto.md` |
 | Embeddings | BGE-M3 | `../ia-local/docs/modelos.md` |
-| Base vectorial | Qdrant (o Chroma) | `plan-instalacion.md` |
+| Base vectorial | Qdrant — **nativo, binario oficial de Windows, no Docker** | `plan-instalacion.md`, `docker-y-recursos.md` |
 | Continuidad, backup y actualizaciones | BIOS auto-encendido + servicios en inicio, backup a Drive, checklist mensual | `mantenimiento.md` |
 
 ## Puntos proactivos — estado tras las respuestas de Felipe (2026-08-26)

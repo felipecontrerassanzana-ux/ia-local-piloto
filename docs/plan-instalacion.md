@@ -43,13 +43,13 @@ Ver `herramientas-trabajo.md` para el detalle completo y las alternativas evalua
 
 ## Paso 2 — Embeddings, base vectorial e interfaz web
 
-Ver `docker-y-recursos.md` antes de este paso — explica qué va en Docker y por qué, y el presupuesto real de RAM en un equipo de 16GB (WSL2 reserva la mitad por defecto si no se capa).
+Ver `docker-y-recursos.md` antes de este paso — explica por qué **ninguna de estas piezas necesita Docker** (ambas tienen forma nativa oficial en Windows), y el presupuesto real de RAM en un equipo de 16GB.
 
-- [ ] Instalar Docker Desktop, si no está ya (`scripts/05-instalar-docker.ps1`) — necesario para Open WebUI y Qdrant. **Deja configurado `.wslconfig` con límite de 4GB de RAM para WSL2 automáticamente.**
-- [ ] Levantar Qdrant (`scripts/06-desplegar-qdrant.ps1`) — con límite de memoria de 1GB.
-- [ ] Levantar Open WebUI apuntando al Ollama del equipo (`scripts/07-desplegar-openwebui.ps1`) — con límite de memoria de 1GB.
+- [ ] Levantar Qdrant nativo (`scripts/06-desplegar-qdrant.ps1`) — descarga el binario oficial de Windows, lo deja corriendo vía Tarea Programada.
+- [ ] Levantar Open WebUI nativo, vía pip (`scripts/07-desplegar-openwebui.ps1`) — requiere Python (Paso 1.4). Puerto 8080 (no 3000, eso era específico de Docker).
 - [ ] Crear la primera cuenta en Open WebUI (queda como admin, cierra el registro público automáticamente — ver `acceso-remoto.md`).
-- [ ] BGE-M3 se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull bge-m3`) — corre en la misma GPU vía Ollama, **no** como proceso Python aparte (ver `docker-y-recursos.md`). Armar el pipeline básico de prueba con documentos propios queda para cuando se conecte el RAG real.
+- [ ] BGE-M3 se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull bge-m3`) — corre en la misma GPU vía Ollama, **no** como proceso Python aparte. Armar el pipeline básico de prueba con documentos propios queda para cuando se conecte el RAG real.
+- [ ] (Opcional/respaldo) `scripts/05-instalar-docker.ps1` — solo si algo nativo da problemas y se prefiere la alternativa en contenedor.
 
 ## Paso 3 — Acceso remoto y autenticación
 

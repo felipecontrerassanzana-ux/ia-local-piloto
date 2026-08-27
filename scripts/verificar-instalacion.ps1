@@ -49,25 +49,29 @@ if ($ollamaCmd) {
 $nvidiaSmi = Get-Command nvidia-smi -ErrorAction SilentlyContinue
 Check "Drivers NVIDIA / nvidia-smi disponible" ($null -ne $nvidiaSmi)
 
-# Docker y contenedores
+# Qdrant y Open WebUI — nativos vía Tareas Programadas desde 2026-08-27 (ver docs/docker-y-recursos.md)
+$qdrantTarea = Get-ScheduledTask -TaskName "Qdrant-Local" -ErrorAction SilentlyContinue
+Check "Tarea 'Qdrant-Local' configurada" ($null -ne $qdrantTarea)
+try {
+    Invoke-WebRequest -Uri "http://localhost:6333" -TimeoutSec 5 -UseBasicParsing | Out-Null
+    Check "Qdrant responde en localhost:6333" $true
+} catch {
+    Check "Qdrant responde en localhost:6333" $false
+}
+
+$openwebuiTarea = Get-ScheduledTask -TaskName "OpenWebUI-Local" -ErrorAction SilentlyContinue
+Check "Tarea 'OpenWebUI-Local' configurada" ($null -ne $openwebuiTarea)
+try {
+    Invoke-WebRequest -Uri "http://localhost:8080" -TimeoutSec 5 -UseBasicParsing | Out-Null
+    Check "Open WebUI responde en localhost:8080" $true
+} catch {
+    Check "Open WebUI responde en localhost:8080" $false
+}
+
+# Docker es opcional en este proyecto — solo se informa si está presente, no se exige.
 $dockerCmd = Get-Command docker -ErrorAction SilentlyContinue
-Check "Docker instalado" ($null -ne $dockerCmd)
-
 if ($dockerCmd) {
-    $qdrantUp = (docker ps --filter "name=qdrant" --filter "status=running" --format "{{.Names}}") -eq "qdrant"
-    Check "Qdrant corriendo" $qdrantUp
-
-    $openwebuiUp = (docker ps --filter "name=open-webui" --filter "status=running" --format "{{.Names}}") -eq "open-webui"
-    Check "Open WebUI corriendo" $openwebuiUp
-
-    if ($openwebuiUp) {
-        try {
-            Invoke-WebRequest -Uri "http://localhost:3000" -TimeoutSec 5 -UseBasicParsing | Out-Null
-            Check "Open WebUI responde en localhost:3000" $true
-        } catch {
-            Check "Open WebUI responde en localhost:3000" $false
-        }
-    }
+    Write-Host "[INFO] Docker está instalado (uso opcional/respaldo, no requerido)." -ForegroundColor Gray
 }
 
 # cloudflared

@@ -36,25 +36,27 @@ if ($ollamaStartup) {
     Write-Host "  automático de Windows (netplwiz) si el piloto debe quedar disponible sin intervención." -ForegroundColor Yellow
 }
 
-# Docker Desktop: confirmar si está configurado para iniciar con Windows (setting propio de Docker).
-$dockerSettings = "$env:APPDATA\Docker\settings-store.json"
-if (Test-Path $dockerSettings) {
-    $contenido = Get-Content $dockerSettings -Raw
-    if ($contenido -match '"StartAtLogin"\s*:\s*true') {
-        Write-Host "Docker Desktop: configurado para iniciar al iniciar sesión. OK." -ForegroundColor Green
+# Qdrant y Open WebUI: desde 2026-08-27 corren nativos vía Tareas Programadas (sin Docker,
+# ver docs/docker-y-recursos.md) — se revisan como tal, no como contenedores.
+foreach ($nombreTarea in @("Qdrant-Local", "OpenWebUI-Local")) {
+    $tarea = Get-ScheduledTask -TaskName $nombreTarea -ErrorAction SilentlyContinue
+    if ($tarea) {
+        $disparadorAlInicio = $tarea.Triggers | Where-Object { $_.CimClass.CimClassName -eq "MSFT_TaskBootTrigger" }
+        if ($disparadorAlInicio) {
+            Write-Host "$nombreTarea : configurada para iniciar con Windows (SYSTEM, sin sesión). OK." -ForegroundColor Green
+        } else {
+            Write-Host "$nombreTarea : existe pero no tiene disparador 'al iniciar el sistema' — revisar." -ForegroundColor Yellow
+        }
     } else {
-        Write-Host "Docker Desktop: revisar manualmente en Settings > General > 'Start Docker Desktop when you log in'." -ForegroundColor Yellow
+        Write-Host "$nombreTarea : no encontrada — ¿se corrió el script 06/07 correspondiente?" -ForegroundColor Red
     }
-} else {
-    Write-Host "Docker Desktop: no se encontró el archivo de configuración — ¿está instalado? (05-instalar-docker.ps1)" -ForegroundColor Yellow
 }
 
-# Contenedores Docker con política de reinicio (Qdrant, Open WebUI)
+# Docker Desktop es opcional en este proyecto (ver 05-instalar-docker.ps1) — solo se revisa si está instalado.
 $docker = Get-Command docker -ErrorAction SilentlyContinue
 if ($docker) {
     Write-Host ""
-    Write-Host "Política de reinicio de contenedores:" -ForegroundColor Cyan
-    docker inspect --format '{{.Name}}: {{.HostConfig.RestartPolicy.Name}}' qdrant, open-webui 2>$null
+    Write-Host "Docker está instalado (uso opcional/respaldo) — si hay contenedores corriendo, revisar su política de reinicio a mano." -ForegroundColor Cyan
 }
 
 Write-Host ""
