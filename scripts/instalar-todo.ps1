@@ -17,6 +17,11 @@
   Interfaz con 3 pestañas (agregado 2026-08-27, a pedido de Felipe): Progreso (checklist +
   parámetros), Consola (lo que cada script va imprimiendo), y Logs generados (los archivos
   que los scripts individuales dejan en logs/, ver scripts/README.md § Logs).
+
+  Rediseño visual (2026-08-27, mismo día, a pedido de Felipe -- "está muy blanco"): tema
+  oscuro tipo editor de código, resumen fijo del equipo (CPU/RAM/GPU/discos, leído directo
+  por WMI al abrir, sin depender de que el Paso 00 ya haya corrido), indicador de estado por
+  paso (punto de color, no solo texto) y progreso con número de pasos + tiempo transcurrido.
 #>
 
 . "$PSScriptRoot\pasos\_elevar.ps1"
@@ -108,28 +113,95 @@ function Test-Paso {
 }
 
 # ============================================================================
-# XAML de la ventana — 3 pestañas: Progreso, Consola, Logs generados
+# XAML de la ventana — tema oscuro, 3 pestañas: Progreso, Consola, Logs generados
 # ============================================================================
 
 [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Instalador — IA Local Piloto" Height="820" Width="920"
-        WindowStartupLocation="CenterScreen">
-    <Grid Margin="12">
+        Title="Instalador — IA Local Piloto" Height="880" Width="920"
+        WindowStartupLocation="CenterScreen" Background="#1E1E1E" Foreground="#D4D4D4">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+        </Style>
+        <Style TargetType="GroupBox">
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+            <Setter Property="CaretBrush" Value="#D4D4D4"/>
+            <Setter Property="Padding" Value="4"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#2D2D30"/>
+            <Setter Property="Foreground" Value="#D4D4D4"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+            <Setter Property="Padding" Value="6,4"/>
+        </Style>
+        <Style TargetType="ProgressBar">
+            <Setter Property="Background" Value="#252526"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+            <Setter Property="Foreground" Value="#4FC3F7"/>
+        </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="BorderBrush" Value="#3C3C3C"/>
+        </Style>
+        <Style TargetType="TabItem">
+            <Setter Property="Foreground" Value="#B0B0B0"/>
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border Name="Bd" Background="#252526" BorderBrush="#3C3C3C" BorderThickness="1,1,1,0" Margin="0,0,2,0">
+                            <ContentPresenter ContentSource="Header" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#1E1E1E"/>
+                                <Setter Property="Foreground" Value="#4FC3F7"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="12" Background="#1E1E1E">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="IA Local Piloto — Instalación completa" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
+        <TextBlock Grid.Row="0" Text="IA Local Piloto — Instalación completa" FontSize="18" FontWeight="Bold" Foreground="#4FC3F7" Margin="0,0,0,10"/>
 
-        <TabControl Grid.Row="1" Name="Pestanas">
+        <Border Grid.Row="1" Background="#252526" BorderBrush="#3C3C3C" BorderThickness="1" CornerRadius="4" Padding="10,8" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="Equipo detectado" FontWeight="Bold" Foreground="#4FC3F7" Margin="0,0,0,4"/>
+                <TextBlock Name="TxtResumenEquipo" Text="Leyendo specs del equipo..." TextWrapping="Wrap" FontFamily="Consolas" FontSize="11"/>
+            </StackPanel>
+        </Border>
+
+        <TabControl Grid.Row="2" Name="Pestanas">
 
             <TabItem Header="Progreso">
-                <Grid Margin="8">
+                <Grid Margin="8" Background="#1E1E1E">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -140,7 +212,7 @@ function Test-Paso {
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                 <TextBlock Text="Letra del disco NVMe:" Width="220" VerticalAlignment="Center"/>
                                 <TextBox Name="TxtNVMe" Width="40" Text="C"/>
-                                <TextBlock Text="  (confirmar con el reporte del Paso 00 antes de avanzar)" FontStyle="Italic" Foreground="Gray" VerticalAlignment="Center"/>
+                                <TextBlock Text="  (confirmar con el reporte del Paso 00 antes de avanzar)" FontStyle="Italic" Foreground="#9A9A9A" VerticalAlignment="Center"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
                                 <TextBlock Text="Carpeta de Google Drive (backup):" Width="220" VerticalAlignment="Center"/>
@@ -151,19 +223,19 @@ function Test-Paso {
                         </StackPanel>
                     </GroupBox>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" BorderBrush="Gray" BorderThickness="1">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Background="#1E1E1E" BorderBrush="#3C3C3C" BorderThickness="1">
                         <StackPanel Name="PanelPasos" Margin="6"/>
                     </ScrollViewer>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Consola">
-                <Grid Margin="8">
+                <Grid Margin="8" Background="#1E1E1E">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="Gray"
+                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="#9A9A9A"
                                Text="Lo que cada script va imprimiendo, paso por paso, a medida que corre — esto es la salida real de scripts\pasos\*.ps1, no un resumen."/>
                     <TextBox Name="TxtLog" Grid.Row="1" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
                              HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" TextWrapping="NoWrap"/>
@@ -171,13 +243,13 @@ function Test-Paso {
             </TabItem>
 
             <TabItem Header="Logs generados">
-                <Grid Margin="8">
+                <Grid Margin="8" Background="#1E1E1E">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="Gray"
+                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="#9A9A9A"
                                Text="Archivos que algunos scripts dejan aparte en logs/ (ej. la prueba de estrés genera un .csv y un resumen) — no todos los pasos generan uno, la mayoría solo imprimen en la pestaña Consola."/>
                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
                         <Button Name="BtnAbrirLogs" Content="Abrir carpeta de logs" Width="180" Height="28" Margin="0,0,8,0"/>
@@ -189,10 +261,12 @@ function Test-Paso {
 
         </TabControl>
 
-        <ProgressBar Name="Barra" Grid.Row="2" Height="18" Margin="0,10,0,6" Minimum="0" Maximum="100"/>
+        <TextBlock Grid.Row="3" Name="TxtProgresoInfo" Text="Sin iniciar" Margin="0,8,0,2" FontFamily="Consolas" FontSize="11" Foreground="#9A9A9A"/>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Name="BtnIniciar" Content="Iniciar instalación" Width="160" Height="32" Margin="0,0,8,0"/>
+        <ProgressBar Name="Barra" Grid.Row="4" Height="18" Margin="0,2,0,6" Minimum="0" Maximum="100"/>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Name="BtnIniciar" Content="Iniciar instalación" Width="160" Height="32" Margin="0,0,8,0" Background="#0E639C" Foreground="White" FontWeight="Bold"/>
             <Button Name="BtnCerrar" Content="Cerrar" Width="100" Height="32"/>
         </StackPanel>
     </Grid>
@@ -202,30 +276,76 @@ function Test-Paso {
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-$TxtNVMe          = $window.FindName("TxtNVMe")
-$TxtBackup        = $window.FindName("TxtBackup")
-$ChkDocker        = $window.FindName("ChkDocker")
-$ChkRed           = $window.FindName("ChkRed")
-$PanelPasos       = $window.FindName("PanelPasos")
-$TxtLog           = $window.FindName("TxtLog")
-$Barra            = $window.FindName("Barra")
-$BtnIniciar       = $window.FindName("BtnIniciar")
-$BtnCerrar        = $window.FindName("BtnCerrar")
-$Pestanas         = $window.FindName("Pestanas")
-$ListaLogs        = $window.FindName("ListaLogs")
-$BtnAbrirLogs     = $window.FindName("BtnAbrirLogs")
+$TxtNVMe           = $window.FindName("TxtNVMe")
+$TxtBackup         = $window.FindName("TxtBackup")
+$ChkDocker         = $window.FindName("ChkDocker")
+$ChkRed            = $window.FindName("ChkRed")
+$PanelPasos        = $window.FindName("PanelPasos")
+$TxtLog            = $window.FindName("TxtLog")
+$Barra             = $window.FindName("Barra")
+$BtnIniciar        = $window.FindName("BtnIniciar")
+$BtnCerrar         = $window.FindName("BtnCerrar")
+$Pestanas          = $window.FindName("Pestanas")
+$ListaLogs         = $window.FindName("ListaLogs")
+$BtnAbrirLogs      = $window.FindName("BtnAbrirLogs")
 $BtnActualizarLogs = $window.FindName("BtnActualizarLogs")
+$TxtResumenEquipo  = $window.FindName("TxtResumenEquipo")
+$TxtProgresoInfo   = $window.FindName("TxtProgresoInfo")
 
-# Una fila de texto por paso, guardadas para poder actualizar el color/estado después
+# ============================================================================
+# Filas de pasos: punto de color + texto, no solo texto (agregado 2026-08-27)
+# ============================================================================
+
 $script:FilasPaso = @{}
-foreach ($p in $script:Pasos) {
-    $fila = New-Object System.Windows.Controls.TextBlock
-    $fila.Text = "  [ pendiente ]  $($p.Id) — $($p.Nombre)"
-    $fila.Margin = "2"
-    $fila.FontFamily = "Consolas"
-    $PanelPasos.Children.Add($fila) | Out-Null
-    $script:FilasPaso[$p.Id] = $fila
+$script:NombresPaso = @{}
+
+$script:EstadosPaso = @{
+    pendiente = @{ Texto = "pendiente";     ColorTexto = "#D4D4D4"; ColorPunto = "#6E6E6E"; ColorFondo = "Transparent" }
+    corriendo = @{ Texto = "corriendo..."; ColorTexto = "#4FC3F7"; ColorPunto = "#4FC3F7"; ColorFondo = "#264F78" }
+    ok        = @{ Texto = "OK";            ColorTexto = "#6A9955"; ColorPunto = "#6A9955"; ColorFondo = "Transparent" }
+    fallo     = @{ Texto = "FALLÓ";         ColorTexto = "#F44747"; ColorPunto = "#F44747"; ColorFondo = "#4B1818" }
 }
+
+function Agregar-FilaPaso {
+    param([string]$Id, [string]$Nombre, [int]$Indice = -1)
+
+    $script:NombresPaso[$Id] = $Nombre
+
+    $borde = New-Object System.Windows.Controls.Border
+    $borde.Padding = "6,3"
+    $borde.Margin = "0,1"
+    $borde.CornerRadius = 3
+
+    $panelFila = New-Object System.Windows.Controls.StackPanel
+    $panelFila.Orientation = "Horizontal"
+
+    $punto = New-Object System.Windows.Shapes.Ellipse
+    $punto.Width = 10
+    $punto.Height = 10
+    $punto.Margin = "0,0,8,0"
+    $punto.VerticalAlignment = "Center"
+    $punto.Fill = $script:EstadosPaso.pendiente.ColorPunto
+
+    $texto = New-Object System.Windows.Controls.TextBlock
+    $texto.FontFamily = "Consolas"
+    $texto.VerticalAlignment = "Center"
+    $texto.Foreground = $script:EstadosPaso.pendiente.ColorTexto
+    $texto.Text = "  pendiente   $Id — $Nombre"
+
+    $panelFila.Children.Add($punto) | Out-Null
+    $panelFila.Children.Add($texto) | Out-Null
+    $borde.Child = $panelFila
+
+    if ($Indice -ge 0) {
+        $PanelPasos.Children.Insert($Indice, $borde) | Out-Null
+    } else {
+        $PanelPasos.Children.Add($borde) | Out-Null
+    }
+
+    $script:FilasPaso[$Id] = [PSCustomObject]@{ Borde = $borde; Punto = $punto; Texto = $texto }
+}
+
+foreach ($p in $script:Pasos) { Agregar-FilaPaso -Id $p.Id -Nombre $p.Nombre }
 
 function Escribir-Log {
     param([string]$Texto)
@@ -234,11 +354,13 @@ function Escribir-Log {
 }
 
 function Actualizar-Fila {
-    param([string]$Id, [string]$Estado, [string]$Color)
-    $p = $script:Pasos | Where-Object { $_.Id -eq $Id }
-    $fila = $script:FilasPaso[$Id]
-    $fila.Text = "  [ $Estado ]  $Id — $($p.Nombre)"
-    $fila.Foreground = $Color
+    param([string]$Id, [string]$Tipo)
+    $info = $script:FilasPaso[$Id]
+    $e = $script:EstadosPaso[$Tipo]
+    $info.Texto.Text = "  $($e.Texto)   $Id — $($script:NombresPaso[$Id])"
+    $info.Texto.Foreground = $e.ColorTexto
+    $info.Punto.Fill = $e.ColorPunto
+    $info.Borde.Background = $e.ColorFondo
 }
 
 function Actualizar-ListaLogs {
@@ -252,6 +374,32 @@ function Actualizar-ListaLogs {
         }
     } else {
         $ListaLogs.Items.Add("(carpeta logs/ no existe todavía — se crea sola cuando un script escribe el primer log)") | Out-Null
+    }
+}
+
+# ============================================================================
+# Resumen fijo del equipo — lectura directa por WMI al abrir, no depende de
+# que el Paso 00 ya haya corrido (agregado 2026-08-27)
+# ============================================================================
+
+function Actualizar-ResumenEquipo {
+    try {
+        $cpu = (Get-CimInstance Win32_Processor -ErrorAction Stop | Select-Object -First 1).Name
+        $ramGB = [math]::Round((Get-CimInstance Win32_ComputerSystem -ErrorAction Stop).TotalPhysicalMemory / 1GB, 1)
+
+        $gpuInfo = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue | Where-Object { $_.Name -match "NVIDIA" } | Select-Object -First 1
+        $gpu = if ($gpuInfo) { $gpuInfo.Name } else { "no detectada vía WMI (ver Paso 00)" }
+
+        $discos = Get-Volume -ErrorAction SilentlyContinue | Where-Object { $_.DriveLetter } | ForEach-Object {
+            $libreGB = [math]::Round($_.SizeRemaining / 1GB, 1)
+            $totalGB = [math]::Round($_.Size / 1GB, 1)
+            "$($_.DriveLetter): $libreGB/$totalGB GB libres"
+        }
+        $discosTexto = if ($discos) { $discos -join "   ·   " } else { "sin datos" }
+
+        $TxtResumenEquipo.Text = "CPU: $cpu   |   RAM: $ramGB GB   |   GPU: $gpu`nDiscos: $discosTexto  (el tipo SSD/HDD de cada uno sale en el reporte del Paso 00)"
+    } catch {
+        $TxtResumenEquipo.Text = "No se pudo leer el resumen del equipo automáticamente. Correr el Paso 00 para el detalle completo."
     }
 }
 
@@ -293,20 +441,18 @@ $BtnIniciar.Add_Click({
     foreach ($p in $script:Pasos) { $pasosAEjecutar.Add($p) }
     if ($ChkDocker.IsChecked) {
         $pasosAEjecutar.Insert(1, [PSCustomObject]@{ Id = "05"; Nombre = "Instalar Docker (respaldo opcional)"; Archivo = "05-instalar-docker.ps1"; Manual = $false })
-        $fila = New-Object System.Windows.Controls.TextBlock
-        $fila.Text = "  [ pendiente ]  05 — Instalar Docker (respaldo opcional)"
-        $fila.Margin = "2"; $fila.FontFamily = "Consolas"
-        $PanelPasos.Children.Insert(1, $fila) | Out-Null
-        $script:FilasPaso["05"] = $fila
+        Agregar-FilaPaso -Id "05" -Nombre "Instalar Docker (respaldo opcional)" -Indice 1
     }
 
     $total = $pasosAEjecutar.Count
     $hecho = 0
     $fallo = $false
+    $script:InicioInstalacion = Get-Date
+    $TxtProgresoInfo.Text = "0/$total pasos completados · 0% · 0 min transcurridos"
 
     foreach ($p in $pasosAEjecutar) {
         if ($fallo) { break }
-        Actualizar-Fila -Id $p.Id -Estado "corriendo..." -Color "Blue"
+        Actualizar-Fila -Id $p.Id -Tipo "corriendo"
         Escribir-Log ""
         Escribir-Log ">>> Paso $($p.Id): $($p.Nombre)"
         $window.Dispatcher.Invoke([action]{}, [System.Windows.Threading.DispatcherPriority]::Background)
@@ -328,16 +474,20 @@ $BtnIniciar.Add_Click({
 
         Start-Sleep -Seconds 2
         $ok = Test-Paso -Id $p.Id
+        $transcurrido = (Get-Date) - $script:InicioInstalacion
+        $transcurridoTexto = "$([math]::Floor($transcurrido.TotalMinutes)) min $($transcurrido.Seconds) s"
 
         if ($ok) {
-            Actualizar-Fila -Id $p.Id -Estado "OK" -Color "Green"
+            Actualizar-Fila -Id $p.Id -Tipo "ok"
             Escribir-Log "<<< Paso $($p.Id) verificado: OK"
             $hecho++
             $Barra.Value = [math]::Round(($hecho / $total) * 100)
+            $TxtProgresoInfo.Text = "$hecho/$total pasos completados · $($Barra.Value)% · $transcurridoTexto transcurridos"
         } else {
-            Actualizar-Fila -Id $p.Id -Estado "FALLÓ" -Color "Red"
+            Actualizar-Fila -Id $p.Id -Tipo "fallo"
             Escribir-Log "<<< Paso $($p.Id) NO PASÓ LA VERIFICACIÓN — instalación detenida acá."
             Escribir-Log "    Revisar el log de arriba, corregir, y volver a correr este instalador (los pasos ya OK no se repiten a mano, pero si se corre de nuevo sí se re-ejecutan todos — no hay resumen de dónde quedó todavía)."
+            $TxtProgresoInfo.Text = "$hecho/$total pasos completados · $($Barra.Value)% · $transcurridoTexto transcurridos · DETENIDO en el paso $($p.Id)"
             [System.Windows.MessageBox]::Show("El paso $($p.Id) ($($p.Nombre)) no pasó la verificación. Revisar el log en la pestaña 'Consola' antes de seguir.", "Instalación detenida") | Out-Null
             $fallo = $true
         }
@@ -360,13 +510,12 @@ $BtnIniciar.Add_Click({
 $BtnCerrar.Add_Click({ $window.Close() })
 
 Actualizar-ListaLogs
+Actualizar-ResumenEquipo
 
 Escribir-Log "Instalador listo. Confirmá la letra del NVMe (ver el reporte del Paso 00 si no estás seguro) y la carpeta de backup en la pestaña 'Progreso', y presioná 'Iniciar instalación'."
 Escribir-Log ""
 Escribir-Log "IMPORTANTE: cada paso corre de forma directa, sin hilo aparte -- mientras un paso largo está"
 Escribir-Log "corriendo (una descarga, una instalación), Windows puede marcar esta ventana como 'No responde'."
 Escribir-Log "Es esperable, no significa que se colgó -- no cerrar la ventana, solo esperar a que el paso termine."
-Escribir-Log ""
-Escribir-Log "Nota: esta es la primera vez que se corre este instalador -- no se ha probado todavía en el equipo real del piloto."
 
 $window.ShowDialog() | Out-Null
