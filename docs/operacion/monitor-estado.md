@@ -37,9 +37,13 @@ La idea original era "¿se puede armar un dashboard como Artifact?" — la respu
 | Tailscale | ¿Instalado? ¿Conectado? ¿Cuál es la IP de este equipo? |
 | ComfyUI | ¿Instalado? (solo se informa — no se espera que esté corriendo, no auto-inicia a propósito) |
 | Backup | ¿Tarea programada configurada? ¿Cuándo corrió por última vez y con qué resultado? |
-| GPU | Nombre, VRAM usada/total, % de uso (vía `nvidia-smi`) |
+| GPU | Nombre, VRAM usada/total, % de uso, **temperatura** (vía `nvidia-smi`) |
 | Discos | Espacio libre/total por letra |
 | CPU/RAM | % de uso de CPU, RAM usada/total |
+
+**Dos agregados tras revisar con Felipe si esto ya mostraba lo que hace falta (2026-08-27, mismo día):**
+- **Temperatura de GPU** — agregada como cuarto gráfico de tendencia (junto a CPU/GPU%/VRAM%). En un equipo compartido con la GPU trabajando seguido, es una señal temprana de un problema térmico, no solo un dato curioso.
+- **Backup atrasado** — el backup corre semanal (domingos 3am, ver `mantenimiento.md`); antes, la tarjeta de Backup mostraba la fecha de la última corrida tal cual, sin importar si fue ayer o hace un mes. Ahora `Obtener-Estado` calcula `atrasado` (más de 8 días sin corrida, con 1 día de margen) y la tarjeta pasa a una píldora roja "ATRASADO" — sin esto, una tarea de backup rota en silencio se veía igual que una sana.
 
 **Nota sobre la duplicación con `verificar-instalacion.ps1`:** los chequeos son deliberadamente parecidos (mismos puertos, mismos nombres de tarea) pero **no comparten código** — uno imprime texto coloreado para que una persona lo lea en consola, el otro arma JSON para un navegador. Con dos scripts de este tamaño, no vale la pena la abstracción de una función compartida; el riesgo real de que se desalineen con el tiempo es bajo y se acepta a cambio de mantener cada uno simple y autocontenido.
 

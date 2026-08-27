@@ -90,18 +90,24 @@ function Obtener-Estado {
         tareaConfigurada = [bool]$infoBackup
         ultimaEjecucion  = if ($infoBackup) { $infoBackup.LastRunTime } else { $null }
         ultimoResultado  = if ($infoBackup) { $infoBackup.LastTaskResult } else { $null }
+        # El backup corre semanal (domingos 3am, ver docs/operacion/mantenimiento.md) -- más de
+        # 8 días sin corrida (1 día de margen) es señal de que la tarea se rompió en silencio,
+        # no solo que "todavía no le toca". Sin esto, una tarea rota se ve igual que una sana
+        # (agregado 2026-08-27, a pedido de Felipe).
+        atrasado         = [bool](-not $infoBackup -or -not $infoBackup.LastRunTime -or ((Get-Date) - $infoBackup.LastRunTime).TotalDays -gt 8)
     }
 
     # GPU (vía nvidia-smi)
     $nvidiaSmi = Get-Command nvidia-smi -ErrorAction SilentlyContinue
     if ($nvidiaSmi) {
         try {
-            $partes = (& nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader,nounits) -split ","
+            $partes = (& nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu,temperature.gpu --format=csv,noheader,nounits) -split ","
             $estado.gpu = [ordered]@{
                 nombre         = $partes[0].Trim()
                 vramUsadaMB    = [int]$partes[1].Trim()
                 vramTotalMB    = [int]$partes[2].Trim()
                 utilizacionPct = [int]$partes[3].Trim()
+                temperaturaC   = [int]$partes[4].Trim()
             }
         } catch {
             $estado.gpu = [ordered]@{ error = "nvidia-smi no respondió correctamente" }
@@ -228,7 +234,7 @@ function Obtener-PaginaHtml {
 
 <script>
 const MAX_MUESTRAS = 30; // 30 x 10s = 5 minutos de historia, guardada en memoria del navegador
-const historia = { cpu: [], gpu: [], vram: [] };
+const historia = { cpu: [], gpu: [], vram: [], temp: [] };
 
 function colorPorPorcentaje(pct) {
   if (pct >= 90) return 'var(--mal)';
@@ -292,9 +298,11 @@ function tarjetaCapacidad(etiqueta, usado, total, unidad, pct) {
   return '<div class="card"><div class="card-head"><span class="etiqueta">' + etiqueta + '</span><span class="valor">' + usado + ' / ' + total + ' ' + unidad + '</span></div><div class="barra"><div class="barra-fill" style="width:' + Math.min(pct, 100).toFixed(0) + '%;background:' + color + '"></div></div></div>';
 }
 
-function tarjetaServicio(nombre, estado, detalle) {
-  // estado: 'ok' | 'mal' | 'neutral'
-  const texto = estado === 'ok' ? 'OK' : (estado === 'mal' ? 'SIN RESPUESTA' : 'INFO');
+function tarjetaServicio(nombre, estado, detalle, textoPersonalizado) {
+  // estado: 'ok' | 'mal' | 'neutral' -- textoPersonalizado pisa la etiqueta por defecto
+  // cuando "SIN RESPUESTA" no tiene sentido para ese caso (ej. un backup atrasado no es que
+  // "no responda", es que no corrió a tiempo).
+  const texto = textoPersonalizado || (estado === 'ok' ? 'OK' : (estado === 'mal' ? 'SIN RESPUESTA' : 'INFO'));
   return '<div class="card card-servicio"><span class="pill ' + estado + '">' + texto + '</span><div class="cuerpo"><div class="nombre">' + nombre + '</div><div class="detalle">' + detalle + '</div></div></div>';
 }
 
@@ -327,14 +335,17 @@ async function actualizar() {
     empujarMuestra(historia.cpu, e.sistema ? e.sistema.cpuUsoPct : null);
     empujarMuestra(historia.gpu, e.gpu ? e.gpu.utilizacionPct : null);
     empujarMuestra(historia.vram, gpuPct);
+    empujarMuestra(historia.temp, e.gpu ? e.gpu.temperaturaC : null);
 
     document.getElementById('grillaGraficos').innerHTML =
       tarjetaGrafico('gCpu', 'CPU', (e.sistema ? e.sistema.cpuUsoPct : '--') + '%') +
       tarjetaGrafico('gGpu', 'GPU (' + (e.gpu && e.gpu.nombre ? e.gpu.nombre : 'sin datos') + ')', (e.gpu ? e.gpu.utilizacionPct : '--') + '%') +
-      tarjetaGrafico('gVram', 'VRAM', gpuPct.toFixed(0) + '%');
+      tarjetaGrafico('gVram', 'VRAM', gpuPct.toFixed(0) + '%') +
+      tarjetaGrafico('gTemp', 'Temp. GPU', (e.gpu && e.gpu.temperaturaC != null ? e.gpu.temperaturaC : '--') + 'C');
     dibujarGrafico(document.getElementById('gCpu'), historia.cpu, 'var(--acento)');
     dibujarGrafico(document.getElementById('gGpu'), historia.gpu, 'var(--acento)');
     dibujarGrafico(document.getElementById('gVram'), historia.vram, 'var(--acento)');
+    dibujarGrafico(document.getElementById('gTemp'), historia.temp, 'var(--acento)');
 
     const capacidad = [];
     if (e.gpu && e.gpu.vramTotalMB) {
@@ -356,17 +367,20 @@ async function actualizar() {
     servicios.push(tarjetaServicio('Cloudflare Tunnel', e.cloudflared.corriendo ? 'ok' : (e.cloudflared.instalado ? 'mal' : 'neutral'), e.cloudflared.instalado ? (e.cloudflared.corriendo ? 'servicio corriendo' : 'instalado pero detenido') : 'no instalado'));
     servicios.push(tarjetaServicio('Tailscale', e.tailscale.conectado ? 'ok' : 'neutral', e.tailscale.instalado ? (e.tailscale.conectado ? ('conectado, IP ' + e.tailscale.ip) : 'instalado, sin autenticar') : 'no instalado (opcional)'));
     servicios.push(tarjetaServicio('ComfyUI', 'neutral', e.comfyUI.instalado ? 'instalado -- se abre a mano, no auto-inicia' : 'no instalado (opcional)'));
-    servicios.push(tarjetaServicio('Backup', e.backup.tareaConfigurada ? 'ok' : 'mal', e.backup.ultimaEjecucion ? ('ultima corrida: ' + new Date(e.backup.ultimaEjecucion).toLocaleString()) : 'sin corridas registradas todavia'));
+    const backupEstado = !e.backup.tareaConfigurada ? 'mal' : (e.backup.atrasado ? 'mal' : 'ok');
+    const backupPill = !e.backup.tareaConfigurada ? 'SIN CONFIGURAR' : (e.backup.atrasado ? 'ATRASADO' : 'OK');
+    servicios.push(tarjetaServicio('Backup', backupEstado, e.backup.ultimaEjecucion ? ('ultima corrida: ' + new Date(e.backup.ultimaEjecucion).toLocaleString()) : 'sin corridas registradas todavia', backupPill));
     document.getElementById('grillaServicios').innerHTML = servicios.join('');
   } catch (err) {
     document.getElementById('actualizado').textContent = 'No se pudo leer /estado: ' + err;
   }
 }
 
+const historiaPorId = { gCpu: 'cpu', gGpu: 'gpu', gVram: 'vram', gTemp: 'temp' };
 window.addEventListener('resize', function() {
-  ['gCpu', 'gGpu', 'gVram'].forEach(function(id) {
+  Object.keys(historiaPorId).forEach(function(id) {
     const c = document.getElementById(id);
-    if (c) dibujarGrafico(c, historia[id === 'gCpu' ? 'cpu' : (id === 'gGpu' ? 'gpu' : 'vram')], 'var(--acento)');
+    if (c) dibujarGrafico(c, historia[historiaPorId[id]], 'var(--acento)');
   });
 });
 

@@ -362,3 +362,12 @@ Felipe vio la primera versión del dashboard (una fila con un punto de color por
 - La grilla usa `grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))` — se reacomoda sola según el ancho disponible, sin JavaScript ni detección manual de resolución.
 
 **Verificación real, no solo teórica — primera vez en este proyecto:** al ser HTML/CSS/JS plano (no WPF nativo como `instalar-todo.ps1`), se pudo abrir de verdad en un navegador real (Playwright MCP) dentro de esta sesión, con un JSON de ejemplo en vez de datos reales del equipo. Se confirmó: 0 errores de JavaScript en consola, los gráficos de Canvas dibujan correctamente (línea + relleno + punto final), las barras de capacidad usan el color correcto según el umbral (un disco al 74% de uso salió en ámbar), y la grilla se reacomoda sin romperse en 1280px, 800px y 420px de ancho. Sigue sin poder confirmarse el ciclo completo del `HttpListener` real (bind + request/response) fuera del equipo piloto — pero por primera vez, la interfaz en sí se vio funcionando, no solo se validó que el código cargue.
+
+## 2026-08-27 (mismo día) — Corrección de alineación y dos métricas nuevas en el monitor
+
+Dos vueltas más de feedback sobre el dashboard, en la misma conversación:
+
+1. **"Mejor en diseño pero no está en orden":** CSS Grid por defecto estira todas las tarjetas de una fila a la altura de la más alta — con la tarjeta de Ollama (lista de 4 modelos) al lado de tarjetas de 1 línea, esas quedaban con espacio vacío abajo. Corregido con `align-items: start` en `.grid` + `resumirModelos()` (la lista se acorta a los primeros 2 + "+N más").
+2. **Pregunta directa: ¿la info que se captura alcanza para saber que todo anda bien?** Se identificaron dos vacíos reales y Felipe aprobó agregarlos: **temperatura de GPU** (vía `nvidia-smi --query-gpu=...,temperature.gpu`, cuarto gráfico de tendencia junto a CPU/GPU%/VRAM%) y **alerta de backup atrasado** (`Obtener-Estado` calcula `atrasado` si pasaron más de 8 días desde la última corrida de la tarea semanal — antes, un backup roto en silencio se veía igual que uno sano).
+
+Verificado igual que el rediseño anterior: `Obtener-Estado` probado en esta máquina real (confirma `atrasado: true` cuando no hay tarea de backup), y el dashboard reabierto con Playwright para confirmar visualmente el cuarto gráfico y la píldora roja "ATRASADO" (forzando ese estado en la demo antes de volver al estado sano).
