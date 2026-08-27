@@ -81,7 +81,7 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 
 ## Próximos pasos sugeridos (orden propuesto, actualizado 2026-08-27)
 
-Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y documentado. Lo que queda es **ejecución real en el equipo**, siguiendo `plan-instalacion.md` (Pasos 0 a 6) con los scripts 00 a 13 de `scripts/`:
+Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y documentado. Lo que queda es **ejecución real en el equipo**, siguiendo `plan-instalacion.md` (Pasos 0 a 6) con los scripts 00 a 14 de `scripts/`:
 
 - [ ] Correr los scripts en orden (ver `scripts/README.md`), empezando por `00-verificar-equipo` y `12-instalar-herramientas-dev` (git/gh/Python).
 - [ ] Manual, cuenta propia: crear el túnel en el dashboard de Cloudflare Zero Trust, obtener el token, elegir el subdominio.
@@ -89,6 +89,6 @@ Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y docum
 - [ ] Configurar BIOS + confirmar servicios de inicio automático (`09-configurar-inicio-automatico`, `mantenimiento.md` §1) como parte de la instalación misma, no después.
 - [ ] Configurar el backup a Drive (`10-configurar-backup`, `mantenimiento.md` §2) también como parte de la instalación.
 - [ ] Activar rate limiting básico en Cloudflare al configurar el Tunnel.
-- [ ] Crear `14-instalar-tailscale.ps1`/`.bat` (no existe todavía) y configurar `OLLAMA_HOST=0.0.0.0` — necesario para conectar Qwen Code/Goose remotos (ver `qwen-code-a-fondo.md`).
+- [x] Crear `14-instalar-tailscale.ps1`/`.bat` y el switch `-PermitirRed` (`OLLAMA_HOST=0.0.0.0`) — resuelto 2026-08-27, quedan solo por correr en el equipo real.
 - [ ] Correr `11-prueba-estres.ps1` (rendimiento real, incluye verificar si el contexto real llega a 100K o se queda en 32K) y las pruebas de calidad de `plan-pruebas.md` — volcar todo en `resultados.md`.
 - [ ] (Baja prioridad, no bloqueante) Test de velocidad de subida real de la conexión.

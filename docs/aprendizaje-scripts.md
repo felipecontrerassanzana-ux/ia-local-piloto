@@ -24,6 +24,8 @@ Usa cmdlets de PowerShell que consultan **WMI/CIM** (Windows Management Instrume
 
 Este es el paso conceptualmente más importante de entender. Una **variable de entorno** es un valor que el sistema operativo guarda y que cualquier programa puede leer al arrancar — Ollama lee `OLLAMA_MODELS` y `OLLAMA_CONTEXT_LENGTH` de ahí, no de un archivo de configuración propio. `[Environment]::SetEnvironmentVariable(..., "Machine")` las crea a **nivel de sistema** (no solo para tu usuario) — el `"Machine"` es la parte clave, sin eso quedaría solo para la sesión de tu cuenta. Por eso hay que **reiniciar Ollama** después: un programa lee sus variables de entorno una sola vez, al arrancar, no las vuelve a consultar mientras corre.
 
+**El switch `-PermitirRed` (agregado 2026-08-27):** por defecto Ollama solo escucha conexiones que vienen de sí mismo (`localhost`) — ni siquiera otro dispositivo de la misma red de casa puede alcanzarlo. `OLLAMA_HOST=0.0.0.0` es lo que le dice "escucha en todas las interfaces de red, no solo en la interna" — el mismo mecanismo que hace posible el Escenario B (otro equipo de la casa) y, junto con Tailscale, el Escenario C1 (remoto) de `qwen-code-a-fondo.md`. Queda **desactivado por defecto** (no pasar el switch = seguir como estaba) porque ampliar quién puede alcanzar el servidor es una decisión que vale la pena tomar a propósito, no como default de un script de configuración general.
+
 ## 03-descargar-modelo — `ollama pull`
 
 Descarga los pesos del modelo desde la biblioteca de Ollama (que a su vez los toma de Hugging Face) a la carpeta configurada en el paso anterior. Se descargan dos versiones (Q4_K_M por defecto y Q8_0) para poder comparar calidad/velocidad reales entre ambas — ver `modelo-elegido.md`.
@@ -71,6 +73,10 @@ Mismo patrón que `01-instalar-ollama.ps1` (winget, revisando primero si ya est�
 
 Distinto a los scripts anteriores en un punto: además de instalar (Node.js vía winget, Qwen Code vía `npm install -g`, el gestor de paquetes de Node), **genera un archivo de configuración** (`settings.json`) construyendo un objeto en PowerShell (`@{ ... }`, una tabla hash) y convirtiéndolo a JSON con `ConvertTo-Json` — más confiable que escribir el JSON como texto plano, porque PowerShell se encarga de las comillas y el formato correctos. El script revisa primero si ya existe el archivo para no pisar una configuración que la persona ya haya ajustado a mano.
 
+## 14-instalar-tailscale — misma familia que 08, pero login interactivo en vez de token
+
+Instala Tailscale vía winget, igual patrón que `08-instalar-cloudflared` (misma familia: un servicio que crea una red privada/túnel saliente). La diferencia está en cómo se autentica: Cloudflare usa un **token** que se pega una sola vez al correr el script (se genera antes, en el dashboard); Tailscale usa un **login interactivo por navegador** (`tailscale up` abre una URL, uno inicia sesión con su cuenta ahí) — no hay token que copiar y pegar, así que el script no puede completarlo por uno, solo detecta si ya se hizo (`tailscale status`) y avisa si falta. Existe una forma de automatizarlo con una "auth key" generada en el dashboard, pero es una pieza más específica de la cuenta que no se justifica para un uso de un solo equipo.
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):
@@ -94,3 +100,5 @@ Todas las corridas de este script durante el desarrollo se habían probado con *
 ## verificar-instalacion — chequeo de salud, sin cambiar nada
 
 Repite muchas de las mismas consultas que los scripts de instalación (¿existe el comando?, ¿responde el servicio?, ¿está el contenedor corriendo?) pero solo para reportar, nunca para corregir — la idea es poder correrlo las veces que se quiera, en cualquier momento, sin riesgo de romper algo, para saber de un vistazo qué falta.
+
+**Qwen Code y Tailscale (agregados 2026-08-27):** eran instalables (scripts 13 y 14) pero no se chequeaban acá — un vacío real, no intencional, encontrado al revisar el estado general del proyecto. El de Tailscale además distingue tres estados, no solo sí/no: no instalado, instalado pero sin autenticar, o instalado y conectado (y en ese caso muestra la IP de Tailscale, que es justo el dato que hace falta para configurar Qwen Code en un dispositivo remoto).

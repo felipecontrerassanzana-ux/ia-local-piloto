@@ -88,8 +88,8 @@ En vez de exponer Ollama, Qwen Code se conecta al **endpoint OpenAI-compatible q
 
 ## Qué falta para ejecutar esto
 
-- [ ] No existe todavía un script de instalación de Tailscale (`scripts/` va del 00 al 13, ninguno lo cubre) — pendiente crear `14-instalar-tailscale.ps1`/`.bat` si se confirma este camino como definitivo.
-- [ ] Configurar `OLLAMA_HOST=0.0.0.0` (hoy Ollama solo escucha en `localhost`) — necesario tanto para el Escenario B como para que Tailscale pueda alcanzar el puerto.
+- [x] `14-instalar-tailscale.ps1`/`.bat` — resuelto 2026-08-27, instala Tailscale vía winget y detecta si falta autenticar.
+- [x] `OLLAMA_HOST=0.0.0.0` — resuelto 2026-08-27, vía el switch `-PermitirRed` de `02-configurar-ollama.ps1` (desactivado por defecto).
 - [ ] Si más adelante se decide construir C2: entrar al dashboard gratis de Cloudflare Zero Trust y comprobar en la práctica si la creación de Service Tokens/política "Service Auth" está disponible sin pedir upgrade — investigado a fondo en documentación (2026-08-27) sin llegar a una respuesta clara, no se puede resolver sin entrar a la cuenta real.
 - [ ] Documentar el archivo `~/.qwen/settings.json` final una vez que Qwen Code esté instalado (script `13-instalar-qwen-code.ps1`) y probado en el Escenario A.
 
