@@ -20,6 +20,8 @@ Un chip de resumen arriba de todo ("Todo operativo" / "N de 4 con problemas", ca
 
 **La grilla se adapta sola a la resolución** (`grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))`) — no hace falta detectar el tamaño de pantalla a mano ni con JavaScript, es el mecanismo estándar de CSS Grid para esto. Probado con Playwright en 1280px, 800px y 420px de ancho (ver más abajo): pasa de 3-5 columnas a 1 columna sin que nada se corte ni se superponga.
 
+**Corrección tras la primera captura (mismo día):** por defecto, CSS Grid estira todas las tarjetas de una misma fila a la altura de la más alta — con la tarjeta de Ollama (lista larga de modelos, 3-4 líneas) al lado de tarjetas de 1 línea (Qdrant, Cloudflare), esas quedaban con un espacio vacío raro abajo, la causa concreta del "desorden" que notó Felipe. Corregido con `align-items: start` en `.grid` (cada tarjeta ocupa solo su alto real) más `resumirModelos()` en el JS (la lista de modelos se acorta a los primeros 2 + "+N más" en vez de listarlos todos) — las dos cosas juntas bajan la diferencia de altura entre tarjetas de la misma fila.
+
 ## Por qué no es un Artifact de Claude
 
 La idea original era "¿se puede armar un dashboard como Artifact?" — la respuesta corta es no, directamente: el sandbox donde corren los Artifacts bloquea llamadas de red a hosts externos salvo un par de excepciones muy acotadas (fuentes de Google, nada más), así que un Artifact no podría hacer `fetch()` a este equipo aunque quisiera. Por eso el dashboard es una página HTML servida por el propio equipo (sin esa restricción, porque no es un Artifact, es una página común y corriente vista en un navegador cualquiera) — más simple, y sin depender de infraestructura de Anthropic para ver el estado de tu propio equipo.

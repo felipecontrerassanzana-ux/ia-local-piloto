@@ -176,7 +176,7 @@ function Obtener-PaginaHtml {
   section.seccion { margin-bottom: 26px; }
   .titulo-seccion { color: var(--tenue); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; }
 
-  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); align-items: start; }
 
   .card { background: var(--superficie); border: 1px solid var(--borde); border-radius: 8px; padding: 12px 14px; min-width: 0; }
   .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; font-size: 12px; }
@@ -298,6 +298,14 @@ function tarjetaServicio(nombre, estado, detalle) {
   return '<div class="card card-servicio"><span class="pill ' + estado + '">' + texto + '</span><div class="cuerpo"><div class="nombre">' + nombre + '</div><div class="detalle">' + detalle + '</div></div></div>';
 }
 
+function resumirModelos(modelos) {
+  // Evita que la tarjeta de Ollama quede mucho mas alta que sus vecinas cuando hay 4+ modelos
+  // descargados -- con align-items:start ya no se estira toda la fila, pero igual conviene
+  // que el texto en si sea compacto (ver docs/decisiones.md, feedback de Felipe 2026-08-27).
+  if (modelos.length <= 2) return modelos.join(', ');
+  return modelos.slice(0, 2).join(', ') + ' +' + (modelos.length - 2) + ' mas';
+}
+
 function empujarMuestra(arr, valor) {
   arr.push(typeof valor === 'number' && !isNaN(valor) ? valor : 0);
   if (arr.length > MAX_MUESTRAS) arr.shift();
@@ -342,7 +350,7 @@ async function actualizar() {
     document.getElementById('grillaCapacidad').innerHTML = capacidad.join('');
 
     const servicios = [];
-    servicios.push(tarjetaServicio('Ollama', e.ollama.responde ? 'ok' : 'mal', e.ollama.responde ? ('modelos: ' + e.ollama.modelos.join(', ') + (e.ollama.modeloEnGpu ? ' -- en GPU' : '')) : 'no responde en :11434'));
+    servicios.push(tarjetaServicio('Ollama', e.ollama.responde ? 'ok' : 'mal', e.ollama.responde ? (resumirModelos(e.ollama.modelos) + (e.ollama.modeloEnGpu ? ' -- en GPU' : '')) : 'no responde en :11434'));
     servicios.push(tarjetaServicio('Qdrant', e.qdrant.responde ? 'ok' : 'mal', e.qdrant.responde ? 'responde en :6333' : 'no responde'));
     servicios.push(tarjetaServicio('Open WebUI', e.openWebUI.responde ? 'ok' : 'mal', e.openWebUI.responde ? ('responde en :8080' + (e.openWebUI.vectorDbQdrant ? ' -- RAG con Qdrant' : ' -- RAG sin Qdrant, revisar')) : 'no responde'));
     servicios.push(tarjetaServicio('Cloudflare Tunnel', e.cloudflared.corriendo ? 'ok' : (e.cloudflared.instalado ? 'mal' : 'neutral'), e.cloudflared.instalado ? (e.cloudflared.corriendo ? 'servicio corriendo' : 'instalado pero detenido') : 'no instalado'));
