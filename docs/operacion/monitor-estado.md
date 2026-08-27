@@ -9,7 +9,16 @@ Un servidor HTTP liviano escrito en PowerShell puro (`System.Net.HttpListener` �
 Expone dos rutas:
 
 - **`GET /estado`** — un JSON con el estado de cada pieza del stack (ver esquema abajo). Pensado para que otro programa lo consuma (o para mirarlo directo en el navegador).
-- **`GET /`** — un dashboard visual simple (HTML/CSS/JS autocontenido, sin librerías externas), con el mismo tema oscuro del instalador (`instalar-todo.ps1`), que hace `fetch('/estado')` cada 10 segundos y pinta un punto verde/rojo/gris por cada pieza.
+- **`GET /`** — un dashboard visual (HTML/CSS/JS/Canvas autocontenido, sin librerías externas), con el mismo tema oscuro del instalador (`instalar-todo.ps1`), que hace `fetch('/estado')` cada 10 segundos.
+
+**Rediseño del dashboard (2026-08-27, mismo día):** la primera versión era una lista apilada de filas con un punto de color — Felipe la encontró desordenada y pidió algo con gráficos, "un dashboard, no un esquema de semáforos". Rediseñado en 3 secciones:
+- **Actividad en tiempo real** — gráficos de línea (Canvas, con relleno de área y punto final destacado) de CPU%, uso de GPU% y VRAM%, con hasta 5 minutos de historial guardado en memoria del navegador (30 muestras a 10s cada una) — así se ve la tendencia, no solo el número del momento.
+- **Capacidad** — barras de VRAM, RAM y cada disco, coloreadas por umbral (verde <70%, ámbar 70-90%, rojo >90%) en vez de un simple "libre/total" en texto.
+- **Servicios** — tarjetas con una píldora de estado (OK/SIN RESPUESTA/INFO) en vez del punto de semáforo, agrupadas en una grilla.
+
+Un chip de resumen arriba de todo ("Todo operativo" / "N de 4 con problemas", calculado sobre Ollama+Qdrant+Open WebUI+Cloudflare) responde directo a "¿cómo sabemos si está corriendo bien?" sin tener que leer las 7 tarjetas de servicios una por una.
+
+**La grilla se adapta sola a la resolución** (`grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))`) — no hace falta detectar el tamaño de pantalla a mano ni con JavaScript, es el mecanismo estándar de CSS Grid para esto. Probado con Playwright en 1280px, 800px y 420px de ancho (ver más abajo): pasa de 3-5 columnas a 1 columna sin que nada se corte ni se superponga.
 
 ## Por qué no es un Artifact de Claude
 
@@ -48,4 +57,6 @@ Reutiliza los dos mecanismos de acceso remoto que este proyecto ya decidió, no 
 
 - **No es un servicio de Windows real** (como `cloudflared`) — es una Tarea Programada con reintento (3 veces, cada 1 minuto) si el proceso se cae solo. Mismo trade-off ya aceptado para Qdrant/Open WebUI, ver `docker-y-recursos.md`.
 - **No hay alertas proactivas** (Slack/email/notificación push) si algo se cae — hay que abrir el dashboard o el JSON para enterarse. Para un piloto de una sola persona, agregar alertas automáticas es más infraestructura de la que hace falta hoy; si en algún momento se necesitara, sería una capa aparte, no una modificación de este monitor.
-- **No se pudo probar en el equipo real** — esta sesión de trabajo no corre en la máquina piloto (RTX 5070), así que no se pudo instalar de verdad ni abrir el dashboard en un navegador. Se verificó sintaxis, BOM y linter (`_verificar-sintaxis.ps1`); el HTML del dashboard se armó a mano siguiendo el mismo esquema de colores ya usado y verificado en `instalar-todo.ps1`, pero su render real (JS, `fetch`, layout) queda para confirmar cuando Felipe lo instale.
+- **No se pudo probar en el equipo real** — esta sesión de trabajo no corre en la máquina piloto (RTX 5070), así que no se pudo instalar de verdad ni ver el dashboard recibiendo datos reales de Ollama/Qdrant/etc.
+
+**Lo que sí se pudo verificar de verdad, distinto del resto del instalador:** el dashboard es HTML/CSS/JS plano (no una ventana WPF nativa), así que se pudo abrir en un navegador real (Playwright) con datos de ejemplo — algo que no fue posible con `instalar-todo.ps1`. Se extrajo el HTML exacto que sirve `Obtener-PaginaHtml`, se le inyectó un JSON de muestra en vez del `fetch('/estado')` real, y se confirmó: el JS carga sin errores de consola, los gráficos de Canvas dibujan bien (línea + relleno + punto final), las barras de capacidad colorean correctamente por umbral (ej. un disco al 74% de uso salió en ámbar, no verde), y la grilla se reacomoda sola en 1280px/800px/420px de ancho sin romperse. La única pieza que queda sin confirmar es el ciclo `HttpListener` real (bind + request/response en el equipo piloto) — la lógica de `Obtener-Estado` y el HTML/JS del dashboard ya están confirmados.

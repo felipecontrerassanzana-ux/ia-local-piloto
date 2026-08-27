@@ -352,3 +352,13 @@ Felipe planteó la idea de un monitoreo en tiempo real del piloto, útil tanto l
 - `scripts/pasos/16-instalar-monitor-estado.ps1` — lo registra como Tarea Programada `Monitor-Estado-Local` (mismo patrón que Qdrant/Open WebUI, corre como `SYSTEM`) y agrega una regla de firewall para el puerto 8090 (necesaria para Tailscale; el tráfico de Cloudflare Tunnel no la necesita, es loopback).
 - Alcanzable por los dos mecanismos de acceso remoto ya decididos: local (`localhost:8090`), Tailscale directo, o agregando una segunda "Public Hostname" al mismo túnel de Cloudflare (paso manual, opcional, documentado en `acceso-remoto.md`) — sin crear infraestructura nueva.
 - Se agregó como paso 16 (último) del array `$Pasos` de `instalar-todo.ps1`, con su propio `Test-Paso`.
+
+## 2026-08-27 (mismo día) — Rediseño del dashboard del monitor, verificado con un navegador real (Playwright)
+
+Felipe vio la primera versión del dashboard (una fila con un punto de color por servicio) y la encontró desordenada: pidió gráficos y una jerarquía real de dashboard, "no un esquema de semáforos", y notó que la grilla debería adaptarse a la resolución de pantalla. Rediseñado en `Obtener-PaginaHtml` (`monitor-estado-servidor.ps1`), sin tocar el JSON de `Obtener-Estado`:
+
+- Tres secciones: **Actividad en tiempo real** (gráficos de línea en `<canvas>` para CPU%, GPU% y VRAM%, con 5 minutos de historial en memoria del navegador), **Capacidad** (barras de VRAM/RAM/discos coloreadas por umbral: verde <70%, ámbar 70-90%, rojo >90%), y **Servicios** (tarjetas con píldora de estado en vez del punto de semáforo).
+- Un chip de resumen ("Todo operativo" / "N de 4 con problemas") arriba de todo, calculado sobre los 4 servicios críticos (Ollama, Qdrant, Open WebUI, Cloudflare Tunnel).
+- La grilla usa `grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))` — se reacomoda sola según el ancho disponible, sin JavaScript ni detección manual de resolución.
+
+**Verificación real, no solo teórica — primera vez en este proyecto:** al ser HTML/CSS/JS plano (no WPF nativo como `instalar-todo.ps1`), se pudo abrir de verdad en un navegador real (Playwright MCP) dentro de esta sesión, con un JSON de ejemplo en vez de datos reales del equipo. Se confirmó: 0 errores de JavaScript en consola, los gráficos de Canvas dibujan correctamente (línea + relleno + punto final), las barras de capacidad usan el color correcto según el umbral (un disco al 74% de uso salió en ámbar), y la grilla se reacomoda sin romperse en 1280px, 800px y 420px de ancho. Sigue sin poder confirmarse el ciclo completo del `HttpListener` real (bind + request/response) fuera del equipo piloto — pero por primera vez, la interfaz en sí se vio funcionando, no solo se validó que el código cargue.

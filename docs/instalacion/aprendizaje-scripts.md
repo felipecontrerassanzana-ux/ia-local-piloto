@@ -97,6 +97,10 @@ Agregado 2026-08-27, a pedido de Felipe: quería poder revisar de un vistazo que
 
 **Por qué el dashboard no es un Artifact de Claude:** se consideró primero, pero el sandbox de los Artifacts bloquea llamadas de red a hosts externos casi por completo — no podría hacer `fetch()` a este equipo aunque quisiera. El dashboard es en cambio una página HTML común, servida por el propio monitor, sin esa restricción. Ver `../operacion/monitor-estado.md` para el detalle completo (qué chequea, cómo se llega a él, limitaciones honestas).
 
+**Rediseño del dashboard, mismo día:** la primera versión (una fila con un punto de color por servicio) le pareció desordenada a Felipe — pidió gráficos y una jerarquía real de dashboard, no "un esquema de semáforos". Quedó en 3 secciones (gráficos de actividad en tiempo real vía `<canvas>`, barras de capacidad coloreadas por umbral, tarjetas de servicio con píldora de estado) en una grilla CSS que se reacomoda sola según el ancho de pantalla (`grid-template-columns: repeat(auto-fit, minmax(...))`), sin necesitar detectar la resolución a mano.
+
+**Cómo se verificó esta vez, distinto a todo lo anterior en este proyecto:** siendo HTML/CSS/JS plano (no una ventana WPF nativa), sí se pudo abrir en un navegador real dentro de esta sesión (Playwright), con un JSON de ejemplo en vez de datos reales — algo que nunca fue posible con `instalar-todo.ps1`. Se confirmaron cosas concretas: cero errores de JS en consola, los gráficos de Canvas dibujan bien, las barras cambian de color según el umbral correcto, y la grilla se reacomoda sin romperse en tres anchos de pantalla distintos (1280px, 800px, 420px). Es la primera vez en este proyecto que una interfaz se verificó viéndola de verdad, no solo revisando que el código cargue sin errores.
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):

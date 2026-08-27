@@ -140,55 +140,228 @@ function Obtener-PaginaHtml {
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Monitor -- IA Local Piloto</title>
 <style>
-  :root { color-scheme: dark; }
-  body { background:#1E1E1E; color:#D4D4D4; font-family: Consolas, "Courier New", monospace; margin:0; padding:24px; }
-  h1 { color:#4FC3F7; font-size:20px; margin:0 0 4px; }
-  .actualizado { color:#9A9A9A; font-size:12px; margin-bottom:20px; }
-  .tarjeta { background:#252526; border:1px solid #3C3C3C; border-radius:6px; padding:12px 16px; margin-bottom:10px; display:flex; align-items:center; gap:10px; }
-  .punto { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
-  .ok { background:#6A9955; }
-  .mal { background:#F44747; }
-  .info { background:#6E6E6E; }
-  .nombre { font-weight:bold; min-width:200px; }
-  .detalle { color:#9A9A9A; font-size:12px; }
+  :root {
+    color-scheme: dark;
+    --bg: #1E1E1E;
+    --superficie: #252526;
+    --superficie-2: #2D2D30;
+    --borde: #3C3C3C;
+    --texto: #D4D4D4;
+    --tenue: #9A9A9A;
+    --acento: #4FC3F7;
+    --ok: #6A9955;
+    --alerta: #D7BA7D;
+    --mal: #F44747;
+    --neutral: #6E6E6E;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--texto);
+    font-family: Consolas, "Cascadia Code", "Courier New", monospace;
+    margin: 0; padding: 20px 24px 40px;
+    font-variant-numeric: tabular-nums;
+  }
+  .topbar { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; margin-bottom: 24px; }
+  .titulo h1 { color: var(--acento); font-size: 19px; margin: 0; font-weight: 700; }
+  .titulo .subtitulo { color: var(--tenue); font-size: 12px; }
+  .resumen { display: flex; align-items: center; gap: 12px; }
+  .actualizado { color: var(--tenue); font-size: 11px; }
+  .chip-resumen { font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--borde); }
+  .chip-resumen.ok { color: var(--ok); border-color: var(--ok); background: rgba(106,153,85,0.12); }
+  .chip-resumen.mal { color: var(--mal); border-color: var(--mal); background: rgba(244,71,71,0.12); }
+
+  section.seccion { margin-bottom: 26px; }
+  .titulo-seccion { color: var(--tenue); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 10px; }
+
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+  .card { background: var(--superficie); border: 1px solid var(--borde); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+  .card-head .etiqueta { color: var(--tenue); }
+  .card-head .valor { font-weight: 700; }
+
+  canvas.grafico { display: block; width: 100%; height: 56px; }
+
+  .barra { height: 8px; background: var(--superficie-2); border-radius: 4px; overflow: hidden; }
+  .barra-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  @media (prefers-reduced-motion: reduce) { .barra-fill { transition: none; } }
+
+  .card-servicio { display: flex; align-items: flex-start; gap: 10px; }
+  .pill { flex-shrink: 0; font-size: 10px; font-weight: 700; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 999px; margin-top: 1px; }
+  .pill.ok { color: var(--ok); background: rgba(106,153,85,0.15); }
+  .pill.mal { color: var(--mal); background: rgba(244,71,71,0.15); }
+  .pill.neutral { color: var(--neutral); background: rgba(110,110,110,0.15); }
+  .card-servicio .cuerpo { min-width: 0; }
+  .card-servicio .nombre { font-weight: 700; font-size: 13px; }
+  .card-servicio .detalle { color: var(--tenue); font-size: 11px; margin-top: 2px; overflow-wrap: break-word; }
 </style>
 </head>
 <body>
-  <h1>IA Local Piloto -- estado en vivo</h1>
-  <div class="actualizado" id="actualizado">cargando...</div>
-  <div id="tarjetas">cargando...</div>
+  <div class="topbar">
+    <div class="titulo">
+      <h1>IA Local Piloto</h1>
+      <div class="subtitulo">Monitor de estado</div>
+    </div>
+    <div class="resumen">
+      <span class="chip-resumen" id="chipResumen">cargando...</span>
+      <span class="actualizado" id="actualizado">--</span>
+    </div>
+  </div>
+
+  <section class="seccion">
+    <p class="titulo-seccion">Actividad en tiempo real (ultimos 5 min)</p>
+    <div class="grid" id="grillaGraficos"></div>
+  </section>
+
+  <section class="seccion">
+    <p class="titulo-seccion">Capacidad</p>
+    <div class="grid" id="grillaCapacidad"></div>
+  </section>
+
+  <section class="seccion">
+    <p class="titulo-seccion">Servicios</p>
+    <div class="grid" id="grillaServicios"></div>
+  </section>
+
 <script>
+const MAX_MUESTRAS = 30; // 30 x 10s = 5 minutos de historia, guardada en memoria del navegador
+const historia = { cpu: [], gpu: [], vram: [] };
+
+function colorPorPorcentaje(pct) {
+  if (pct >= 90) return 'var(--mal)';
+  if (pct >= 70) return 'var(--alerta)';
+  return 'var(--ok)';
+}
+
+function dibujarGrafico(canvas, muestras, colorCss) {
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+    canvas.width = w * dpr; canvas.height = h * dpr;
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.lineWidth = 1;
+  [0.25, 0.5, 0.75].forEach(function(f) {
+    const y = h * f;
+    ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
+  });
+
+  if (muestras.length < 2) return;
+  const color = getComputedStyle(document.body).getPropertyValue(colorCss.replace('var(', '').replace(')', '')) || '#4FC3F7';
+  const paso = w / (MAX_MUESTRAS - 1);
+  const offset = MAX_MUESTRAS - muestras.length;
+  const puntos = muestras.map(function(v, i) { return [(offset + i) * paso, h - (Math.min(v, 100) / 100) * h]; });
+
+  const grad = ctx.createLinearGradient(0, 0, 0, h);
+  grad.addColorStop(0, color.trim() + '55');
+  grad.addColorStop(1, color.trim() + '00');
+  ctx.beginPath();
+  ctx.moveTo(puntos[0][0], h);
+  puntos.forEach(function(p) { ctx.lineTo(p[0], p[1]); });
+  ctx.lineTo(puntos[puntos.length - 1][0], h);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  puntos.forEach(function(p, i) { i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); });
+  ctx.strokeStyle = color.trim();
+  ctx.lineWidth = 1.75;
+  ctx.stroke();
+
+  const ultimo = puntos[puntos.length - 1];
+  ctx.beginPath();
+  ctx.arc(ultimo[0], ultimo[1], 2.5, 0, Math.PI * 2);
+  ctx.fillStyle = color.trim();
+  ctx.fill();
+}
+
+function tarjetaGrafico(id, etiqueta, valorTexto) {
+  return '<div class="card"><div class="card-head"><span class="etiqueta">' + etiqueta + '</span><span class="valor">' + valorTexto + '</span></div><canvas class="grafico" id="' + id + '"></canvas></div>';
+}
+
+function tarjetaCapacidad(etiqueta, usado, total, unidad, pct) {
+  const color = colorPorPorcentaje(pct);
+  return '<div class="card"><div class="card-head"><span class="etiqueta">' + etiqueta + '</span><span class="valor">' + usado + ' / ' + total + ' ' + unidad + '</span></div><div class="barra"><div class="barra-fill" style="width:' + Math.min(pct, 100).toFixed(0) + '%;background:' + color + '"></div></div></div>';
+}
+
+function tarjetaServicio(nombre, estado, detalle) {
+  // estado: 'ok' | 'mal' | 'neutral'
+  const texto = estado === 'ok' ? 'OK' : (estado === 'mal' ? 'SIN RESPUESTA' : 'INFO');
+  return '<div class="card card-servicio"><span class="pill ' + estado + '">' + texto + '</span><div class="cuerpo"><div class="nombre">' + nombre + '</div><div class="detalle">' + detalle + '</div></div></div>';
+}
+
+function empujarMuestra(arr, valor) {
+  arr.push(typeof valor === 'number' && !isNaN(valor) ? valor : 0);
+  if (arr.length > MAX_MUESTRAS) arr.shift();
+}
+
 async function actualizar() {
   try {
     const r = await fetch('/estado', { cache: 'no-store' });
     const e = await r.json();
-    document.getElementById('actualizado').textContent = 'Actualizado: ' + new Date(e.timestamp).toLocaleString();
-    const filas = [];
-    filas.push(fila('Ollama', e.ollama.responde, e.ollama.responde ? ('modelos: ' + e.ollama.modelos.join(', ') + (e.ollama.modeloEnGpu ? ' (corriendo en GPU)' : '')) : 'no responde'));
-    filas.push(fila('Qdrant', e.qdrant.responde, e.qdrant.responde ? 'responde en :6333' : 'no responde'));
-    filas.push(fila('Open WebUI', e.openWebUI.responde, e.openWebUI.responde ? ('responde en :8080' + (e.openWebUI.vectorDbQdrant ? ' -- RAG con Qdrant' : ' -- RAG SIN Qdrant, revisar')) : 'no responde'));
-    filas.push(fila('Cloudflare Tunnel', e.cloudflared.corriendo, e.cloudflared.instalado ? (e.cloudflared.corriendo ? 'servicio corriendo' : 'instalado pero detenido') : 'no instalado'));
-    filas.push(fila('Tailscale', e.tailscale.conectado, e.tailscale.instalado ? (e.tailscale.conectado ? ('conectado, IP ' + e.tailscale.ip) : 'instalado, sin autenticar') : 'no instalado', !e.tailscale.instalado));
-    filas.push(fila('ComfyUI', e.comfyUI.instalado, e.comfyUI.instalado ? 'instalado (se abre a mano, no auto-inicia)' : 'no instalado', true));
-    filas.push(fila('Backup', !!e.backup.tareaConfigurada, e.backup.ultimaEjecucion ? ('ultima corrida: ' + new Date(e.backup.ultimaEjecucion).toLocaleString()) : 'sin corridas registradas todavia'));
-    if (e.gpu && e.gpu.nombre) {
-      filas.push(fila('GPU -- ' + e.gpu.nombre, true, e.gpu.vramUsadaMB + ' / ' + e.gpu.vramTotalMB + ' MB VRAM -- ' + e.gpu.utilizacionPct + '% uso', true));
+    document.getElementById('actualizado').textContent = 'Actualizado ' + new Date(e.timestamp).toLocaleTimeString();
+
+    const criticos = [e.ollama.responde, e.qdrant.responde, e.openWebUI.responde, e.cloudflared.corriendo];
+    const fallando = criticos.filter(function(x) { return !x; }).length;
+    const chip = document.getElementById('chipResumen');
+    if (fallando === 0) { chip.textContent = 'Todo operativo'; chip.className = 'chip-resumen ok'; }
+    else { chip.textContent = fallando + ' de ' + criticos.length + ' con problemas'; chip.className = 'chip-resumen mal'; }
+
+    const gpuPct = (e.gpu && e.gpu.vramTotalMB) ? (e.gpu.vramUsadaMB / e.gpu.vramTotalMB) * 100 : 0;
+    empujarMuestra(historia.cpu, e.sistema ? e.sistema.cpuUsoPct : null);
+    empujarMuestra(historia.gpu, e.gpu ? e.gpu.utilizacionPct : null);
+    empujarMuestra(historia.vram, gpuPct);
+
+    document.getElementById('grillaGraficos').innerHTML =
+      tarjetaGrafico('gCpu', 'CPU', (e.sistema ? e.sistema.cpuUsoPct : '--') + '%') +
+      tarjetaGrafico('gGpu', 'GPU (' + (e.gpu && e.gpu.nombre ? e.gpu.nombre : 'sin datos') + ')', (e.gpu ? e.gpu.utilizacionPct : '--') + '%') +
+      tarjetaGrafico('gVram', 'VRAM', gpuPct.toFixed(0) + '%');
+    dibujarGrafico(document.getElementById('gCpu'), historia.cpu, 'var(--acento)');
+    dibujarGrafico(document.getElementById('gGpu'), historia.gpu, 'var(--acento)');
+    dibujarGrafico(document.getElementById('gVram'), historia.vram, 'var(--acento)');
+
+    const capacidad = [];
+    if (e.gpu && e.gpu.vramTotalMB) {
+      capacidad.push(tarjetaCapacidad('VRAM GPU', (e.gpu.vramUsadaMB / 1024).toFixed(1), (e.gpu.vramTotalMB / 1024).toFixed(1), 'GB', gpuPct));
     }
-    (e.discos || []).forEach(function(d) { filas.push(fila('Disco ' + d.letra + ':', true, d.libreGB + ' / ' + d.totalGB + ' GB libres', true)); });
     if (e.sistema) {
-      filas.push(fila('CPU / RAM', true, 'CPU ' + e.sistema.cpuUsoPct + '% -- RAM ' + e.sistema.ramUsadaGB + ' / ' + e.sistema.ramTotalGB + ' GB', true));
+      capacidad.push(tarjetaCapacidad('RAM', e.sistema.ramUsadaGB, e.sistema.ramTotalGB, 'GB', (e.sistema.ramUsadaGB / e.sistema.ramTotalGB) * 100));
     }
-    document.getElementById('tarjetas').innerHTML = filas.join('');
+    (e.discos || []).forEach(function(d) {
+      const usado = (d.totalGB - d.libreGB);
+      capacidad.push(tarjetaCapacidad('Disco ' + d.letra + ':', usado.toFixed(0), d.totalGB.toFixed(0), 'GB', (usado / d.totalGB) * 100));
+    });
+    document.getElementById('grillaCapacidad').innerHTML = capacidad.join('');
+
+    const servicios = [];
+    servicios.push(tarjetaServicio('Ollama', e.ollama.responde ? 'ok' : 'mal', e.ollama.responde ? ('modelos: ' + e.ollama.modelos.join(', ') + (e.ollama.modeloEnGpu ? ' -- en GPU' : '')) : 'no responde en :11434'));
+    servicios.push(tarjetaServicio('Qdrant', e.qdrant.responde ? 'ok' : 'mal', e.qdrant.responde ? 'responde en :6333' : 'no responde'));
+    servicios.push(tarjetaServicio('Open WebUI', e.openWebUI.responde ? 'ok' : 'mal', e.openWebUI.responde ? ('responde en :8080' + (e.openWebUI.vectorDbQdrant ? ' -- RAG con Qdrant' : ' -- RAG sin Qdrant, revisar')) : 'no responde'));
+    servicios.push(tarjetaServicio('Cloudflare Tunnel', e.cloudflared.corriendo ? 'ok' : (e.cloudflared.instalado ? 'mal' : 'neutral'), e.cloudflared.instalado ? (e.cloudflared.corriendo ? 'servicio corriendo' : 'instalado pero detenido') : 'no instalado'));
+    servicios.push(tarjetaServicio('Tailscale', e.tailscale.conectado ? 'ok' : 'neutral', e.tailscale.instalado ? (e.tailscale.conectado ? ('conectado, IP ' + e.tailscale.ip) : 'instalado, sin autenticar') : 'no instalado (opcional)'));
+    servicios.push(tarjetaServicio('ComfyUI', 'neutral', e.comfyUI.instalado ? 'instalado -- se abre a mano, no auto-inicia' : 'no instalado (opcional)'));
+    servicios.push(tarjetaServicio('Backup', e.backup.tareaConfigurada ? 'ok' : 'mal', e.backup.ultimaEjecucion ? ('ultima corrida: ' + new Date(e.backup.ultimaEjecucion).toLocaleString()) : 'sin corridas registradas todavia'));
+    document.getElementById('grillaServicios').innerHTML = servicios.join('');
   } catch (err) {
     document.getElementById('actualizado').textContent = 'No se pudo leer /estado: ' + err;
   }
 }
-function fila(nombre, ok, detalle, neutral) {
-  const clase = neutral ? 'info' : (ok ? 'ok' : 'mal');
-  return '<div class="tarjeta"><div class="punto ' + clase + '"></div><div class="nombre">' + nombre + '</div><div class="detalle">' + detalle + '</div></div>';
-}
+
+window.addEventListener('resize', function() {
+  ['gCpu', 'gGpu', 'gVram'].forEach(function(id) {
+    const c = document.getElementById(id);
+    if (c) dibujarGrafico(c, historia[id === 'gCpu' ? 'cpu' : (id === 'gGpu' ? 'gpu' : 'vram')], 'var(--acento)');
+  });
+});
+
 actualizar();
 setInterval(actualizar, 10000);
 </script>
