@@ -86,6 +86,26 @@ if ($cfService) {
 $gooseCmd = Get-Command goose -ErrorAction SilentlyContinue
 Check "Goose instalado" ($null -ne $gooseCmd)
 
+# Qwen Code
+$qwenCmd = Get-Command qwen -ErrorAction SilentlyContinue
+Check "Qwen Code instalado" ($null -ne $qwenCmd)
+Check "Configuración de Qwen Code presente (~/.qwen/settings.json)" (Test-Path "$env:USERPROFILE\.qwen\settings.json")
+
+# Tailscale — opcional, solo se informa (no se exige, no todos los equipos necesitan conexión remota de agentes)
+$tailscaleCmd = Get-Command tailscale -ErrorAction SilentlyContinue
+if ($tailscaleCmd) {
+    $tsStatus = tailscale status 2>$null
+    if ($LASTEXITCODE -eq 0 -and $tsStatus) {
+        Write-Host "[INFO] Tailscale instalado y conectado." -ForegroundColor Gray
+        $tsIp = (tailscale ip -4 2>$null)
+        if ($tsIp) { Write-Host "       IP de Tailscale de este equipo: $tsIp" -ForegroundColor Gray }
+    } else {
+        Write-Host "[INFO] Tailscale instalado pero sin autenticar — correr 'tailscale up'." -ForegroundColor Gray
+    }
+} else {
+    Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/qwen-code-a-fondo.md)." -ForegroundColor Gray
+}
+
 # Tarea de backup
 $tareaBackup = Get-ScheduledTask -TaskName "IA-Local-Piloto-Backup" -ErrorAction SilentlyContinue
 Check "Tarea programada de backup configurada" ($null -ne $tareaBackup)

@@ -11,11 +11,19 @@
   Cuántos tokens de contexto pedirle a Ollama. 100000 es el máximo seguro confirmado para
   Qwen 2.5 Coder 7B en esta GPU (ver docs/modelo-elegido.md) — pero ver también la nota sobre
   el límite de 32K que Ollama declara por defecto en el modelo empaquetado, a verificar.
+
+.PARAMETER PermitirRed
+  Switch opcional. Por defecto Ollama solo escucha en localhost (nadie fuera de este equipo
+  puede alcanzarlo). Si se pasa -PermitirRed, se configura OLLAMA_HOST=0.0.0.0 para que también
+  responda a la IP de la red local y de Tailscale — necesario para los Escenarios B y C1 de
+  docs/qwen-code-a-fondo.md (Qwen Code/Goose desde otro dispositivo). No activar si no se va a
+  usar ninguno de esos escenarios — mantiene la superficie expuesta al mínimo por defecto.
 #>
 
 param(
     [string]$LetraHDD = "D",
-    [int]$ContextoTokens = 32000
+    [int]$ContextoTokens = 32000,
+    [switch]$PermitirRed
 )
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -25,6 +33,9 @@ $modelsPath = "${LetraHDD}:\OllamaModels"
 Write-Host "Configurando variables de entorno de sistema para Ollama..." -ForegroundColor Cyan
 Write-Host "  OLLAMA_MODELS -> $modelsPath"
 Write-Host "  OLLAMA_CONTEXT_LENGTH -> $ContextoTokens"
+if ($PermitirRed) {
+    Write-Host "  OLLAMA_HOST -> 0.0.0.0 (accesible desde la red local y desde Tailscale)" -ForegroundColor Yellow
+}
 Write-Host ""
 Write-Host "Si $LetraHDD no es la letra real del HDD en este equipo, cancela (Ctrl+C) y" -ForegroundColor Yellow
 Write-Host "vuelve a correr con -LetraHDD <letra correcta>, ej: .\02-configurar-ollama.ps1 -LetraHDD E" -ForegroundColor Yellow
@@ -35,6 +46,12 @@ New-Item -ItemType Directory -Force -Path $modelsPath | Out-Null
 
 [Environment]::SetEnvironmentVariable("OLLAMA_MODELS", $modelsPath, "Machine")
 [Environment]::SetEnvironmentVariable("OLLAMA_CONTEXT_LENGTH", $ContextoTokens, "Machine")
+
+if ($PermitirRed) {
+    [Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0", "Machine")
+} else {
+    [Environment]::SetEnvironmentVariable("OLLAMA_HOST", $null, "Machine")
+}
 
 Write-Host "Variables configuradas a nivel de sistema." -ForegroundColor Green
 Write-Host ""

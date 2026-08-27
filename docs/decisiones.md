@@ -225,3 +225,13 @@ El usuario pidió indagar más a fondo cómo opera Qwen Code (qué provecho saca
 Se profundizó la búsqueda del punto que había quedado pendiente en la entrada anterior. Ni la documentación oficial de Service Tokens, ni la página de precios de Zero Trust, ni la comparativa de planes lo dejan explícito. Única señal encontrada: el título de un hilo del foro oficial de Cloudflare ("Supporting Service Tokens for All subscription plans") sugiere que en algún momento no estuvieron disponibles en todos los planes, pero el foro bloquea la lectura sin sesión iniciada, así que no se pudo verificar el contenido ni si sigue vigente hoy.
 
 **Conclusión:** este punto no se puede resolver leyendo documentación — hace falta entrar al dashboard gratis de Cloudflare Zero Trust y comprobarlo en la práctica. No es bloqueante: Tailscale sigue siendo la ruta recomendada para conexión remota de Qwen Code/Goose y no depende de esto en absoluto. Queda marcado en `qwen-code-a-fondo.md` como pendiente de comprobación práctica, no de más investigación documental.
+
+## 2026-08-27 (mismo día) — Se construyó el script de Tailscale, quedaba solo documentado
+
+Con la decisión de Tailscale como ruta recomendada ya tomada, se construyó lo que faltaba para que fuera ejecutable, no solo teoría:
+
+- `scripts/14-instalar-tailscale.ps1`/`.bat` (nuevo) — instala Tailscale vía winget (`Tailscale.Tailscale`, verificado), detecta si ya está autenticado, y si no, indica el paso manual (`tailscale up`, login interactivo por navegador — no automatizable sin generar una auth key en el dashboard, que es específica de cuenta).
+- `scripts/02-configurar-ollama.ps1` — se agregó el switch `-PermitirRed`, que configura `OLLAMA_HOST=0.0.0.0`. Queda **desactivado por defecto** (Ollama solo en `localhost` si no se pasa el switch) — activar la escucha en red es una decisión aparte de solo tener Tailscale instalado, y no todos los equipos que corran este piloto van a necesitar conexión remota de agentes.
+- `scripts/verificar-instalacion.ps1` — se agregaron chequeos de Qwen Code y Tailscale, que estaban instalables (scripts 13 y 14) pero no se verificaban en el chequeo integral.
+- Se corrigieron dos referencias obsoletas encontradas de paso: `scripts/README.md` y `plan-instalacion.md` todavía mencionaban Open WebUI en el puerto 3000 y como "contenedor Docker" — arrastre de antes de la migración a nativo (puerto 8080, Tarea Programada) que no se había propagado a esos dos archivos.
+- Se agregó el Paso 3.5 en `plan-instalacion.md` para la instalación de Tailscale, dejado explícitamente como opcional y distinto del acceso por navegador del Paso 3.

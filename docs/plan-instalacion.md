@@ -61,17 +61,25 @@ Ver `acceso-remoto.md` para el detalle completo de la decisión (Cloudflare Tunn
 - [ ] Configurar Cloudflare Access delante del túnel, con el correo de Felipe como único autorizado.
 - [ ] Activar rate limiting básico en el dashboard de Cloudflare.
 
+## Paso 3.5 — Conexión remota de Qwen Code/Goose (opcional, distinto del acceso por navegador)
+
+Ver `qwen-code-a-fondo.md` para el detalle completo — solo hace falta si se va a usar Qwen Code/Goose desde un dispositivo fuera de la casa, no para el uso local ni para el acceso por navegador del Paso 3.
+
+- [ ] Instalar Tailscale (`scripts/14-instalar-tailscale.ps1`) y autenticar (`tailscale up`, interactivo).
+- [ ] Configurar `OLLAMA_HOST=0.0.0.0` (`scripts/02-configurar-ollama.ps1 -PermitirRed`) — sin esto, Tailscale conecta el equipo pero Ollama sigue sin aceptar tráfico de otros dispositivos.
+- [ ] En el dispositivo remoto: instalar Tailscale + Qwen Code, y apuntar `baseUrl` en `~/.qwen/settings.json` a `http://<IP-de-Tailscale>:11434/v1` (obtener la IP con `tailscale ip -4` en el equipo servidor).
+
 ## Paso 4 — Continuidad y backup
 
 Ver `mantenimiento.md` para el detalle completo.
 
 - [ ] Configurar la BIOS para reencender el equipo solo tras un corte de luz.
-- [ ] Confirmar que Ollama, Open WebUI (contenedor Docker) y `cloudflared` quedan configurados para iniciar solos con Windows (`scripts/09-configurar-inicio-automatico.ps1`).
+- [ ] Confirmar que Ollama, Open WebUI (nativo, vía Tarea Programada) y `cloudflared` quedan configurados para iniciar solos con Windows (`scripts/09-configurar-inicio-automatico.ps1`).
 - [ ] Configurar la tarea programada de backup a Drive (`scripts/10-configurar-backup.ps1`).
 
 ## Paso 5 — Verificación final
 
-- [ ] Correr `scripts/verificar-instalacion.ps1` — chequeo integral: Ollama responde, contexto configurado, GPU detectada, servicios activos y configurados para auto-inicio, Open WebUI accesible en LAN, túnel de Cloudflare activo, backup programado.
+- [ ] Correr `scripts/verificar-instalacion.ps1` — chequeo integral: Ollama responde, contexto configurado, GPU detectada, servicios activos y configurados para auto-inicio, Open WebUI accesible en LAN, túnel de Cloudflare activo, backup programado, Qwen Code configurado, y estado de Tailscale si se instaló.
 
 ## Paso 6 — Prueba de estrés y rendimiento
 
