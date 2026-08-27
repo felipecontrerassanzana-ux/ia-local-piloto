@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Descarga Qwen 2.5 Coder 7B en dos cuantizaciones para comparar (ver docs/modelo-elegido.md).
   Tags confirmados en ollama.com/library/qwen2.5-coder/tags (2026-08-26).

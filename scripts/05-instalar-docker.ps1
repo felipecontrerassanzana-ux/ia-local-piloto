@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Instala Docker Desktop si no está presente. Necesario para Open WebUI y Qdrant (Paso 2).
 #>

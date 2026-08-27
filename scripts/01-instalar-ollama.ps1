@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Instala Ollama si no está instalado. Usa winget (viene con Windows 11).
   Fuente: docs.ollama.com / github.com/ollama/ollama/docs/windows.mdx

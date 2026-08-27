@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Configura Ollama: contexto largo (OLLAMA_CONTEXT_LENGTH) y ubicación de modelos en el HDD (OLLAMA_MODELS).
   Ver docs/almacenamiento.md y docs/herramientas-trabajo.md para el porqué de cada valor.

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Verifica y deja configurado que los servicios necesarios arranquen solos con Windows,
   sin necesitar que alguien inicie sesión. Ver docs/mantenimiento.md §1.

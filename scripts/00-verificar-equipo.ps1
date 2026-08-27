@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Verificación inicial del equipo antes de instalar nada (Paso 0 de plan-instalacion.md).
   No instala ni cambia nada — solo reporta el estado real del equipo.
@@ -54,13 +54,23 @@ Escribir ""
 # Discos
 Escribir "--- Discos ---"
 Get-Volume | Where-Object { $_.DriveLetter } | ForEach-Object {
-    $tipo = if ($_.DriveType -eq 'Fixed') { (Get-PhysicalDisk | Where-Object { $_.DeviceId -ne $null }).MediaType } else { "N/A" }
+    $letra = $_.DriveLetter
+    $tipo = "N/D"
+    try {
+        $particion = Get-Partition -DriveLetter $letra -ErrorAction Stop
+        $disco = Get-Disk -Number $particion.DiskNumber -ErrorAction Stop
+        $tipo = (Get-PhysicalDisk -DeviceNumber $disco.Number -ErrorAction Stop).MediaType
+    } catch {
+        # Algunas unidades (ópticas, de red) no tienen disco físico asociado — se deja "N/D".
+        Write-Verbose "No se pudo determinar el tipo de disco para $($letra): $($_.Exception.Message)"
+    }
     $libreGB = [math]::Round($_.SizeRemaining / 1GB, 1)
     $totalGB = [math]::Round($_.Size / 1GB, 1)
-    Escribir "$($_.DriveLetter): $libreGB GB libres de $totalGB GB total (etiqueta: $($_.FileSystemLabel))"
+    Escribir "$($letra): $libreGB GB libres de $totalGB GB total, tipo: $tipo (etiqueta: $($_.FileSystemLabel))"
 }
 Escribir ""
-Escribir "Nota: para saber cuál letra es el NVMe y cuál el HDD, revisar Administrador de discos"
+Escribir "El campo 'tipo' de arriba (SSD/HDD) ya identifica cuál letra es el NVMe y cuál el HDD."
+Escribir "Si aparece 'Unspecified' o 'N/D' en algún disco, confirmar a mano en Administrador de discos"
 Escribir "(diskmgmt.msc) o el Administrador de tareas > Rendimiento > cada disco muestra el tipo."
 Escribir ""
 

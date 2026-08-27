@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Instala cloudflared y lo registra como servicio de Windows usando un túnel creado desde el
   dashboard de Cloudflare Zero Trust (método "remotely-managed", el más simple para uso personal).

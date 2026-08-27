@@ -21,8 +21,11 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 | 10 | `10-configurar-backup.bat` | Crea la tarea programada de backup a Drive | **Sí** — la ruta de tu carpeta de Google Drive |
 | — | `verificar-instalacion.bat` | Chequeo integral, se puede correr las veces que se quiera | No |
 | 11 | `11-prueba-estres.bat` | Mide rendimiento real (tok/s, carga sostenida, límite de contexto) — ver `../docs/pruebas-rendimiento.md` | No (correr al final, con todo ya instalado) |
+| — | `_verificar-sintaxis.bat` | Control de calidad de los scripts mismos — sintaxis, codificación, linter — **sin instalar ni ejecutar nada de su contenido**. No pide administrador. Correr después de editar cualquier script. | No |
 
 **Antes de correr nada, leer `../docs/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
+
+**Control de calidad ya aplicado (2026-08-26):** todos los scripts pasaron por `_verificar-sintaxis.bat` antes de subirse — se encontró y corrigió un bug real (detección de tipo de disco en `00-verificar-equipo.ps1`, calculaba mal la correlación letra→disco y nunca llegaba a mostrarse) y un problema de codificación (faltaba BOM UTF-8, lo que corrompía las tildes al ejecutar vía `powershell.exe`). Detalle completo en `../docs/aprendizaje-scripts.md`.
 
 ## Qué NO automatizan estos scripts (pasos manuales, no evitables)
 

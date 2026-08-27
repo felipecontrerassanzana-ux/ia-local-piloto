@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Levanta Open WebUI como contenedor Docker, conectado al Ollama nativo del equipo (host).
   Comando base verificado en docs.openwebui.com (2026-08-26), adaptado con --restart para continuidad.

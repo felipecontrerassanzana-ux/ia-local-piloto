@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Batería de pruebas de estrés y rendimiento real sobre el modelo ya instalado.
   Ver docs/pruebas-rendimiento.md para qué mide cada prueba y cómo interpretar los resultados.

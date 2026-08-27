@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Chequeo integral post-instalación (Paso 5 de plan-instalacion.md). No instala ni cambia nada,
   solo reporta qué está bien y qué falta.

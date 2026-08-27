@@ -1,4 +1,4 @@
-# Fragmento reutilizado por todos los scripts: confirma que la sesión corre elevada.
+﻿# Fragmento reutilizado por todos los scripts: confirma que la sesión corre elevada.
 # Los .bat ya elevan antes de llamar al .ps1, esto es una segunda confirmación
 # por si alguien corre el .ps1 directo sin pasar por el .bat.
 

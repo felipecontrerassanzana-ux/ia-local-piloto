@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Crea el script de backup real (volúmenes Docker de Open WebUI y Qdrant -> carpeta de Drive)
   y lo registra como Tarea Programada semanal. Ver docs/mantenimiento.md §2.

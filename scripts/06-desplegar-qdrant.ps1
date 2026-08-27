@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SINOPSIS
   Levanta Qdrant (base vectorial para el RAG) como contenedor Docker persistente.
   Ver docs/plan-instalacion.md Paso 2 y docs/almacenamiento.md.

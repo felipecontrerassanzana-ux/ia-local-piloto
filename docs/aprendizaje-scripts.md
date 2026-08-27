@@ -65,6 +65,16 @@ Dos conceptos nuevos acá:
 
 Distinto a todos los anteriores: no instala ni configura nada, **mide**. Usa `Invoke-RestMethod` para hablarle directo a la API que Ollama expone en `localhost:11434` (la misma que usan Continue.dev, Goose y Open WebUI por debajo) y lee los campos de rendimiento que el propio Ollama calcula (`eval_count`, `eval_duration`, etc. — documentados oficialmente). Ver `pruebas-rendimiento.md` para el detalle de qué prueba cada parte y cómo interpretar los números.
 
+## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
+
+Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):
+
+1. **Parser de PowerShell** (`[System.Management.Automation.Language.Parser]::ParseFile`): PowerShell puede analizar la gramática de un script sin correrlo — igual que un corrector ortográfico no necesita que leas el texto en voz alta para encontrar errores. Esto encuentra llaves/comillas sin cerrar, sintaxis inválida, etc.
+2. **Codificación de caracteres:** revisa que cada archivo tenga BOM UTF-8 (los primeros 3 bytes del archivo, `EF BB BF`) — el marcador que le dice a `powershell.exe` (la versión clásica de Windows, la que usan los `.bat`) que el archivo es UTF-8. **Esto no era solo una formalidad:** se probó en este equipo y, sin BOM, el mismo texto con tildes se ve así al ejecutarlo: `funciÃ³n, configuraciÃ³n` en vez de `función, configuración` — un bug real que habría afectado a los 14 scripts.
+3. **PSScriptAnalyzer:** el linter oficial de PowerShell (mismo tipo de herramienta que ESLint para JavaScript) — revisa patrones que suelen esconder errores reales, no solo estilo. Así se encontró que `00-verificar-equipo.ps1` calculaba el tipo de disco (SSD/HDD) con una consulta que no lo relacionaba con la unidad correcta, y encima nunca llegaba a mostrarse en el reporte — quedaba calculado y descartado. Se corrigió correlacionando la letra de unidad → partición → disco → disco físico, y se verificó en vivo que da el resultado correcto.
+
+**Cómo correrlo:** `_verificar-sintaxis.bat` — a diferencia de todos los demás, **no pide permisos de administrador**, porque solo lee y analiza texto. Correrlo después de cualquier cambio a un script, antes de confiar en que funciona.
+
 ## verificar-instalacion — chequeo de salud, sin cambiar nada
 
 Repite muchas de las mismas consultas que los scripts de instalación (¿existe el comando?, ¿responde el servicio?, ¿está el contenedor corriendo?) pero solo para reportar, nunca para corregir — la idea es poder correrlo las veces que se quiera, en cualquier momento, sin riesgo de romper algo, para saber de un vistazo qué falta.
