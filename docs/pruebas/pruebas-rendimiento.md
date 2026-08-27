@@ -12,7 +12,7 @@ Varios números usados en este proyecto son **estimaciones de terceros** (willit
 
 Establece un número de referencia (tok/s) en condiciones ideales (poco contexto, GPU "fría"). Sirve como punto de comparación para las otras dos pruebas — si algo más adelante da mucho menos que esto, hay un problema que investigar, no es "normal".
 
-**Qué comparar:** el promedio debería acercarse a los ~98 tok/s estimados por willitrunai.com para Q4_K_M (ver `modelo-elegido.md`) — no tiene que ser idéntico (es otra metodología de medición), pero si está muy por debajo (ej. menos de 50 tok/s), algo no está bien configurado (revisar si el modelo está cargando en GPU o si está haciendo offload a CPU — ver `ollama ps`, columna `PROCESSOR`).
+**Qué comparar:** el promedio debería acercarse a los ~98 tok/s estimados por willitrunai.com para Q4_K_M (ver `../modelo/modelo-elegido.md`) — no tiene que ser idéntico (es otra metodología de medición), pero si está muy por debajo (ej. menos de 50 tok/s), algo no está bien configurado (revisar si el modelo está cargando en GPU o si está haciendo offload a CPU — ver `ollama ps`, columna `PROCESSOR`).
 
 ### 2. Carga sostenida — 20 repeticiones seguidas
 
@@ -22,12 +22,12 @@ El mismo prompt, veinte veces seguidas sin pausa. El objetivo es detectar **degr
 - Si el tok/s se mantiene estable (variación menor a ~10%): el equipo aguanta uso sostenido sin problema térmico.
 - Si cae progresivamente: revisar la temperatura de GPU registrada en el archivo de resumen (capturada antes/después con `nvidia-smi`) — sobre ~83-85°C en una GPU NVIDIA moderna suele activar throttling automático (reducción de velocidad para no sobrecalentarse). Si se confirma esto, es un dato real para decidir si hace falta mejorar la ventilación del gabinete antes de darle uso diario pesado.
 
-### 3. Rampa de contexto — el pendiente que quedó abierto en `modelo-elegido.md`
+### 3. Rampa de contexto — el pendiente que quedó abierto en `../modelo/modelo-elegido.md`
 
 Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 8K, 32K, 64K y 100K+ tokens — Ollama mismo informa el conteo real vía `prompt_eval_count`, no hace falta adivinarlo) y pide un resumen corto de cada uno. Esto responde directamente la pregunta que quedó pendiente: **¿el modelo realmente sostiene más de 32K de contexto en la práctica, o el límite de 32K que muestra la página de Ollama es real?**
 
 **Cómo interpretar el resultado:**
-- Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa sin error: el modelo sí acepta más de 32K, confirmando que ese número era solo el default de fábrica, no un techo real. Registrar el resultado en `modelo-elegido.md` (actualizar el pendiente marcado ahí).
+- Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa sin error: el modelo sí acepta más de 32K, confirmando que ese número era solo el default de fábrica, no un techo real. Registrar el resultado en `../modelo/modelo-elegido.md` (actualizar el pendiente marcado ahí).
 - Si el script falla o corta en un tamaño específico (ej. justo pasando 32K): eso es el límite real de esta instalación — hay que documentarlo como el contexto verdadero utilizable, no los 100K que se habían proyectado, y ajustar `OLLAMA_CONTEXT_LENGTH` acorde en `02-configurar-ollama.ps1`.
 - **Esta prueba no evalúa si el modelo "recuerda bien" el contenido largo** (eso sería una prueba de calidad, no de estrés) — solo si la petición se procesa técnicamente. Para saber si realmente usa bien un contexto largo, agregar ese caso a `plan-pruebas.md` con una persona revisando la respuesta.
 

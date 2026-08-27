@@ -80,7 +80,7 @@ Un token no es exactamente una palabra, pero en español/código ronda 0,7-1 pal
 | **Depuración con contexto largo** | Gracias a los 100K de contexto, puede seguir el hilo de varias funciones/archivos relacionados sin perder de vista el inicio de la conversación | Cargar un proyecto entero de una vez y esperar que "entienda todo" — mejor acotar a los archivos relevantes |
 | **Agentic coding (tareas de varios pasos, tipo agente)** | "Runs well" según los datos verificados (sin offload) — puede sostener flujos de varios pasos (leer → proponer cambio → explicar) | Que actúe sin supervisión en cambios grandes — es un asistente, no un ingeniero autónomo; requiere revisión humana en cada paso, igual que cualquier LLM |
 | **RAG sobre documentación/código propio** | "Runs well" también, con más margen de espera (TTFT más alto cuando hay mucho contexto recuperado inyectado) — sirve para responder preguntas sobre documentación indexada del área de TI | La calidad depende tanto del modelo como de qué tan bien está armado el índice (embeddings, chunking) — un mal RAG da mala respuesta aunque el modelo sea bueno (ver `../ia-local/docs/conceptos-fundamentales.md` §3) |
-| **Español** | El modelo declara amplio soporte de idiomas (familia Qwen, 100+ idiomas a nivel Qwen3.6), pero el benchmark de código citado es en inglés | No hay benchmark propio verificado de calidad en español para esta variante — queda como ítem a probar en `plan-pruebas.md`, no asumir que rinde igual que en inglés |
+| **Español** | El modelo declara amplio soporte de idiomas (familia Qwen, 100+ idiomas a nivel Qwen3.6), pero el benchmark de código citado es en inglés | No hay benchmark propio verificado de calidad en español para esta variante — queda como ítem a probar en `../pruebas/plan-pruebas.md`, no asumir que rinde igual que en inglés |
 
 ## Modelo de embeddings (para el RAG de prueba)
 
@@ -88,7 +88,7 @@ Un token no es exactamente una palabra, pero en español/código ronda 0,7-1 pal
 
 ## Qué queda pendiente de confirmar con uso real
 
-- [x] Velocidad estimada específica de esta GPU exacta (no proxy) — resuelto 2026-08-26: 98,0 tok/s en Q4_K_M según willitrunai.com. **Sigue pendiente la medición real de primera mano** una vez instalado (ver `resultados.md`) — el sitio mismo aclara que son estimaciones, no mediciones.
+- [x] Velocidad estimada específica de esta GPU exacta (no proxy) — resuelto 2026-08-26: 98,0 tok/s en Q4_K_M según willitrunai.com. **Sigue pendiente la medición real de primera mano** una vez instalado (ver `../pruebas/resultados.md`) — el sitio mismo aclara que son estimaciones, no mediciones.
 - [ ] Calidad real en español y en el tipo de código que se use en la práctica — el benchmark "Coding" del sitio de referencia es en inglés.
 - [x] Contexto usable en la práctica — resuelto: 100K de contexto seguro confirmado por el sitio para esta GPU exacta (no los 131K teóricos), sin necesidad de reducirlo manualmente.
 - [ ] Probar Q8_0 (recomendado como "best for your GPU") contra Q4_K_M en tareas reales — confirmar si la mejora de calidad se nota en la práctica antes de fijarlo como cuantización definitiva.

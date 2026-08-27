@@ -23,29 +23,25 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 
 ## Estructura
 
-- `docs/arquitectura-piloto.md` — **el esquema estructural completo del montaje**: diagrama de todo el stack junto (hardware → modelo → motor → herramientas → red → autenticación), tabla de qué decisión sale de qué documento, y una sección proactiva de qué falta resolver antes de instalar de verdad. Es el punto de partida para ver el conjunto, no solo una pieza.
-- `docs/hardware-real.md` — specs del equipo y qué modelo cabe realmente.
-- `docs/fundamentacion-modelo.md` — **qué es Qwen, de dónde viene, historia real verificada de la línea Coder, y el esquema completo de la decisión** (filtro por filtro) que llevó a elegirlo para este equipo. Es el documento a leer antes de instalar, para poder explicar la elección, no solo ejecutarla.
-- `docs/modelo-elegido.md` — decisión técnica de modelo para este hardware (Qwen 2.5 Coder 7B): VRAM, velocidad, cuantización, comparación con alternativas.
-- `docs/plan-instalacion.md` — pasos para dejar el equipo funcionando (Ollama, embeddings, base vectorial, RAG).
-- `docs/herramientas-trabajo.md` — el modelo no tiene memoria propia: qué herramientas usar para programar de forma efectiva (Goose, Qwen Code, Continue.dev, Aider) y cómo se resuelve la memoria persistente en la práctica (Auto-memory de Qwen Code de fábrica, `AGENTS.md`/reglas estáticas como respaldo, Mem0 descartado por ahora).
-- `docs/qwen-code-a-fondo.md` — qué funciones de Qwen Code sacan más provecho al modelo instalado (Plan Mode, SubAgents, contexto largo, Auto-memory, cruzado contra los números reales de `modelo-elegido.md`), y los tres modos de conexión posibles: mismo equipo, misma red de casa, y remoto fuera de la red (Tailscale recomendado, Cloudflare Tunnel+Access como alternativa reutilizando lo ya planeado).
-- `docs/motor-alternativas.md` — alternativas a Ollama si el piloto necesita más funciones que solo código (LocalAI para voz/imagen/visión, LM Studio como GUI, Open WebUI como interfaz web).
-- `docs/acceso-remoto.md` — cómo acceder por navegador desde afuera sin IP fija (Tailscale Funnel / Cloudflare Tunnel), con la condición real de este equipo (fibra Movistar 800 megas, sin IP fija).
-- `docs/mantenimiento.md` — continuidad tras corte de luz (sin UPS por ahora), backup a Drive personal, checklist mensual de actualizaciones, y confirmación de que toda la estructura es gratuita.
-- `docs/como-funcionan-los-agentes.md` — cómo funcionan por dentro Goose y Qwen Code (ciclo de vida de sesión, qué archivo de contexto lee cada uno, MCP, subagentes, skills) — para entender el motor y los addons, no solo instalarlos.
-- `AGENTS.md` (raíz) — instrucciones reales que Goose y Qwen Code leen automáticamente al trabajar en este proyecto: decisiones ya tomadas, convenciones, restricciones duras del equipo, qué revisar antes de proponer algo nuevo.
-- `DESIGN.md` (raíz) — reglas de diseño del frontend (qué sistema de componentes usar, revisión visual obligatoria) para que el resultado no dependa de que el modelo de código "invente" estilo. Ver `docs/capa-diseno.md` para el porqué completo.
-- `docs/capa-diseno.md` — **por qué el frontend siempre "queda cojo" con un modelo de solo texto, y cómo se resuelve**: revisor visual (`qwen3-vl:4b`), generador de assets (ComfyUI + Stable Diffusion 1.5), y el loop generar → revisar → corregir — todo protegiendo la VRAM del modelo de código, que no se toca.
-- `docs/plan-pruebas.md` — protocolo de evaluación y criterios de éxito de este piloto.
-- `docs/decisiones.md` — bitácora cronológica de decisiones (mismo patrón que los otros repos).
-- `docs/almacenamiento.md` — cómo repartir el modelo/RAG/proyectos entre el NVMe y el HDD.
-- `docs/docker-y-recursos.md` — por qué este piloto corre todo nativo en Windows sin Docker (Qdrant y Open WebUI tienen forma nativa oficial), y el presupuesto real de RAM en un equipo de 16GB.
-- `docs/resultados.md` — se crea una vez haya pruebas reales corridas en el equipo.
-- `docs/aprendizaje-scripts.md` — **qué hace cada script y por qué**, explicado en conceptos (variables de entorno, servicios de Windows, volúmenes de Docker, Tareas Programadas) — para entender el montaje, no solo ejecutarlo.
-- `docs/pruebas-rendimiento.md` — esquema de pruebas de estrés post-instalación (tok/s real, estabilidad bajo carga, límite real de contexto) — distinto de `plan-pruebas.md` (que evalúa calidad, no rendimiento).
-- `scripts/` — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic. Ver `scripts/README.md` para el orden y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye el chequeo integral (`verificar-instalacion.bat`) y la prueba de estrés (`11-prueba-estres.bat`).
+`docs/` está organizado por categoría — cada subcarpeta tiene su propio `README.md` con el detalle de qué hay adentro (reordenado 2026-08-27, antes eran 18 archivos sueltos):
+
+| Carpeta | Qué contiene |
+|---|---|
+| [`docs/arquitectura/`](docs/arquitectura/README.md) | El esquema completo del stack, por qué no hay Docker, dónde vive cada cosa en disco, y la capa de diseño visual. |
+| [`docs/modelo/`](docs/modelo/README.md) | Por qué Qwen 2.5 Coder 7B, su historia, y las specs del equipo cruzadas contra qué modelo cabe. |
+| [`docs/herramientas/`](docs/herramientas/README.md) | Goose, Qwen Code, Continue.dev/Aider, cómo funcionan por dentro, y alternativas a Ollama. |
+| [`docs/instalacion/`](docs/instalacion/README.md) | Los pasos concretos y qué hace cada script por dentro. |
+| [`docs/pruebas/`](docs/pruebas/README.md) | Protocolo de evaluación de calidad y de rendimiento real. |
+| [`docs/operacion/`](docs/operacion/README.md) | Continuidad, backup, actualizaciones, y acceso remoto por navegador. |
+| [`docs/referencia/`](docs/referencia/README.md) *(próximamente)* | Manual por herramienta/modelo — comandos, API, mejores prácticas, para tener dominio completo de cada pieza del stack. |
+
+Fuera de `docs/`:
+
+- **`AGENTS.md`** (raíz) — instrucciones reales que Goose y Qwen Code leen automáticamente al trabajar en este proyecto: decisiones ya tomadas, convenciones, restricciones duras del equipo, qué revisar antes de proponer algo nuevo.
+- **`DESIGN.md`** (raíz) — reglas de diseño del frontend (qué sistema de componentes usar, revisión visual obligatoria) para que el resultado no dependa de que el modelo de código "invente" estilo.
+- **`docs/decisiones.md`** — bitácora cronológica de decisiones (mismo patrón que los otros repos) — queda fuera de las subcarpetas porque se consulta todo el tiempo.
+- **`scripts/`** — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic. Ver `scripts/README.md` para el orden y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye el chequeo integral (`verificar-instalacion.bat`) y la prueba de estrés (`11-prueba-estres.bat`).
 
 ## Estado actual
 
-Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Ver `docs/plan-instalacion.md` para el orden de pasos y `scripts/README.md` para cómo correrlos.
+Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Ver `docs/instalacion/plan-instalacion.md` para el orden de pasos y `scripts/README.md` para cómo correrlos.

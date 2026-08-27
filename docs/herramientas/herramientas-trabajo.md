@@ -34,7 +34,7 @@ El usuario preguntó específicamente si existe una extensión de Qwen para VS C
 }
 ```
 
-(el `contextWindowSize` de 32000 sigue el mismo criterio conservador que `02-configurar-ollama.ps1` — ajustar junto con `OLLAMA_CONTEXT_LENGTH` cuando la prueba de estrés confirme un límite real mayor, ver `pruebas-rendimiento.md`).
+(el `contextWindowSize` de 32000 sigue el mismo criterio conservador que `02-configurar-ollama.ps1` — ajustar junto con `OLLAMA_CONTEXT_LENGTH` cuando la prueba de estrés confirme un límite real mayor, ver `../pruebas/pruebas-rendimiento.md`).
 
 **Requiere Node.js 22+** (se instala vía npm: `npm install -g @qwen-code/qwen-code`) — ver `scripts/13-instalar-qwen-code.ps1`.
 
@@ -101,7 +101,7 @@ Asistente de programación por terminal, consciente de git (arma commits automá
 
 **Gotcha crítico — aplica a cualquier herramienta que use Ollama, no solo Aider (verificado y corregido 2026-08-26 contra el repo oficial de Ollama, más actualizado que la mención inicial de la documentación de Aider):**
 
-Ollama **no usa el contexto completo del modelo por defecto** — el límite depende de la VRAM de la tarjeta: menos de 24GB de VRAM (el caso de esta RTX 5070 12GB) usa solo **4K de contexto por defecto**. Muy por debajo de los 100K de contexto seguro que se confirmó que esta GPU puede manejar con Qwen 2.5 Coder 7B (ver `modelo-elegido.md`) — **si no se configura explícitamente, se pierde la ventaja de contexto largo que fue justamente el criterio principal de elección del modelo.**
+Ollama **no usa el contexto completo del modelo por defecto** — el límite depende de la VRAM de la tarjeta: menos de 24GB de VRAM (el caso de esta RTX 5070 12GB) usa solo **4K de contexto por defecto**. Muy por debajo de los 100K de contexto seguro que se confirmó que esta GPU puede manejar con Qwen 2.5 Coder 7B (ver `../modelo/modelo-elegido.md`) — **si no se configura explícitamente, se pierde la ventaja de contexto largo que fue justamente el criterio principal de elección del modelo.**
 
 Se resuelve de dos formas (documentación oficial de Ollama, `context-length.mdx`):
 - **App de Ollama:** mover el slider de "Context length" en la configuración a lo deseado.
@@ -149,7 +149,7 @@ Ya prendida por defecto en cuanto se instala Qwen Code (`13-instalar-qwen-code.p
 
 ### Estática, para Continue.dev/Aider (y como respaldo legible por humanos)
 
-Archivos de reglas/convenciones estáticos — `.continue/rules` en Continue, o un archivo de convenciones que Aider lea al iniciar. Continue.dev **no** trae memoria automática (confirmado en la tabla comparativa de arriba), así que si se usa como asistente de editor en vez de o junto a Qwen Code, esta sigue siendo la única vía. **Es el mismo patrón que ya se usa en los 4 repos de `Documents/Proyectos IA/`** (`decisiones.md`, bitácora mantenida a mano) — no se actualiza sola, pero es memoria persistente real, sostenida por la disciplina de mantener el archivo al día, no por magia del modelo. `AGENTS.md` (raíz del repo) cumple este mismo rol para Goose.
+Archivos de reglas/convenciones estáticos — `.continue/rules` en Continue, o un archivo de convenciones que Aider lea al iniciar. Continue.dev **no** trae memoria automática (confirmado en la tabla comparativa de arriba), así que si se usa como asistente de editor en vez de o junto a Qwen Code, esta sigue siendo la única vía. **Es el mismo patrón que ya se usa en los 4 repos de `Documents/Proyectos IA/`** (`../decisiones.md`, bitácora mantenida a mano) — no se actualiza sola, pero es memoria persistente real, sostenida por la disciplina de mantener el archivo al día, no por magia del modelo. `AGENTS.md` (raíz del repo) cumple este mismo rol para Goose.
 
 ### Mem0 — no se instala, sigue descartado
 

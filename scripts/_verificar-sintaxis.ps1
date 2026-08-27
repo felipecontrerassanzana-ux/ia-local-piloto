@@ -10,7 +10,7 @@
 
   Código de salida: 0 si no hay errores de sintaxis ni archivos sin BOM (los hallazgos de
   lint no bloquean, incluyen los aceptados a propósito); 1 si hay algo real que corregir.
-  Pensado para usarse desde `scripts/hooks/pre-commit` — ver docs/aprendizaje-scripts.md.
+  Pensado para usarse desde `scripts/hooks/pre-commit` — ver docs/instalacion/aprendizaje-scripts.md.
 #>
 
 $carpeta = $PSScriptRoot

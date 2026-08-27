@@ -1,6 +1,6 @@
 ﻿<#
 .SINOPSIS
-  Chequeo integral post-instalación (Paso 5 de plan-instalacion.md). No instala ni cambia nada,
+  Chequeo integral post-instalación (Paso 5 de docs/instalacion/plan-instalacion.md). No instala ni cambia nada,
   solo reporta qué está bien y qué falta.
 #>
 
@@ -49,7 +49,7 @@ if ($ollamaCmd) {
 $nvidiaSmi = Get-Command nvidia-smi -ErrorAction SilentlyContinue
 Check "Drivers NVIDIA / nvidia-smi disponible" ($null -ne $nvidiaSmi)
 
-# Qdrant y Open WebUI — nativos vía Tareas Programadas desde 2026-08-27 (ver docs/docker-y-recursos.md)
+# Qdrant y Open WebUI — nativos vía Tareas Programadas desde 2026-08-27 (ver docs/arquitectura/docker-y-recursos.md)
 $qdrantTarea = Get-ScheduledTask -TaskName "Qdrant-Local" -ErrorAction SilentlyContinue
 Check "Tarea 'Qdrant-Local' configurada" ($null -ne $qdrantTarea)
 try {
@@ -103,7 +103,7 @@ if ($tailscaleCmd) {
         Write-Host "[INFO] Tailscale instalado pero sin autenticar — correr 'tailscale up'." -ForegroundColor Gray
     }
 } else {
-    Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/qwen-code-a-fondo.md)." -ForegroundColor Gray
+    Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/herramientas/qwen-code-a-fondo.md)." -ForegroundColor Gray
 }
 
 # Capa de diseño: qwen3-vl (vía Ollama) y ComfyUI (app aparte, no auto-inicia)
@@ -113,9 +113,9 @@ if ($ollamaCmd -and $respuesta) {
 }
 $comfyPath = "C:\ComfyUI\run_nvidia_gpu.bat"
 if (Test-Path $comfyPath) {
-    Write-Host "[INFO] ComfyUI instalado en C:\ComfyUI — se abre a mano, no corre como servicio (ver docs/capa-diseno.md)." -ForegroundColor Gray
+    Write-Host "[INFO] ComfyUI instalado en C:\ComfyUI — se abre a mano, no corre como servicio (ver docs/arquitectura/capa-diseno.md)." -ForegroundColor Gray
 } else {
-    Write-Host "[INFO] ComfyUI no instalado (opcional — solo hace falta para generar assets de diseño, ver docs/capa-diseno.md)." -ForegroundColor Gray
+    Write-Host "[INFO] ComfyUI no instalado (opcional — solo hace falta para generar assets de diseño, ver docs/arquitectura/capa-diseno.md)." -ForegroundColor Gray
 }
 
 # Tarea de backup

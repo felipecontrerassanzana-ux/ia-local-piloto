@@ -32,7 +32,7 @@ Felipe fue explícito en esto: la cuantización de Qwen 2.5 Coder 7B (Q4_K_M o Q
 4. El feedback vuelve a Qwen Code/Goose, que corrige.
 5. Si falta un asset que no existe en el sistema de componentes (un ícono, una ilustración), se genera con ComfyUI (API en `http://localhost:8188/prompt` una vez abierto) antes de continuar.
 
-**Pendiente de formalizar:** empaquetar este loop como una Skill invocable por nombre (Qwen Code y Goose soportan Skills, ver `como-funcionan-los-agentes.md`) — no se armó todavía porque no se verificó el formato exacto de archivo que usa cada herramienta para definir una Skill propia. Por ahora queda como procedimiento documentado en esta página, aplicable a mano.
+**Pendiente de formalizar:** empaquetar este loop como una Skill invocable por nombre (Qwen Code y Goose soportan Skills, ver `../herramientas/como-funcionan-los-agentes.md`) — no se armó todavía porque no se verificó el formato exacto de archivo que usa cada herramienta para definir una Skill propia. Por ahora queda como procedimiento documentado en esta página, aplicable a mano.
 
 ## Presupuesto de VRAM (con el modelo de código protegido)
 

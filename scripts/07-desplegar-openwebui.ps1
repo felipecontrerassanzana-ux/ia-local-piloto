@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Instala y deja corriendo Open WebUI NATIVO en Windows (vía pip) — sin Docker.
-  Ver docs/docker-y-recursos.md. Requiere Python (scripts/12-instalar-herramientas-dev.ps1).
+  Ver docs/arquitectura/docker-y-recursos.md. Requiere Python (scripts/12-instalar-herramientas-dev.ps1).
 
   Confirmado en documentación oficial (docs.openwebui.com, 2026-08-27): "Python: Suitable
   for low-resource environments" — es un método soportado oficialmente, no un hack.
@@ -26,7 +26,7 @@ if ($openwebui) {
     pip install open-webui
 }
 
-# Registrar como Tarea Programada para que arranque solo con Windows (ver mantenimiento.md §1)
+# Registrar como Tarea Programada para que arranque solo con Windows (ver docs/operacion/mantenimiento.md §1)
 $existe = Get-ScheduledTask -TaskName "OpenWebUI-Local" -ErrorAction SilentlyContinue
 if ($existe) {
     Write-Host "La tarea programada 'OpenWebUI-Local' ya existe." -ForegroundColor Yellow
@@ -54,7 +54,7 @@ Write-Host ""
 Write-Host "PASO MANUAL IMPORTANTE:" -ForegroundColor Yellow
 Write-Host "  Entra a http://localhost:8080 y crea la PRIMERA cuenta ahora mismo." -ForegroundColor Yellow
 Write-Host "  Esa cuenta queda como administrador, y el registro público se cierra automáticamente" -ForegroundColor Yellow
-Write-Host "  (comportamiento por defecto de Open WebUI, ver docs/acceso-remoto.md) — no dejar esto para después." -ForegroundColor Yellow
+Write-Host "  (comportamiento por defecto de Open WebUI, ver docs/operacion/acceso-remoto.md) — no dejar esto para después." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "En Settings > Connections de Open WebUI, confirmar que apunta a Ollama en http://localhost:11434" -ForegroundColor Cyan
 Write-Host "(nativo también, así que localhost normal alcanza — ya no hace falta host.docker.internal)." -ForegroundColor Cyan

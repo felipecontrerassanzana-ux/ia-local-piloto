@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Verifica y deja configurado que los servicios necesarios arranquen solos con Windows,
-  sin necesitar que alguien inicie sesión. Ver docs/mantenimiento.md §1.
+  sin necesitar que alguien inicie sesión. Ver docs/operacion/mantenimiento.md §1.
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -37,7 +37,7 @@ if ($ollamaStartup) {
 }
 
 # Qdrant y Open WebUI: desde 2026-08-27 corren nativos vía Tareas Programadas (sin Docker,
-# ver docs/docker-y-recursos.md) — se revisan como tal, no como contenedores.
+# ver docs/arquitectura/docker-y-recursos.md) — se revisan como tal, no como contenedores.
 foreach ($nombreTarea in @("Qdrant-Local", "OpenWebUI-Local")) {
     $tarea = Get-ScheduledTask -TaskName $nombreTarea -ErrorAction SilentlyContinue
     if ($tarea) {

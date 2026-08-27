@@ -2,7 +2,7 @@
 .SINOPSIS
   Instala Tailscale (winget) y deja el equipo listo para conectarse a la red privada — es el
   mecanismo elegido para conectar Qwen Code/Goose desde un dispositivo remoto (fuera de la red
-  de casa) sin exponer nada a internet público. Ver docs/qwen-code-a-fondo.md § "Escenario C1".
+  de casa) sin exponer nada a internet público. Ver docs/herramientas/qwen-code-a-fondo.md § "Escenario C1".
 
   Paquete verificado 2026-08-27: Tailscale.Tailscale (winget.run/pkg/tailscale/tailscale).
 
@@ -44,7 +44,7 @@ if ($LASTEXITCODE -eq 0 -and $estado) {
 
 Write-Host ""
 Write-Host "Una vez conectado, la IP de Tailscale de este equipo se obtiene con: tailscale ip -4" -ForegroundColor Cyan
-Write-Host "Esa IP es la que va en 'baseUrl' de ~/.qwen/settings.json cuando Qwen Code corre en otro dispositivo (ver docs/qwen-code-a-fondo.md)." -ForegroundColor Cyan
+Write-Host "Esa IP es la que va en 'baseUrl' de ~/.qwen/settings.json cuando Qwen Code corre en otro dispositivo (ver docs/herramientas/qwen-code-a-fondo.md)." -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Recordatorio: para que Ollama acepte esas conexiones remotas, correr también:" -ForegroundColor Yellow
 Write-Host "  scripts\02-configurar-ollama.bat -PermitirRed" -ForegroundColor Yellow

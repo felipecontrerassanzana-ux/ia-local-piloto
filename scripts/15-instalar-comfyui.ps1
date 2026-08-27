@@ -2,7 +2,7 @@
 .SINOPSIS
   Instala ComfyUI (motor de generacion de imagenes, portable para Windows) y descarga el
   checkpoint de Stable Diffusion 1.5 -- la pieza que genera assets/graficos para la capa de
-  diseno (ver docs/capa-diseno.md). Se instala en el NVMe (ver docs/almacenamiento.md).
+  diseno (ver docs/arquitectura/capa-diseno.md). Se instala en el NVMe (ver docs/arquitectura/almacenamiento.md).
 
   Por que ComfyUI y no AUTOMATIC1111: AUTOMATIC1111 exige Python 3.10.6 exacto ("newer version
   of Python does not support torch", confirmado en su propio README) -- choca con el Python 3.12
@@ -10,7 +10,7 @@
   empaquetado (sin instalar nada aparte) y es mas eficiente en GPUs de VRAM chica.
 
   A PROPOSITO no se registra como Tarea Programada de inicio automatico (a diferencia de Qdrant/
-  Open WebUI): el diseno de este piloto protege la VRAM del modelo de codigo (ver capa-diseno.md)
+  Open WebUI): el diseno de este piloto protege la VRAM del modelo de codigo (ver docs/arquitectura/capa-diseno.md)
   -- ComfyUI se abre solo cuando hace falta generar un asset, no queda residente en segundo plano
   compitiendo por VRAM.
 
@@ -87,5 +87,5 @@ if (Test-Path $checkpointPath) {
 Write-Host ""
 Write-Host "=== Instalación completa. No se registró como servicio de inicio automático, a propósito ===" -ForegroundColor Cyan
 Write-Host "Para usarlo: correr $instalarEn\run_nvidia_gpu.bat (queda escuchando en http://localhost:8188)." -ForegroundColor White
-Write-Host "API para uso programático (parte de la Skill de capa-diseno.md): http://localhost:8188/prompt" -ForegroundColor White
+Write-Host "API para uso programático (parte de la Skill de docs/arquitectura/capa-diseno.md): http://localhost:8188/prompt" -ForegroundColor White
 Write-Host "Cerrar la ventana cuando no se esté generando nada, para liberar la VRAM que use el modelo de código." -ForegroundColor Yellow

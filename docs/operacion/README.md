@@ -1,0 +1,6 @@
+# Operación
+
+Cómo se mantiene el piloto funcionando una vez instalado: continuidad, backup, actualizaciones, y acceso remoto por navegador.
+
+- **`mantenimiento.md`** — continuidad tras corte de luz (sin UPS por ahora), backup a Drive personal, checklist mensual de actualizaciones, y confirmación de que toda la estructura es gratuita.
+- **`acceso-remoto.md`** — cómo acceder por navegador desde afuera sin IP fija (Cloudflare Tunnel + dominio propio), con la condición real de este equipo (fibra Movistar 800 megas, sin IP fija). Distinto del acceso remoto de agentes de código (Qwen Code/Goose), que vive en `../herramientas/qwen-code-a-fondo.md`.

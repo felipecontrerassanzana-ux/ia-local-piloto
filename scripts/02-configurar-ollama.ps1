@@ -1,11 +1,11 @@
 ﻿<#
 .SINOPSIS
   Configura Ollama: contexto largo (OLLAMA_CONTEXT_LENGTH) y ubicación de modelos en el NVMe (OLLAMA_MODELS).
-  Ver docs/almacenamiento.md y docs/herramientas-trabajo.md para el porqué de cada valor.
+  Ver docs/arquitectura/almacenamiento.md y docs/herramientas/herramientas-trabajo.md para el porqué de cada valor.
 
   Corregido 2026-08-27: los modelos van al NVMe, no al HDD como se planeó originalmente — con el
   diseño de intercambio de modelos bajo demanda (coder / revisor visual / generador de imágenes,
-  ver docs/capa-diseno.md), cada modelo se lee del disco varias veces por sesión de trabajo, no
+  ver docs/arquitectura/capa-diseno.md), cada modelo se lee del disco varias veces por sesión de trabajo, no
   una sola vez al arrancar. En HDD eso son ~30s de espera por cada cambio de tarea; en NVMe, 1-2s.
 
 .PARAMETER LetraNVMe
@@ -14,14 +14,14 @@
 
 .PARAMETER ContextoTokens
   Cuántos tokens de contexto pedirle a Ollama. 100000 es el máximo seguro confirmado para
-  Qwen 2.5 Coder 7B en esta GPU (ver docs/modelo-elegido.md) — pero ver también la nota sobre
+  Qwen 2.5 Coder 7B en esta GPU (ver docs/modelo/modelo-elegido.md) — pero ver también la nota sobre
   el límite de 32K que Ollama declara por defecto en el modelo empaquetado, a verificar.
 
 .PARAMETER PermitirRed
   Switch opcional. Por defecto Ollama solo escucha en localhost (nadie fuera de este equipo
   puede alcanzarlo). Si se pasa -PermitirRed, se configura OLLAMA_HOST=0.0.0.0 para que también
   responda a la IP de la red local y de Tailscale — necesario para los Escenarios B y C1 de
-  docs/qwen-code-a-fondo.md (Qwen Code/Goose desde otro dispositivo). No activar si no se va a
+  docs/herramientas/qwen-code-a-fondo.md (Qwen Code/Goose desde otro dispositivo). No activar si no se va a
   usar ninguno de esos escenarios — mantiene la superficie expuesta al mínimo por defecto.
 #>
 

@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Crea el script de backup real (carpetas nativas de Open WebUI y Qdrant -> carpeta de Drive)
-  y lo registra como Tarea Programada semanal. Ver docs/mantenimiento.md §2.
+  y lo registra como Tarea Programada semanal. Ver docs/operacion/mantenimiento.md §2.
 
   Actualizado 2026-08-27: como Open WebUI y Qdrant ahora corren nativos (sin Docker, ver
   06/07), sus datos son carpetas normales de Windows — ya no hace falta un contenedor

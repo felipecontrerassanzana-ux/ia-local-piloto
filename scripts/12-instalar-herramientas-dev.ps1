@@ -2,7 +2,7 @@
 .SINOPSIS
   Instala las herramientas base de desarrollo que le dan a Goose/Continue.dev/Aider la
   misma capacidad de "comitear a GitHub" que tiene este mismo entorno (git + gh CLI),
-  más Python como herramienta de propósito general. Ver docs/herramientas-trabajo.md.
+  más Python como herramienta de propósito general. Ver docs/herramientas/herramientas-trabajo.md.
 
   IDs de winget verificados en un equipo real (2026-08-26) antes de escribir este script.
 #>

@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Batería de pruebas de estrés y rendimiento real sobre el modelo ya instalado.
-  Ver docs/pruebas-rendimiento.md para qué mide cada prueba y cómo interpretar los resultados.
+  Ver docs/pruebas/pruebas-rendimiento.md para qué mide cada prueba y cómo interpretar los resultados.
 
   Usa exclusivamente la API oficial de Ollama (localhost:11434/api/generate) y sus propios
   campos de métricas (prompt_eval_count, eval_count, eval_duration, etc. — documentados en
@@ -9,7 +9,7 @@
   números que el propio Ollama reporta, que son más precisos.
 
 .PARAMETER Modelo
-  Tag del modelo a probar. Por defecto el recomendado en modelo-elegido.md.
+  Tag del modelo a probar. Por defecto el recomendado en docs/modelo/modelo-elegido.md.
 #>
 
 param(
@@ -98,7 +98,7 @@ Registrar-GPU "fin carga sostenida"
 
 # --- Prueba 3: Rampa de contexto — textos cada vez más largos ---
 Write-Host ""
-Write-Host "--- Prueba 3: Rampa de contexto (verifica el límite real, ver modelo-elegido.md) ---" -ForegroundColor Yellow
+Write-Host "--- Prueba 3: Rampa de contexto (verifica el límite real, ver docs/modelo/modelo-elegido.md) ---" -ForegroundColor Yellow
 $parrafoBase = "El procesamiento de lenguaje natural permite que un modelo entienda y genere texto en distintos idiomas, adaptándose al contexto de la conversación y a la tarea solicitada por quien lo usa. "
 $repeticiones = @(5, 40, 150, 300, 600, 1200, 2000)  # aproxima ~1K, 8K, 32K, 64K, 100K+ tokens (Ollama reporta el número real)
 
