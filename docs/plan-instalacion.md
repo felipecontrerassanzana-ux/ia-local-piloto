@@ -25,6 +25,12 @@ Uso de una sola persona — Ollama es la opción correcta según `motor-alternat
 
 Script: `scripts/02-configurar-ollama.ps1` (variables de entorno) + `scripts/03-descargar-modelo.ps1` (pull del modelo).
 
+## Paso 1.4 — Herramientas base de desarrollo (git, GitHub CLI, Python)
+
+- [ ] Correr `scripts/12-instalar-herramientas-dev.ps1` (`.bat`) — instala git, `gh` y Python.
+- [ ] Autenticar `gh` a mano: `gh auth login` (interactivo, no se puede automatizar).
+- [ ] Con esto, Goose ya puede comitear/pushear a GitHub igual que se hace en esta conversación — ver `herramientas-trabajo.md` § "Conectores a GitHub".
+
 ## Paso 1.5 — Herramientas de trabajo para programar
 
 Ver `herramientas-trabajo.md` para el detalle completo y las alternativas evaluadas.

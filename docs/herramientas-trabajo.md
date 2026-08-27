@@ -41,6 +41,36 @@ Se resuelve de dos formas (documentación oficial de Ollama, `context-length.mdx
 
 **Cómo verificar que quedó bien configurado:** correr `ollama ps` mientras el modelo está cargado — muestra una columna `CONTEXT` con el valor real asignado y `PROCESSOR` con el reparto GPU/CPU. Si `CONTEXT` sigue en 4096, no se aplicó el cambio. **Este paso no es opcional.**
 
+## Conectores a GitHub — ¿existe algo como lo que uso yo (gh CLI) para este sistema?
+
+El usuario preguntó si para este piloto existen herramientas tipo conector a GitHub (como el `gh` CLI que se usa en esta misma conversación), para que el trabajo que se proyecte hacer quede comiteado a repos reales, como parte de la estructura de montaje — igual que PowerShell, Python u otras herramientas necesarias. Verificado 2026-08-26:
+
+**Punto clave: `gh` (GitHub CLI) no es una herramienta exclusiva de Claude Code — es un programa de línea de comandos normal**, igual que `git`. Cualquier agente que pueda ejecutar comandos de terminal en el equipo (y Goose lo hace, con su extensión **Developer**, "built-in developer tools for file editing and **shell command execution**") puede usarlo exactamente igual que se usa acá. No hace falta un "conector especial" — hace falta que `git` y `gh` estén instalados en el equipo y autenticados una vez, y de ahí en adelante Goose puede correr `git commit`, `git push`, `gh repo create`, `gh pr create`, etc. tal cual como se hizo con este mismo repo (`ia-local-piloto`).
+
+**Instalación confirmada (winget, IDs verificados en este equipo, 2026-08-26):**
+- `git`: paquete `Git.Git`
+- `gh` (GitHub CLI): paquete `GitHub.cli`
+
+**Autenticación:** `gh auth login` es un paso interactivo (abre el navegador para el login de OAuth) — no se puede dejar 100% automatizado en un script, hay que completarlo una vez a mano después de instalar. Ver `scripts/12-instalar-herramientas-dev.ps1`.
+
+### Opción más nativa para Goose específicamente: extensión "GitHub" vía MCP
+
+Además de shell + `gh` CLI, Goose tiene una **extensión dedicada de GitHub** en su directorio oficial (goose-docs.ai/extensions, 32.5k estrellas en GitHub — es el servidor MCP oficial de GitHub, alojado por la propia GitHub, no algo de terceros). Se conecta así:
+
+```
+goose session --with-streamable-http-extension "https://api.githubcopilot.com/mcp/"
+```
+
+Requiere un **Personal Access Token de GitHub** (se genera en GitHub.com, no es lo mismo que la sesión de `gh auth login`) puesto como header `Authorization: Bearer <token>`. Esta vía es más "estructurada" (llamadas de herramienta directas, no depende de que el agente escriba y parsee comandos de texto) — vale la pena evaluarla si el uso con GitHub se vuelve intensivo, pero para empezar, `git`/`gh` por shell alcanza y es más simple de configurar.
+
+### VS Code + Continue.dev — misma lógica
+
+VS Code ya trae control de código fuente (Git) integrado de fábrica, y existe la extensión oficial "GitHub Pull Requests and Issues" para gestionar PRs/issues sin salir del editor. Continue.dev en modo **Agent** (con acceso a archivos/terminal) puede también ejecutar `git`/`gh` directamente, con el mismo principio que Goose — la interconexión con GitHub no depende de Continue.dev en sí, depende de que el editor/terminal tengan `git`/`gh` disponibles, que es justamente lo que resuelve `12-instalar-herramientas-dev.ps1`.
+
+### Python — la otra herramienta mencionada
+
+Se agrega también a la instalación base, ya que es de uso general (scripts, procesamiento de datos, herramientas de IA que a veces solo tienen SDK en Python) — paquete winget verificado: `Python.Python.3.12`. No está atado a ningún paso específico del piloto todavía, es infraestructura base para lo que se proyecte trabajar más adelante.
+
 ## Memoria persistente — cómo resolverlo en la práctica
 
 ### Nivel 1 (para partir, sin instalar nada extra)

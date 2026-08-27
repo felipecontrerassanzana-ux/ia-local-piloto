@@ -65,6 +65,12 @@ Dos conceptos nuevos acá:
 
 Distinto a todos los anteriores: no instala ni configura nada, **mide**. Usa `Invoke-RestMethod` para hablarle directo a la API que Ollama expone en `localhost:11434` (la misma que usan Continue.dev, Goose y Open WebUI por debajo) y lee los campos de rendimiento que el propio Ollama calcula (`eval_count`, `eval_duration`, etc. — documentados oficialmente). Ver `pruebas-rendimiento.md` para el detalle de qué prueba cada parte y cómo interpretar los números.
 
+## 12-instalar-herramientas-dev — git, gh CLI y Python
+
+Mismo patrón que `01-instalar-ollama.ps1` (winget, revisando primero si ya está instalado), pero acá para tres herramientas de propósito general, no específicas de IA: **Git** (control de versiones), **GitHub CLI** (`gh` — permite crear repos, hacer push, abrir Pull Requests desde la terminal, sin abrir el navegador para cada acción), y **Python**. La razón de este script: Goose (con su extensión "Developer", que le da acceso a shell) puede correr `git`/`gh` exactamente igual que se hace en esta conversación — no es una capacidad exclusiva de Claude Code, es que cualquier agente con acceso a una terminal puede usar cualquier programa que esté instalado en ella. Ver `herramientas-trabajo.md` § "Conectores a GitHub" para el detalle completo, incluyendo la extensión nativa de GitHub que tiene Goose vía MCP como alternativa más estructurada.
+
+**Por qué `gh auth login` queda fuera del script:** es un flujo de autenticación OAuth que necesita abrir el navegador y que una persona apruebe el acceso — no hay forma de automatizarlo sin intervención humana, así que el script instala las herramientas y deja ese único paso para hacer a mano.
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):

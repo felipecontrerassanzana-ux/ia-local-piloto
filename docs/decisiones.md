@@ -123,3 +123,14 @@ El usuario preguntó si valía la pena testear los `.ps1` sin ejecutar instalaci
 3. Se creó `scripts/_verificar-sintaxis.ps1` + `.bat` como herramienta reutilizable — no numerada (con `_` al inicio, como `_elevar.ps1`) porque no es un paso de instalación, es control de calidad para correr después de cualquier edición futura a los scripts. No pide permisos de administrador (solo analiza texto, no ejecuta nada).
 
 Documentado en `aprendizaje-scripts.md` (nueva sección) y `scripts/README.md`. Los únicos hallazgos restantes del linter (uso de `Write-Host`, verbos en español en nombres de función) se revisaron y se dejaron a propósito — no son errores, son decisiones de diseño (scripts interactivos en español, no funciones de librería en inglés).
+
+## 2026-08-26 (mismo día) — Conectores a GitHub para el piloto (git, gh CLI, extensión GitHub de Goose)
+
+El usuario preguntó si para este sistema existen herramientas conectoras a GitHub como el `gh` CLI usado en esta conversación, para que el trabajo proyectado quede comiteado a repos reales — parte de la estructura de montaje, igual que PowerShell/Python. Verificado 2026-08-26:
+
+- **`gh` no es exclusivo de Claude Code** — es un programa de terminal normal. Cualquier agente con acceso a shell en el equipo (Goose, vía su extensión built-in "Developer") puede usarlo igual que se usa acá, una vez instalado y autenticado.
+- IDs de winget verificados en un equipo real: `Git.Git`, `GitHub.cli`, y de paso `Python.Python.3.12` (Python también mencionado por el usuario como herramienta necesaria).
+- **Hallazgo adicional:** Goose tiene una extensión dedicada de GitHub en su directorio oficial de extensiones — resultó ser el **servidor MCP oficial de GitHub** (`https://api.githubcopilot.com/mcp/`, alojado por GitHub mismo, 32.5k estrellas), instalable con `goose session --with-streamable-http-extension "..."` y un Personal Access Token. Es una vía más estructurada que shell+gh CLI, documentada como alternativa.
+- Continue.dev/VS Code: mismo principio — VS Code trae Git integrado y la extensión oficial "GitHub Pull Requests and Issues"; Continue.dev en modo Agent también puede correr `git`/`gh` por shell.
+
+Se creó `scripts/12-instalar-herramientas-dev.ps1` + `.bat` (pasó por `_verificar-sintaxis.ps1` sin hallazgos nuevos) y se actualizaron `herramientas-trabajo.md` (nueva sección "Conectores a GitHub"), `plan-instalacion.md` (nuevo Paso 1.4) y `scripts/README.md`.

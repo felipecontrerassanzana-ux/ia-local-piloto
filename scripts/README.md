@@ -21,6 +21,7 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 | 10 | `10-configurar-backup.bat` | Crea la tarea programada de backup a Drive | **Sí** — la ruta de tu carpeta de Google Drive |
 | — | `verificar-instalacion.bat` | Chequeo integral, se puede correr las veces que se quiera | No |
 | 11 | `11-prueba-estres.bat` | Mide rendimiento real (tok/s, carga sostenida, límite de contexto) — ver `../docs/pruebas-rendimiento.md` | No (correr al final, con todo ya instalado) |
+| 12 | `12-instalar-herramientas-dev.bat` | Instala git, GitHub CLI (`gh`) y Python — para que Goose/Continue.dev/Aider puedan comitear a GitHub igual que se hace en esta conversación. Ver `../docs/herramientas-trabajo.md` § "Conectores a GitHub" | No (pero después hay que correr `gh auth login` a mano, es interactivo) |
 | — | `_verificar-sintaxis.bat` | Control de calidad de los scripts mismos — sintaxis, codificación, linter — **sin instalar ni ejecutar nada de su contenido**. No pide administrador. Correr después de editar cualquier script. | No |
 
 **Antes de correr nada, leer `../docs/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
