@@ -36,7 +36,9 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 - `docs/decisiones.md` — bitácora cronológica de decisiones (mismo patrón que los otros repos).
 - `docs/almacenamiento.md` — cómo repartir el modelo/RAG/proyectos entre el NVMe y el HDD.
 - `docs/resultados.md` — se crea una vez haya pruebas reales corridas en el equipo.
-- `scripts/` — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic. Ver `scripts/README.md` para el orden y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye también el chequeo integral (`verificar-instalacion.bat`).
+- `docs/aprendizaje-scripts.md` — **qué hace cada script y por qué**, explicado en conceptos (variables de entorno, servicios de Windows, volúmenes de Docker, Tareas Programadas) — para entender el montaje, no solo ejecutarlo.
+- `docs/pruebas-rendimiento.md` — esquema de pruebas de estrés post-instalación (tok/s real, estabilidad bajo carga, límite real de contexto) — distinto de `plan-pruebas.md` (que evalúa calidad, no rendimiento).
+- `scripts/` — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic. Ver `scripts/README.md` para el orden y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye el chequeo integral (`verificar-instalacion.bat`) y la prueba de estrés (`11-prueba-estres.bat`).
 
 ## Estado actual
 

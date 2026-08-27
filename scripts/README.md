@@ -20,6 +20,9 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 | 09 | `09-configurar-inicio-automatico.bat` | Verifica/ajusta que todo arranque solo con Windows | No (correr al final, después de 01-08) |
 | 10 | `10-configurar-backup.bat` | Crea la tarea programada de backup a Drive | **Sí** — la ruta de tu carpeta de Google Drive |
 | — | `verificar-instalacion.bat` | Chequeo integral, se puede correr las veces que se quiera | No |
+| 11 | `11-prueba-estres.bat` | Mide rendimiento real (tok/s, carga sostenida, límite de contexto) — ver `../docs/pruebas-rendimiento.md` | No (correr al final, con todo ya instalado) |
+
+**Antes de correr nada, leer `../docs/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
 
 ## Qué NO automatizan estos scripts (pasos manuales, no evitables)
 

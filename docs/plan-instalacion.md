@@ -64,6 +64,14 @@ Ver `mantenimiento.md` para el detalle completo.
 
 - [ ] Correr `scripts/verificar-instalacion.ps1` — chequeo integral: Ollama responde, contexto configurado, GPU detectada, servicios activos y configurados para auto-inicio, Open WebUI accesible en LAN, túnel de Cloudflare activo, backup programado.
 
+## Paso 6 — Prueba de estrés y rendimiento
+
+- [ ] Correr `scripts/11-prueba-estres.ps1` (`.bat`) — mide tok/s real, estabilidad bajo carga sostenida, y el límite real de contexto (cierra el pendiente de `modelo-elegido.md` sobre si el límite de 32K de Ollama es real o solo el default). Ver `pruebas-rendimiento.md` para cómo interpretar los resultados.
+
 ## Siguiente documento
 
-Una vez instalado, pasar a `plan-pruebas.md` para la evaluación real con tareas de programación concretas, y registrar resultados en `resultados.md`.
+Una vez instalado y con la prueba de estrés corrida, pasar a `plan-pruebas.md` para la evaluación de **calidad** con tareas de programación concretas, y registrar todos los resultados (rendimiento + calidad) en `resultados.md`.
+
+## Antes de empezar: entender qué hace cada script
+
+Ver `aprendizaje-scripts.md` — explica qué hace cada `.ps1` y por qué, no solo el comando a correr. Es parte del objetivo del proyecto (entender, no solo ejecutar), igual que `fundamentacion-modelo.md` con la elección del modelo.
