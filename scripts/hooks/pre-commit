@@ -1,0 +1,33 @@
+#!/bin/sh
+# Pre-commit hook: si el commit toca algún .ps1, corre _verificar-sintaxis.ps1
+# (parser + PSScriptAnalyzer + chequeo de BOM) y bloquea el commit si encuentra
+# errores de sintaxis o archivos sin BOM. No bloquea por hallazgos de lint
+# (esos incluyen los aceptados a propósito, ver el propio script).
+#
+# Se instala con scripts/instalar-git-hooks.sh — no se activa solo al clonar,
+# porque .git/hooks/ no se versiona con git (limitación de git, no de este repo).
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+STAGED_PS1=$(git diff --cached --name-only --diff-filter=ACM | grep '\.ps1$')
+
+if [ -z "$STAGED_PS1" ]; then
+    exit 0
+fi
+
+echo "pre-commit: se detectaron .ps1 en el commit, corriendo scripts/_verificar-sintaxis.ps1..."
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$REPO_ROOT/scripts/_verificar-sintaxis.ps1" > /tmp/verificar-sintaxis-output.txt 2>&1
+RESULTADO=$?
+
+cat /tmp/verificar-sintaxis-output.txt
+
+if [ $RESULTADO -ne 0 ]; then
+    echo ""
+    echo "pre-commit: BLOQUEADO — hay errores de sintaxis o archivos sin BOM (ver arriba)."
+    echo "Corregir antes de comitear, o usar 'git commit --no-verify' para saltarse esto a propósito."
+    exit 1
+fi
+
+echo "pre-commit: OK, scripts .ps1 verificados."
+exit 0
