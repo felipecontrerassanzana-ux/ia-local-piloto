@@ -11,8 +11,11 @@
 
   No reemplaza los scripts individuales -- los reutiliza tal cual (viven en scripts/pasos/,
   ver docs/instalacion/aprendizaje-scripts.md), en el orden correcto, con verificación
-  automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo aparte para
-  chequeos posteriores (no ligados a una instalación en curso).
+  automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo aparte como
+  herramienta independiente (chequeos en cualquier momento, no ligados a una instalación en
+  curso) -- al terminar la instalación automática, este instalador también ofrece correrlo
+  como paso opcional (pregunta sí/no, no obliga, y no es uno de los 12 pasos del array
+  $Pasos -- agregado 2026-08-27, a pedido de Felipe).
 
   Interfaz con 3 pestañas (agregado 2026-08-27, a pedido de Felipe): Progreso (checklist +
   parámetros), Consola (lo que cada script va imprimiendo), y Logs generados (los archivos
@@ -276,6 +279,15 @@ function Test-Paso {
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
+# La altura fija (880) puede no entrar en pantallas más chicas o con la barra de tareas
+# ocupando espacio -- se ajusta acá, antes de mostrar la ventana, para que entre siempre
+# sin que haya que reposicionarla a mano (reportado por Felipe, 2026-08-27).
+$margenPantalla = 60
+$alturaDisponible = [System.Windows.SystemParameters]::WorkArea.Height - $margenPantalla
+$anchoDisponible = [System.Windows.SystemParameters]::WorkArea.Width - $margenPantalla
+if ($window.Height -gt $alturaDisponible) { $window.Height = $alturaDisponible }
+if ($window.Width -gt $anchoDisponible) { $window.Width = $anchoDisponible }
+
 $TxtNVMe           = $window.FindName("TxtNVMe")
 $TxtBackup         = $window.FindName("TxtBackup")
 $ChkDocker         = $window.FindName("ChkDocker")
@@ -502,6 +514,21 @@ $BtnIniciar.Add_Click({
         Escribir-Log "Quedan estos pasos MANUALES (necesitan login/token, no se automatizan a propósito):"
         foreach ($m in $script:PasosManuales) { Escribir-Log "  - $m" }
         [System.Windows.MessageBox]::Show("Instalación automática completa. Quedan pasos manuales listados en la pestaña 'Consola' (Cloudflare, Tailscale, extensiones de VS Code).", "Listo") | Out-Null
+
+        $respuesta = [System.Windows.MessageBox]::Show("¿Querés correr 'verificar-instalación' ahora para confirmar que todo quedó funcionando?", "Verificar instalación", [System.Windows.MessageBoxButton]::YesNo, [System.Windows.MessageBoxImage]::Question)
+        if ($respuesta -eq [System.Windows.MessageBoxResult]::Yes) {
+            Escribir-Log ""
+            Escribir-Log "=== Corriendo verificar-instalacion.ps1 ==="
+            $rutaVerificar = Join-Path $PSScriptRoot "verificar-instalacion.ps1"
+            try {
+                $salidaVerificacion = & $rutaVerificar 2>&1 | Out-String
+                Escribir-Log $salidaVerificacion.TrimEnd()
+            } catch {
+                Escribir-Log "EXCEPCIÓN al correr verificar-instalacion.ps1: $($_.Exception.Message)"
+            }
+            Escribir-Log ""
+            Escribir-Log "=== Fin de verificar-instalacion.ps1 ==="
+        }
     }
 
     $BtnIniciar.IsEnabled = $true
