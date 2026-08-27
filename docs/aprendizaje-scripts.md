@@ -81,6 +81,16 @@ Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén 
 
 **Cómo correrlo:** `_verificar-sintaxis.bat` — a diferencia de todos los demás, **no pide permisos de administrador**, porque solo lee y analiza texto. Correrlo después de cualquier cambio a un script, antes de confiar en que funciona.
 
+### El gotcha que solo apareció al probarlo en el camino real (2026-08-27)
+
+Todas las corridas de este script durante el desarrollo se habían probado con **PowerShell 7 (pwsh)** — pero **todos los `.bat` de este proyecto invocan `powershell.exe` (Windows PowerShell 5.1)**, que es un programa distinto con su propia carpeta de módulos separada (`Documents\WindowsPowerShell\Modules`, no `Documents\PowerShell\Modules`). Al probarlo por primera vez en el camino real (vía `powershell.exe`, como lo hace el hook de git de abajo), `Invoke-ScriptAnalyzer` fallaba en silencio con `CouldNotInstallNuGetProvider` — Windows PowerShell 5.1 necesita el proveedor NuGet bootstrapeado antes de poder instalar cualquier módulo, y eso no pasa solo porque pwsh 7 ya lo tenga. El resultado, sin la corrección: el script reportaba **"0 hallazgos de lint"**, que parecía buena noticia pero en realidad significaba que el paso 3 completo nunca corrió. Corregido: el script ahora bootstrapea `NuGet` explícitamente si falta, y si aun así no puede cargar el linter, lo dice en rojo (`[SIN LINTER]`) en vez de reportar silenciosamente "0 hallazgos" como si hubiera revisado algo.
+
+**Lección genérica:** cuando un equipo tiene más de una versión de PowerShell instalada (pwsh 7 y Windows PowerShell 5.1 conviven en Windows 11 normalmente), probar una herramienta en una no garantiza que funcione en la otra — hay que probarla específicamente en el intérprete que realmente la va a ejecutar en producción, no en el que resulte más cómodo para probar.
+
+### Hook de git — de "hay que acordarse de correrlo" a "no se puede comitear sin pasarlo"
+
+`scripts/hooks/pre-commit` (instalado con `scripts/instalar-git-hooks.sh`, una sola vez por copia local del repo — git no versiona `.git/hooks/`) convierte esto de una buena práctica que hay que recordar en algo que la herramienta impone sola: si el commit toca algún `.ps1`, corre `_verificar-sintaxis.ps1` automáticamente y **bloquea el commit** si hay errores de sintaxis o archivos sin BOM (no bloquea por hallazgos de lint, esos incluyen los aceptados a propósito). Probado en vivo con un script deliberadamente roto (bloqueó correctamente) y con un commit real válido (lo dejó pasar). Se puede saltar a propósito con `git commit --no-verify` si hiciera falta.
+
 ## verificar-instalacion — chequeo de salud, sin cambiar nada
 
 Repite muchas de las mismas consultas que los scripts de instalación (¿existe el comando?, ¿responde el servicio?, ¿está el contenedor corriendo?) pero solo para reportar, nunca para corregir — la idea es poder correrlo las veces que se quiera, en cualquier momento, sin riesgo de romper algo, para saber de un vistazo qué falta.

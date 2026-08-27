@@ -174,3 +174,12 @@ Docker fue la primera aproximación para Qdrant/Open WebUI (ver entrada anterior
 El usuario notó que varios aprendizajes de este piloto (Goose/Qwen Code, la trampa de RAM de Docker/WSL2, verificación de scripts sin ejecutarlos, git/gh como base) son genéricos — útiles para cualquier proyecto futuro de IA local, no solo este — y pidió propagarlos a `ia-local` con autorización total, sin preguntas. Se agregaron a `ia-local/docs/arquitectura.md` tres secciones nuevas ("Herramientas de código tipo agente", verificación de scripts, "Presupuesto de RAM y la trampa de Docker/WSL2"), enlazando de vuelta a los documentos de este repo como caso aplicado con números reales. Detalle completo en `ia-local/CHANGELOG.md` y `ia-local/PROYECTOS.md` (sección nueva "Tercera pasada — piloto real hacia atrás").
 
 De paso, el usuario planteó si `ia-local` debería reenmarcarse como base de una consultoría (ya tenía esa visión anotada a futuro). Se recomendó no renombrar todavía — queda como pregunta abierta en `ia-local/PROYECTOS.md` §3.5, a revisar si en algún momento existe una consultoría real que use este material.
+
+## 2026-08-27 (mismo día) — Control de calidad como parte del flujo de git, no solo un script suelto
+
+El control de calidad de scripts (`_verificar-sintaxis.ps1`) pasó a estar mecanizado dentro del flujo de trabajo, no solo disponible para correr manualmente:
+
+- `_verificar-sintaxis.ps1` ahora bootstrapea el proveedor NuGet antes de instalar PSScriptAnalyzer si hace falta, y reporta explícitamente `[SIN LINTER]` si no logra cargarlo, en vez de reportar "0 hallazgos" de forma ambigua. Corrige un caso real: el script fallaba en silencio al ejecutarse vía `powershell.exe` (Windows PowerShell 5.1, el intérprete que usan todos los `.bat` del proyecto) porque el proveedor NuGet no viene bootstrapeado ahí por defecto — distinto de pwsh 7, que sí lo tenía. El script también termina ahora con código de salida 0/1 según si hay errores reales (antes siempre salía en 0).
+- Se agregó `scripts/hooks/pre-commit` + `scripts/instalar-git-hooks.sh`: cualquier commit que modifique un `.ps1` corre la verificación automáticamente y se bloquea si hay errores de sintaxis o archivos sin BOM. Probado en vivo con un script deliberadamente roto (bloqueó) y un commit real válido (lo dejó pasar).
+
+Detalle completo, incluyendo la explicación del porqué de la diferencia entre intérpretes de PowerShell, en `aprendizaje-scripts.md`.

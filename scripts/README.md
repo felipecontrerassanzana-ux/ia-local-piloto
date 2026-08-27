@@ -27,7 +27,9 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 
 **Antes de correr nada, leer `../docs/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
 
-**Control de calidad ya aplicado (2026-08-26):** todos los scripts pasaron por `_verificar-sintaxis.bat` antes de subirse — se encontró y corrigió un bug real (detección de tipo de disco en `00-verificar-equipo.ps1`, calculaba mal la correlación letra→disco y nunca llegaba a mostrarse) y un problema de codificación (faltaba BOM UTF-8, lo que corrompía las tildes al ejecutar vía `powershell.exe`). Detalle completo en `../docs/aprendizaje-scripts.md`.
+**Control de calidad ya aplicado (2026-08-26/27):** todos los scripts pasaron por `_verificar-sintaxis.bat` antes de subirse — se encontró y corrigió un bug real (detección de tipo de disco en `00-verificar-equipo.ps1`), un problema de codificación (faltaba BOM UTF-8), y un tercero más sutil: el propio `_verificar-sintaxis.ps1` fallaba en silencio al correr vía `powershell.exe` (el intérprete real que usan los `.bat`, distinto de pwsh 7) porque el proveedor NuGet no estaba bootstrapeado — corregido, y ahora avisa en vez de fallar en silencio. Detalle completo en `../docs/aprendizaje-scripts.md`.
+
+**Hook de git instalado:** `.git/hooks/pre-commit` corre `_verificar-sintaxis.ps1` automáticamente en cada commit que toque un `.ps1`, y bloquea el commit si encuentra errores reales — instalado con `bash scripts/instalar-git-hooks.sh` (correr una vez por cada copia local del repo, git no versiona los hooks). Probado en vivo: bloquea scripts rotos, deja pasar commits válidos.
 
 ## Qué NO automatizan estos scripts (pasos manuales, no evitables)
 
