@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Instala y deja corriendo Open WebUI NATIVO en Windows (vía pip) — sin Docker.
-  Ver docs/arquitectura/docker-y-recursos.md. Requiere Python (scripts/12-instalar-herramientas-dev.ps1).
+  Ver docs/arquitectura/docker-y-recursos.md. Requiere Python (scripts/pasos/12-instalar-herramientas-dev.ps1).
 
   Confirmado en documentación oficial (docs.openwebui.com, 2026-08-27): "Python: Suitable
   for low-resource environments" — es un método soportado oficialmente, no un hack.

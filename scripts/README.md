@@ -16,7 +16,9 @@ Corrida manual, uno por uno, de 17 scripts en el orden numérico de archivo **no
 
 ## Orden de ejecución manual, paso a paso (si no se usa `instalar-todo.bat` — sigue `../docs/instalacion/plan-instalacion.md`)
 
-| # | Script | Qué hace | Necesita algo tuyo antes de correr |
+Los 17 pasos numerados viven en **`scripts/pasos/`** (ej. `pasos\00-verificar-equipo.bat`) — son los módulos que `instalar-todo.bat` orquesta, y también se pueden correr sueltos desde ahí. Lo que queda en `scripts/` (esta carpeta) son las herramientas que se corren directo: el instalador, el verificador de salud, y las de mantenimiento del repo mismo.
+
+| # | Script (en `pasos/`) | Qué hace | Necesita algo tuyo antes de correr |
 |---|---|---|---|
 | 00 | `00-verificar-equipo.bat` | Reporta SO, GPU, drivers, discos, RAM — no cambia nada | No |
 | 01 | `01-instalar-ollama.bat` | Instala Ollama vía winget | No |
@@ -29,13 +31,20 @@ Corrida manual, uno por uno, de 17 scripts en el orden numérico de archivo **no
 | 08 | `08-instalar-cloudflared.bat` | Instala cloudflared como servicio | **Sí** — el token del túnel, creado a mano en el dashboard de Cloudflare (instrucciones dentro del script) |
 | 09 | `09-configurar-inicio-automatico.bat` | Verifica/ajusta que todo arranque solo con Windows | No (correr al final, después de 01-08) |
 | 10 | `10-configurar-backup.bat` | Crea la tarea programada de backup a Drive | **Sí** — la ruta de tu carpeta de Google Drive |
-| — | `verificar-instalacion.bat` | Chequeo integral, se puede correr las veces que se quiera | No |
 | 11 | `11-prueba-estres.bat` | Mide rendimiento real (tok/s, carga sostenida, límite de contexto) — ver `../docs/pruebas/pruebas-rendimiento.md` | No (correr al final, con todo ya instalado) |
 | 12 | `12-instalar-herramientas-dev.bat` | Instala git, GitHub CLI (`gh`) y Python — para que Goose/Continue.dev/Aider puedan comitear a GitHub igual que se hace en esta conversación. Ver `../docs/herramientas/herramientas-trabajo.md` § "Conectores a GitHub" | No (pero después hay que correr `gh auth login` a mano, es interactivo) |
 | 13 | `13-instalar-qwen-code.bat` | Instala Node.js + Qwen Code (el agente hecho por el propio equipo de Qwen) y configura el proveedor apuntando al Ollama local | No — instala Node.js si falta, y deja `settings.json` ya configurado |
 | 14 | `14-instalar-tailscale.bat` | Instala Tailscale — red privada para conectar Qwen Code/Goose desde un dispositivo remoto sin exponer nada a internet. Ver `../docs/herramientas/qwen-code-a-fondo.md` | **Sí** — el login (`tailscale up`) es interactivo, abre el navegador para autenticar |
 | 15 | `15-instalar-comfyui.bat` | Instala ComfyUI (portable) + checkpoint de Stable Diffusion 1.5 — generador de assets para la capa de diseño. **No** se registra como inicio automático a propósito (protege la VRAM del modelo de código). Ver `../docs/arquitectura/capa-diseno.md` | No |
-| — | `_verificar-sintaxis.bat` | Control de calidad de los scripts mismos — sintaxis, codificación, linter — **sin instalar ni ejecutar nada de su contenido**. No pide administrador. Correr después de editar cualquier script. | No |
+
+## Herramientas de esta carpeta (`scripts/`, top-level — no viven en `pasos/`)
+
+| Script | Qué hace |
+|---|---|
+| `instalar-todo.bat` | Instalador único con GUI — ver arriba. |
+| `verificar-instalacion.bat` | Chequeo integral de salud, se puede correr las veces que se quiera. |
+| `_verificar-sintaxis.bat` | Control de calidad de los scripts mismos (sintaxis, codificación, linter) — escanea recursivamente esta carpeta y `pasos/`. **Sin instalar ni ejecutar nada de su contenido.** No pide administrador. Correr después de editar cualquier script. |
+| `instalar-git-hooks.sh` | Instala el hook de pre-commit una vez por copia local del repo. |
 
 **Antes de correr nada, leer `../docs/instalacion/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
 
@@ -45,7 +54,7 @@ Corrida manual, uno por uno, de 17 scripts en el orden numérico de archivo **no
 
 ## Qué NO automatizan estos scripts (pasos manuales, no evitables)
 
-- **BIOS:** "Restore on AC Power Loss" se configura en la BIOS/UEFI, no desde Windows — ningún script puede tocarlo. Instrucciones en `09-configurar-inicio-automatico.ps1` y `../docs/operacion/mantenimiento.md`.
+- **BIOS:** "Restore on AC Power Loss" se configura en la BIOS/UEFI, no desde Windows — ningún script puede tocarlo. Instrucciones en `pasos/09-configurar-inicio-automatico.ps1` y `../docs/operacion/mantenimiento.md`.
 - **Crear el túnel de Cloudflare y el correo autorizado en Cloudflare Access:** son pasos en el dashboard web de Cloudflare, específicos de tu cuenta — no automatizables desde un script local.
 - **Crear la primera cuenta de Open WebUI:** paso manual único (entrar a `http://localhost:8080` y registrarse) — automatizarlo no tendría sentido, es tu cuenta de administrador.
 - **Continue.dev y `.continue/rules`:** se instala desde el marketplace de VS Code, no por script.

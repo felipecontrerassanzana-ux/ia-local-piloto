@@ -11,10 +11,13 @@
   Código de salida: 0 si no hay errores de sintaxis ni archivos sin BOM (los hallazgos de
   lint no bloquean, incluyen los aceptados a propósito); 1 si hay algo real que corregir.
   Pensado para usarse desde `scripts/hooks/pre-commit` — ver docs/instalacion/aprendizaje-scripts.md.
+
+  Escanea de forma recursiva (top-level: instalar-todo.ps1, verificar-instalacion.ps1;
+  scripts/pasos/: los 17 módulos de instalación) — no asumir que todo vive en una sola carpeta.
 #>
 
 $carpeta = $PSScriptRoot
-$scripts = Get-ChildItem "$carpeta\*.ps1" | Where-Object { $_.Name -ne "_verificar-sintaxis.ps1" }
+$scripts = Get-ChildItem "$carpeta\*.ps1" -Recurse | Where-Object { $_.Name -ne "_verificar-sintaxis.ps1" }
 
 Write-Host "=== 1. Sintaxis (parser de PowerShell, no ejecuta nada) ===" -ForegroundColor Cyan
 $erroresSintaxis = 0
@@ -66,7 +69,7 @@ if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
 if ($linterDisponible) {
     try {
         Import-Module PSScriptAnalyzer -ErrorAction Stop
-        $resultados = Invoke-ScriptAnalyzer -Path "$carpeta\*.ps1" -Severity Warning, Error
+        $resultados = Invoke-ScriptAnalyzer -Path $carpeta -Recurse -Severity Warning, Error
     } catch {
         $linterDisponible = $false
         Write-Host "PSScriptAnalyzer está instalado pero no se pudo cargar: $($_.Exception.Message)" -ForegroundColor Red

@@ -26,11 +26,11 @@ Confirmado en la documentación oficial de Ollama (`docs/windows.mdx`): se cambi
 2. Crear (o editar) la variable `OLLAMA_MODELS` con la ruta deseada en el NVMe.
 3. Si Ollama ya estaba corriendo, cerrar la aplicación desde la bandeja del sistema y volver a abrirla (o iniciar una terminal nueva) para que tome el cambio.
 
-El script `scripts/02-configurar-ollama.ps1` deja esto configurado automáticamente — solo hay que confirmar la letra de unidad correcta del NVMe antes de correrlo (parámetro `-LetraNVMe`, default `C`).
+El script `scripts/pasos/02-configurar-ollama.ps1` deja esto configurado automáticamente — solo hay que confirmar la letra de unidad correcta del NVMe antes de correrlo (parámetro `-LetraNVMe`, default `C`).
 
 ComfyUI (el motor de generación de imágenes, ver `capa-diseno.md`) guarda su propio checkpoint en `models/checkpoints/` dentro de su carpeta de instalación — el script `15-instalar-comfyui.ps1` la instala directo en el NVMe, no hace falta configurarlo aparte.
 
 ## Pendiente de confirmar
 
 - [ ] Letra de unidad real de cada disco en este equipo (ej. `C:` para NVMe, `D:` para HDD — confirmar, no asumir).
-- [ ] Espacio libre real en cada uno hoy (antes de instalar nada) — lo reporta `scripts/00-verificar-equipo.ps1`.
+- [ ] Espacio libre real en cada uno hoy (antes de instalar nada) — lo reporta `scripts/pasos/00-verificar-equipo.ps1`.

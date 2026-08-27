@@ -5,8 +5,8 @@ El motor de código (Qwen 2.5 Coder 7B) puede generar una app completa y funcion
 ## Las tres piezas del pack
 
 1. **`DESIGN.md`** (raíz del repo) — contrato de diseño que Qwen Code/Goose leen, igual que `AGENTS.md`. Define qué sistema de componentes usar (Tailwind+shadcn/ui para web, Fluent UI para escritorio nativo), para que el agente **ensamble** en vez de **inventar** estilo visual.
-2. **`qwen3-vl:4b`** (modelo de visión, vía Ollama) — el revisor. Confirmado publicado oficialmente en `ollama.com/library/qwen3-vl` (3,3GB, contexto 256K, entrada texto+imagen) — se instala igual que cualquier otro modelo de Ollama (`ollama pull qwen3-vl:4b`, ya agregado a `scripts/03-descargar-modelo.ps1`).
-3. **ComfyUI + Stable Diffusion 1.5** (`scripts/15-instalar-comfyui.ps1`) — el generador, para cuando hace falta un asset custom que no existe en la librería de componentes (un ícono específico, una ilustración).
+2. **`qwen3-vl:4b`** (modelo de visión, vía Ollama) — el revisor. Confirmado publicado oficialmente en `ollama.com/library/qwen3-vl` (3,3GB, contexto 256K, entrada texto+imagen) — se instala igual que cualquier otro modelo de Ollama (`ollama pull qwen3-vl:4b`, ya agregado a `scripts/pasos/03-descargar-modelo.ps1`).
+3. **ComfyUI + Stable Diffusion 1.5** (`scripts/pasos/15-instalar-comfyui.ps1`) — el generador, para cuando hace falta un asset custom que no existe en la librería de componentes (un ícono específico, una ilustración).
 
 ## Por qué ComfyUI y no AUTOMATIC1111
 
@@ -48,7 +48,7 @@ Cada uno entra solo en los 12GB por separado — nunca hace falta que los tres c
 
 ## Qué falta
 
-- [ ] Correr `scripts/15-instalar-comfyui.ps1` en el equipo real y confirmar tiempos de generación reales (no medidos todavía, nada se ha ejecutado en el equipo piloto).
+- [ ] Correr `scripts/pasos/15-instalar-comfyui.ps1` en el equipo real y confirmar tiempos de generación reales (no medidos todavía, nada se ha ejecutado en el equipo piloto).
 - [ ] Definir el mecanismo de captura de pantalla para el caso de app de escritorio nativa (el caso web con Playwright ya está resuelto).
 - [x] Formalizar el loop como comando invocable — resuelto para Qwen Code (comando personalizado `.qwen/commands/diseno/revisar.md`, ver `../referencia/qwen-code.md`); pendiente el equivalente en Goose (Recipe, formato exacto sin verificar aún, ver `../referencia/goose.md`).
 - [ ] Confirmar si `/model --vision`/`--image` de Qwen Code pueden reemplazar los pasos manuales 2-3-5 del loop de arriba — en particular si ComfyUI puede exponerse compatible con `--image` (su API es por workflow JSON, no confirmado que encaje).

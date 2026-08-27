@@ -9,12 +9,15 @@
   listados con instrucciones -- no pausan la instalación automática (decisión de Felipe,
   2026-08-27, ver docs/decisiones.md).
 
-  No reemplaza los scripts individuales -- los reutiliza tal cual, en el orden correcto,
-  con verificación automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo
-  aparte para chequeos posteriores (no ligados a una instalación en curso).
+  No reemplaza los scripts individuales -- los reutiliza tal cual (viven en scripts/pasos/,
+  ver docs/instalacion/aprendizaje-scripts.md), en el orden correcto, con verificación
+  automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo aparte para
+  chequeos posteriores (no ligados a una instalación en curso).
 #>
 
-. "$PSScriptRoot\_elevar.ps1"
+. "$PSScriptRoot\pasos\_elevar.ps1"
+
+$script:CarpetaPasos = Join-Path $PSScriptRoot "pasos"
 
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
@@ -40,8 +43,8 @@ $script:Pasos = @(
 
 # Pasos que se listan al final, no se automatizan (necesitan login/token) — ver arriba
 $script:PasosManuales = @(
-    "08 — Cloudflare Tunnel: crear el túnel en el dashboard de Cloudflare Zero Trust, pegar el token, y correr scripts\08-instalar-cloudflared.bat -Token <token>."
-    "14 — Tailscale: correr scripts\14-instalar-tailscale.bat, después 'tailscale up' en una terminal para autenticar por navegador."
+    "08 — Cloudflare Tunnel: crear el túnel en el dashboard de Cloudflare Zero Trust, pegar el token, y correr scripts\pasos\08-instalar-cloudflared.bat -Token <token>."
+    "14 — Tailscale: correr scripts\pasos\14-instalar-tailscale.bat, después 'tailscale up' en una terminal para autenticar por navegador."
     "VS Code: instalar desde el Marketplace las extensiones 'Qwen Code' y 'Continue.dev' (no se puede automatizar la instalación de extensiones de otro programa)."
     "Open WebUI: entrar a http://localhost:8080 y crear la primera cuenta (queda como admin)."
 )
@@ -232,7 +235,7 @@ $BtnIniciar.Add_Click({
         Escribir-Log ">>> Paso $($p.Id): $($p.Nombre)"
         $window.Dispatcher.Invoke([action]{}, [System.Windows.Threading.DispatcherPriority]::Background)
 
-        $rutaScript = Join-Path $PSScriptRoot $p.Archivo
+        $rutaScript = Join-Path $script:CarpetaPasos $p.Archivo
         $argumentos = switch ($p.Id) {
             "02" { if ($ChkRed.IsChecked) { @("-LetraNVMe", $script:LetraNVMe, "-PermitirRed") } else { @("-LetraNVMe", $script:LetraNVMe) } }
             "10" { @("-CarpetaDrive", $carpetaBackup) }

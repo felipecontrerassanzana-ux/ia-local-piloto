@@ -10,7 +10,7 @@ Open WebUI trae más de 200 variables de entorno — sin configurarlas explícit
 - **`RAG_EMBEDDING_MODEL`** — default `sentence-transformers/all-MiniLM-L6-v2` (se descarga solo, un modelo de embeddings distinto), **no** `bge-m3`.
 - **`RAG_EMBEDDING_ENGINE`** — vacío por defecto usa SentenceTransformers local; hay que poner `ollama` explícitamente para que use un modelo servido por Ollama (como BGE-M3).
 
-`scripts/07-desplegar-openwebui.ps1` instalaba Open WebUI y por separado se instalaban Qdrant (`06-desplegar-qdrant.ps1`) y BGE-M3 (`03-descargar-modelo.ps1`) — pero nada los conectaba entre sí. Sin las variables correctas, Open WebUI habría usado su ChromaDB interno y su propio modelo de embeddings, ignorando en silencio las dos piezas que este piloto instala específicamente para el RAG.
+`scripts/pasos/07-desplegar-openwebui.ps1` instalaba Open WebUI y por separado se instalaban Qdrant (`06-desplegar-qdrant.ps1`) y BGE-M3 (`03-descargar-modelo.ps1`) — pero nada los conectaba entre sí. Sin las variables correctas, Open WebUI habría usado su ChromaDB interno y su propio modelo de embeddings, ignorando en silencio las dos piezas que este piloto instala específicamente para el RAG.
 
 **Corregido:** `07-desplegar-openwebui.ps1` ahora fija estas variables a nivel de sistema antes de (re)iniciar el servicio:
 

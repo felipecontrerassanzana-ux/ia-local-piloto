@@ -36,7 +36,7 @@ El usuario preguntó específicamente si existe una extensión de Qwen para VS C
 
 (el `contextWindowSize` de 32000 sigue el mismo criterio conservador que `02-configurar-ollama.ps1` — ajustar junto con `OLLAMA_CONTEXT_LENGTH` cuando la prueba de estrés confirme un límite real mayor, ver `../pruebas/pruebas-rendimiento.md`).
 
-**Requiere Node.js 22+** (se instala vía npm: `npm install -g @qwen-code/qwen-code`) — ver `scripts/13-instalar-qwen-code.ps1`.
+**Requiere Node.js 22+** (se instala vía npm: `npm install -g @qwen-code/qwen-code`) — ver `scripts/pasos/13-instalar-qwen-code.ps1`.
 
 ## Auto-memory de Qwen Code — la respuesta a "¿puede identificar cosas y dejarlas establecidas solo, como vos?" (verificado 2026-08-27)
 
@@ -119,7 +119,7 @@ El usuario preguntó si para este piloto existen herramientas tipo conector a Gi
 - `git`: paquete `Git.Git`
 - `gh` (GitHub CLI): paquete `GitHub.cli`
 
-**Autenticación:** `gh auth login` es un paso interactivo (abre el navegador para el login de OAuth) — no se puede dejar 100% automatizado en un script, hay que completarlo una vez a mano después de instalar. Ver `scripts/12-instalar-herramientas-dev.ps1`.
+**Autenticación:** `gh auth login` es un paso interactivo (abre el navegador para el login de OAuth) — no se puede dejar 100% automatizado en un script, hay que completarlo una vez a mano después de instalar. Ver `scripts/pasos/12-instalar-herramientas-dev.ps1`.
 
 ### Opción más nativa para Goose específicamente: extensión "GitHub" vía MCP
 

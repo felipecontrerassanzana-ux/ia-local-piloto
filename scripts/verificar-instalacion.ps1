@@ -4,7 +4,7 @@
   solo reporta qué está bien y qué falta.
 #>
 
-. "$PSScriptRoot\_elevar.ps1"
+. "$PSScriptRoot\pasos\_elevar.ps1"
 
 $ok = @()
 $falta = @()

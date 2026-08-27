@@ -13,23 +13,23 @@ Sigue el stack ya definido en `../arquitectura/arquitectura-piloto.md` (esquema 
 - [ ] Confirmar espacio en disco disponible en **ambos discos** (NVMe + HDD, ver `../arquitectura/almacenamiento.md`) — modelos + embeddings + capa de diseño + índices de prueba: estimar ~25GB, todo en el NVMe.
 - [ ] Confirmar letra de unidad de cada disco (cuál es el NVMe, cuál es el HDD).
 
-Script: `scripts/00-verificar-equipo.ps1` — corre todo lo de arriba automáticamente y deja un reporte.
+Script: `scripts/pasos/00-verificar-equipo.ps1` — corre todo lo de arriba automáticamente y deja un reporte.
 
 ## Paso 1 — Motor de inferencia: Ollama
 
 Uso de una sola persona — Ollama es la opción correcta según `../herramientas/motor-alternativas.md` (vLLM solo se justifica con concurrencia real de varios usuarios, no es el caso acá).
 
-- [ ] Instalar Ollama (`scripts/01-instalar-ollama.ps1`).
+- [ ] Instalar Ollama (`scripts/pasos/01-instalar-ollama.ps1`).
 - [ ] **Configurar `OLLAMA_CONTEXT_LENGTH` explícitamente (crítico, no saltarse).** Con menos de 24GB de VRAM (el caso de esta RTX 5070 12GB), Ollama usa por defecto solo **4K de contexto** — muy por debajo del contexto largo (100K) que fue el criterio principal para elegir este modelo (ver `../modelo/modelo-elegido.md` y `../herramientas/herramientas-trabajo.md`, corregido y verificado contra la documentación oficial de Ollama, 2026-08-26).
 - [ ] Configurar `OLLAMA_MODELS` apuntando al NVMe (ver `../arquitectura/almacenamiento.md` — corregido 2026-08-27, los modelos se intercambian en VRAM varias veces por sesión con la capa de diseño, conviene el disco rápido).
 - [ ] Descargar Qwen 2.5 Coder 7B en cuantización Q4_K_M (ver `../modelo/modelo-elegido.md`) — probar también Q8_0, marcado "best for your GPU" en la verificación de hardware.
 - [ ] Confirmar que responde vía la API compatible OpenAI que expone Ollama, y que `ollama ps` muestra el `CONTEXT` configurado correctamente (no 4096).
 
-Script: `scripts/02-configurar-ollama.ps1` (variables de entorno) + `scripts/03-descargar-modelo.ps1` (pull del modelo).
+Script: `scripts/pasos/02-configurar-ollama.ps1` (variables de entorno) + `scripts/pasos/03-descargar-modelo.ps1` (pull del modelo).
 
 ## Paso 1.4 — Herramientas base de desarrollo (git, GitHub CLI, Python)
 
-- [ ] Correr `scripts/12-instalar-herramientas-dev.ps1` (`.bat`) — instala git, `gh` y Python.
+- [ ] Correr `scripts/pasos/12-instalar-herramientas-dev.ps1` (`.bat`) — instala git, `gh` y Python.
 - [ ] Autenticar `gh` a mano: `gh auth login` (interactivo, no se puede automatizar).
 - [ ] Con esto, Goose ya puede comitear/pushear a GitHub igual que se hace en esta conversación — ver `../herramientas/herramientas-trabajo.md` § "Conectores a GitHub".
 
@@ -37,8 +37,8 @@ Script: `scripts/02-configurar-ollama.ps1` (variables de entorno) + `scripts/03-
 
 Ver `../herramientas/herramientas-trabajo.md` para el detalle completo y las alternativas evaluadas.
 
-- [ ] Instalar **Goose** (`scripts/04-instalar-goose.ps1`) — para iniciar/gestionar proyectos completos desde la terminal.
-- [ ] Instalar **Qwen Code** (`scripts/13-instalar-qwen-code.ps1`) — el agente hecho por el propio equipo de Qwen, con extensión oficial de VS Code (Beta) — instalar esa extensión desde el Marketplace además de correr el script.
+- [ ] Instalar **Goose** (`scripts/pasos/04-instalar-goose.ps1`) — para iniciar/gestionar proyectos completos desde la terminal.
+- [ ] Instalar **Qwen Code** (`scripts/pasos/13-instalar-qwen-code.ps1`) — el agente hecho por el propio equipo de Qwen, con extensión oficial de VS Code (Beta) — instalar esa extensión desde el Marketplace además de correr el script.
 - [ ] Instalar Continue.dev en VS Code, configurar el bloque `ollama/qwen2.5-coder-7b` — para trabajar dentro de un proyecto ya iniciado.
 - [ ] Crear `.continue/rules` con las convenciones básicas de trabajo.
 - [ ] (Opcional) Evaluar Aider como alternativa de terminal.
@@ -47,18 +47,18 @@ Ver `../herramientas/herramientas-trabajo.md` para el detalle completo y las alt
 
 Ver `../arquitectura/docker-y-recursos.md` antes de este paso — explica por qué **ninguna de estas piezas necesita Docker** (ambas tienen forma nativa oficial en Windows), y el presupuesto real de RAM en un equipo de 16GB.
 
-- [ ] Levantar Qdrant nativo (`scripts/06-desplegar-qdrant.ps1`) — descarga el binario oficial de Windows, lo deja corriendo vía Tarea Programada.
-- [ ] Levantar Open WebUI nativo, vía pip (`scripts/07-desplegar-openwebui.ps1`) — requiere Python (Paso 1.4). Puerto 8080 (no 3000, eso era específico de Docker).
+- [ ] Levantar Qdrant nativo (`scripts/pasos/06-desplegar-qdrant.ps1`) — descarga el binario oficial de Windows, lo deja corriendo vía Tarea Programada.
+- [ ] Levantar Open WebUI nativo, vía pip (`scripts/pasos/07-desplegar-openwebui.ps1`) — requiere Python (Paso 1.4). Puerto 8080 (no 3000, eso era específico de Docker).
 - [ ] Crear la primera cuenta en Open WebUI (queda como admin, cierra el registro público automáticamente — ver `../operacion/acceso-remoto.md`).
-- [ ] BGE-M3 se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull bge-m3`) — corre en la misma GPU vía Ollama, **no** como proceso Python aparte. Armar el pipeline básico de prueba con documentos propios queda para cuando se conecte el RAG real.
-- [ ] (Opcional/respaldo) `scripts/05-instalar-docker.ps1` — solo si algo nativo da problemas y se prefiere la alternativa en contenedor.
+- [ ] BGE-M3 se descarga con `scripts/pasos/03-descargar-modelo.ps1` (`ollama pull bge-m3`) — corre en la misma GPU vía Ollama, **no** como proceso Python aparte. Armar el pipeline básico de prueba con documentos propios queda para cuando se conecte el RAG real.
+- [ ] (Opcional/respaldo) `scripts/pasos/05-instalar-docker.ps1` — solo si algo nativo da problemas y se prefiere la alternativa en contenedor.
 
 ## Paso 3 — Acceso remoto y autenticación
 
 Ver `../operacion/acceso-remoto.md` para el detalle completo de la decisión (Cloudflare Tunnel + dominio propio + Cloudflare Access).
 
 - [ ] Crear el túnel en el dashboard de Cloudflare Zero Trust y obtener el token.
-- [ ] Instalar `cloudflared` como servicio de Windows con ese token (`scripts/08-instalar-cloudflared.ps1`).
+- [ ] Instalar `cloudflared` como servicio de Windows con ese token (`scripts/pasos/08-instalar-cloudflared.ps1`).
 - [ ] Configurar el subdominio propio apuntando al túnel.
 - [ ] Configurar Cloudflare Access delante del túnel, con el correo de Felipe como único autorizado.
 - [ ] Activar rate limiting básico en el dashboard de Cloudflare.
@@ -67,16 +67,16 @@ Ver `../operacion/acceso-remoto.md` para el detalle completo de la decisión (Cl
 
 Ver `../herramientas/qwen-code-a-fondo.md` para el detalle completo — solo hace falta si se va a usar Qwen Code/Goose desde un dispositivo fuera de la casa, no para el uso local ni para el acceso por navegador del Paso 3.
 
-- [ ] Instalar Tailscale (`scripts/14-instalar-tailscale.ps1`) y autenticar (`tailscale up`, interactivo).
-- [ ] Configurar `OLLAMA_HOST=0.0.0.0` (`scripts/02-configurar-ollama.ps1 -PermitirRed`) — sin esto, Tailscale conecta el equipo pero Ollama sigue sin aceptar tráfico de otros dispositivos.
+- [ ] Instalar Tailscale (`scripts/pasos/14-instalar-tailscale.ps1`) y autenticar (`tailscale up`, interactivo).
+- [ ] Configurar `OLLAMA_HOST=0.0.0.0` (`scripts/pasos/02-configurar-ollama.ps1 -PermitirRed`) — sin esto, Tailscale conecta el equipo pero Ollama sigue sin aceptar tráfico de otros dispositivos.
 - [ ] En el dispositivo remoto: instalar Tailscale + Qwen Code, y apuntar `baseUrl` en `~/.qwen/settings.json` a `http://<IP-de-Tailscale>:11434/v1` (obtener la IP con `tailscale ip -4` en el equipo servidor).
 
 ## Paso 3.6 — Capa de diseño (revisor visual + generador de assets)
 
 Ver `../arquitectura/capa-diseno.md` para el razonamiento completo — cierra la brecha de que el modelo de código es solo texto y no puede evaluar visualmente su propio resultado.
 
-- [ ] `qwen3-vl:4b` se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull qwen3-vl:4b`) — mismo mecanismo que el resto de los modelos, entra/sale de VRAM bajo demanda.
-- [ ] Instalar ComfyUI + checkpoint de Stable Diffusion 1.5 (`scripts/15-instalar-comfyui.ps1`) — **no** se registra como inicio automático a propósito, se abre a mano cuando hace falta generar un asset.
+- [ ] `qwen3-vl:4b` se descarga con `scripts/pasos/03-descargar-modelo.ps1` (`ollama pull qwen3-vl:4b`) — mismo mecanismo que el resto de los modelos, entra/sale de VRAM bajo demanda.
+- [ ] Instalar ComfyUI + checkpoint de Stable Diffusion 1.5 (`scripts/pasos/15-instalar-comfyui.ps1`) — **no** se registra como inicio automático a propósito, se abre a mano cuando hace falta generar un asset.
 - [ ] Confirmar que `DESIGN.md` (raíz del repo) está completo con el sistema de componentes elegido antes de generar la primera pantalla de una app nueva.
 
 ## Paso 4 — Continuidad y backup
@@ -84,8 +84,8 @@ Ver `../arquitectura/capa-diseno.md` para el razonamiento completo — cierra la
 Ver `../operacion/mantenimiento.md` para el detalle completo.
 
 - [ ] Configurar la BIOS para reencender el equipo solo tras un corte de luz.
-- [ ] Confirmar que Ollama, Open WebUI (nativo, vía Tarea Programada) y `cloudflared` quedan configurados para iniciar solos con Windows (`scripts/09-configurar-inicio-automatico.ps1`).
-- [ ] Configurar la tarea programada de backup a Drive (`scripts/10-configurar-backup.ps1`).
+- [ ] Confirmar que Ollama, Open WebUI (nativo, vía Tarea Programada) y `cloudflared` quedan configurados para iniciar solos con Windows (`scripts/pasos/09-configurar-inicio-automatico.ps1`).
+- [ ] Configurar la tarea programada de backup a Drive (`scripts/pasos/10-configurar-backup.ps1`).
 
 ## Paso 5 — Verificación final
 
@@ -93,7 +93,7 @@ Ver `../operacion/mantenimiento.md` para el detalle completo.
 
 ## Paso 6 — Prueba de estrés y rendimiento
 
-- [ ] Correr `scripts/11-prueba-estres.ps1` (`.bat`) — mide tok/s real, estabilidad bajo carga sostenida, y el límite real de contexto (cierra el pendiente de `../modelo/modelo-elegido.md` sobre si el límite de 32K de Ollama es real o solo el default). Ver `../pruebas/pruebas-rendimiento.md` para cómo interpretar los resultados.
+- [ ] Correr `scripts/pasos/11-prueba-estres.ps1` (`.bat`) — mide tok/s real, estabilidad bajo carga sostenida, y el límite real de contexto (cierra el pendiente de `../modelo/modelo-elegido.md` sobre si el límite de 32K de Ollama es real o solo el default). Ver `../pruebas/pruebas-rendimiento.md` para cómo interpretar los resultados.
 
 ## Siguiente documento
 

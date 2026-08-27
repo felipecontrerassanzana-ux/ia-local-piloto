@@ -1,6 +1,6 @@
 # Pruebas de estrés y rendimiento post-instalación
 
-Esto es distinto de `plan-pruebas.md`: aquel evalúa **calidad** (¿la respuesta es correcta?, ¿alucina?, ¿el español es natural?) con tareas de programación reales, juzgadas por una persona. Este documento evalúa **rendimiento técnico puro**: velocidad, estabilidad bajo carga, y el límite real de contexto — con números medidos, no juicio de calidad. Script: `scripts/11-prueba-estres.ps1`.
+Esto es distinto de `plan-pruebas.md`: aquel evalúa **calidad** (¿la respuesta es correcta?, ¿alucina?, ¿el español es natural?) con tareas de programación reales, juzgadas por una persona. Este documento evalúa **rendimiento técnico puro**: velocidad, estabilidad bajo carga, y el límite real de contexto — con números medidos, no juicio de calidad. Script: `scripts/pasos/11-prueba-estres.ps1`.
 
 ## Por qué hace falta esto además de `plan-pruebas.md`
 

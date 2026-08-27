@@ -24,7 +24,7 @@ Cualquier pantalla nueva generada debe pasar por el loop de revisión con `qwen3
 
 ## Generación de assets custom (íconos, ilustraciones)
 
-Si hace falta un gráfico que no existe en la librería de componentes (un ícono específico, una ilustración), usar ComfyUI + Stable Diffusion 1.5 (`scripts/15-instalar-comfyui.ps1`) — no pedirle al modelo de código que "dibuje" algo en SVG a mano salvo que sea geométricamente simple (un ícono de línea básico sí, una ilustración compleja no).
+Si hace falta un gráfico que no existe en la librería de componentes (un ícono específico, una ilustración), usar ComfyUI + Stable Diffusion 1.5 (`scripts/pasos/15-instalar-comfyui.ps1`) — no pedirle al modelo de código que "dibuje" algo en SVG a mano salvo que sea geométricamente simple (un ícono de línea básico sí, una ilustración compleja no).
 
 ## Qué no hacer
 

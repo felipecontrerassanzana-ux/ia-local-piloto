@@ -8,7 +8,7 @@
 
 .NOTAS
   Este script NO configura OLLAMA_HOST=0.0.0.0 — eso sigue siendo un paso aparte
-  (scripts/02-configurar-ollama.ps1 -PermitirRed), porque son dos decisiones independientes:
+  (scripts/pasos/02-configurar-ollama.ps1 -PermitirRed), porque son dos decisiones independientes:
   "¿este equipo está en la red de Tailscale?" y "¿Ollama acepta conexiones que no sean de sí
   mismo?". Tailscale sin OLLAMA_HOST=0.0.0.0 no sirve para conectar Qwen Code remoto — hacen
   falta los dos.
@@ -47,4 +47,4 @@ Write-Host "Una vez conectado, la IP de Tailscale de este equipo se obtiene con:
 Write-Host "Esa IP es la que va en 'baseUrl' de ~/.qwen/settings.json cuando Qwen Code corre en otro dispositivo (ver docs/herramientas/qwen-code-a-fondo.md)." -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Recordatorio: para que Ollama acepte esas conexiones remotas, correr también:" -ForegroundColor Yellow
-Write-Host "  scripts\02-configurar-ollama.bat -PermitirRed" -ForegroundColor Yellow
+Write-Host "  scripts\pasos\02-configurar-ollama.bat -PermitirRed" -ForegroundColor Yellow
