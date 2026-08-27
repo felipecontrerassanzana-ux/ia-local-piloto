@@ -1,11 +1,16 @@
 ﻿<#
 .SINOPSIS
-  Configura Ollama: contexto largo (OLLAMA_CONTEXT_LENGTH) y ubicación de modelos en el HDD (OLLAMA_MODELS).
+  Configura Ollama: contexto largo (OLLAMA_CONTEXT_LENGTH) y ubicación de modelos en el NVMe (OLLAMA_MODELS).
   Ver docs/almacenamiento.md y docs/herramientas-trabajo.md para el porqué de cada valor.
 
-.PARAMETER LetraHDD
-  Letra de la unidad del HDD (ej. "D"). AJUSTAR antes de correr — no asumir, confirmar con
-  00-verificar-equipo.ps1 cuál letra es realmente el HDD en este equipo.
+  Corregido 2026-08-27: los modelos van al NVMe, no al HDD como se planeó originalmente — con el
+  diseño de intercambio de modelos bajo demanda (coder / revisor visual / generador de imágenes,
+  ver docs/capa-diseno.md), cada modelo se lee del disco varias veces por sesión de trabajo, no
+  una sola vez al arrancar. En HDD eso son ~30s de espera por cada cambio de tarea; en NVMe, 1-2s.
+
+.PARAMETER LetraNVMe
+  Letra de la unidad del NVMe (ej. "C"). AJUSTAR antes de correr — no asumir, confirmar con
+  00-verificar-equipo.ps1 cuál letra es realmente el NVMe en este equipo.
 
 .PARAMETER ContextoTokens
   Cuántos tokens de contexto pedirle a Ollama. 100000 es el máximo seguro confirmado para
@@ -21,24 +26,24 @@
 #>
 
 param(
-    [string]$LetraHDD = "D",
+    [string]$LetraNVMe = "C",
     [int]$ContextoTokens = 32000,
     [switch]$PermitirRed
 )
 
 . "$PSScriptRoot\_elevar.ps1"
 
-$modelsPath = "${LetraHDD}:\OllamaModels"
+$modelsPath = "${LetraNVMe}:\OllamaModels"
 
 Write-Host "Configurando variables de entorno de sistema para Ollama..." -ForegroundColor Cyan
-Write-Host "  OLLAMA_MODELS -> $modelsPath"
+Write-Host "  OLLAMA_MODELS -> $modelsPath (NVMe)"
 Write-Host "  OLLAMA_CONTEXT_LENGTH -> $ContextoTokens"
 if ($PermitirRed) {
     Write-Host "  OLLAMA_HOST -> 0.0.0.0 (accesible desde la red local y desde Tailscale)" -ForegroundColor Yellow
 }
 Write-Host ""
-Write-Host "Si $LetraHDD no es la letra real del HDD en este equipo, cancela (Ctrl+C) y" -ForegroundColor Yellow
-Write-Host "vuelve a correr con -LetraHDD <letra correcta>, ej: .\02-configurar-ollama.ps1 -LetraHDD E" -ForegroundColor Yellow
+Write-Host "Si $LetraNVMe no es la letra real del NVMe en este equipo, cancela (Ctrl+C) y" -ForegroundColor Yellow
+Write-Host "vuelve a correr con -LetraNVMe <letra correcta>, ej: .\02-configurar-ollama.ps1 -LetraNVMe D" -ForegroundColor Yellow
 Write-Host ""
 Start-Sleep -Seconds 3
 

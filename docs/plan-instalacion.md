@@ -8,7 +8,7 @@ Sigue el stack ya definido en `arquitectura-piloto.md` (esquema completo) y en `
 
 - [x] Sistema operativo — resuelto 2026-08-26: **Windows 11 Pro 25H2**, instalación nativa (no WSL2, Ollama tiene versión nativa para Windows).
 - [ ] Confirmar drivers NVIDIA actualizados y que reconocen la RTX 5070 con sus 12GB completos.
-- [ ] Confirmar espacio en disco disponible en **ambos discos** (NVMe + HDD, ver `almacenamiento.md`) — modelo + embeddings + índices de prueba: estimar 10-15GB.
+- [ ] Confirmar espacio en disco disponible en **ambos discos** (NVMe + HDD, ver `almacenamiento.md`) — modelos + embeddings + capa de diseño + índices de prueba: estimar ~25GB, todo en el NVMe.
 - [ ] Confirmar letra de unidad de cada disco (cuál es el NVMe, cuál es el HDD).
 
 Script: `scripts/00-verificar-equipo.ps1` — corre todo lo de arriba automáticamente y deja un reporte.
@@ -19,7 +19,7 @@ Uso de una sola persona — Ollama es la opción correcta según `motor-alternat
 
 - [ ] Instalar Ollama (`scripts/01-instalar-ollama.ps1`).
 - [ ] **Configurar `OLLAMA_CONTEXT_LENGTH` explícitamente (crítico, no saltarse).** Con menos de 24GB de VRAM (el caso de esta RTX 5070 12GB), Ollama usa por defecto solo **4K de contexto** — muy por debajo del contexto largo (100K) que fue el criterio principal para elegir este modelo (ver `modelo-elegido.md` y `herramientas-trabajo.md`, corregido y verificado contra la documentación oficial de Ollama, 2026-08-26).
-- [ ] Configurar `OLLAMA_MODELS` apuntando al HDD (ver `almacenamiento.md`) — no ocupar el NVMe con los pesos del modelo.
+- [ ] Configurar `OLLAMA_MODELS` apuntando al NVMe (ver `almacenamiento.md` — corregido 2026-08-27, los modelos se intercambian en VRAM varias veces por sesión con la capa de diseño, conviene el disco rápido).
 - [ ] Descargar Qwen 2.5 Coder 7B en cuantización Q4_K_M (ver `modelo-elegido.md`) — probar también Q8_0, marcado "best for your GPU" en la verificación de hardware.
 - [ ] Confirmar que responde vía la API compatible OpenAI que expone Ollama, y que `ollama ps` muestra el `CONTEXT` configurado correctamente (no 4096).
 
@@ -68,6 +68,14 @@ Ver `qwen-code-a-fondo.md` para el detalle completo — solo hace falta si se va
 - [ ] Instalar Tailscale (`scripts/14-instalar-tailscale.ps1`) y autenticar (`tailscale up`, interactivo).
 - [ ] Configurar `OLLAMA_HOST=0.0.0.0` (`scripts/02-configurar-ollama.ps1 -PermitirRed`) — sin esto, Tailscale conecta el equipo pero Ollama sigue sin aceptar tráfico de otros dispositivos.
 - [ ] En el dispositivo remoto: instalar Tailscale + Qwen Code, y apuntar `baseUrl` en `~/.qwen/settings.json` a `http://<IP-de-Tailscale>:11434/v1` (obtener la IP con `tailscale ip -4` en el equipo servidor).
+
+## Paso 3.6 — Capa de diseño (revisor visual + generador de assets)
+
+Ver `capa-diseno.md` para el razonamiento completo — cierra la brecha de que el modelo de código es solo texto y no puede evaluar visualmente su propio resultado.
+
+- [ ] `qwen3-vl:4b` se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull qwen3-vl:4b`) — mismo mecanismo que el resto de los modelos, entra/sale de VRAM bajo demanda.
+- [ ] Instalar ComfyUI + checkpoint de Stable Diffusion 1.5 (`scripts/15-instalar-comfyui.ps1`) — **no** se registra como inicio automático a propósito, se abre a mano cuando hace falta generar un asset.
+- [ ] Confirmar que `DESIGN.md` (raíz del repo) está completo con el sistema de componentes elegido antes de generar la primera pantalla de una app nueva.
 
 ## Paso 4 — Continuidad y backup
 

@@ -106,6 +106,18 @@ if ($tailscaleCmd) {
     Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/qwen-code-a-fondo.md)." -ForegroundColor Gray
 }
 
+# Capa de diseño: qwen3-vl (vía Ollama) y ComfyUI (app aparte, no auto-inicia)
+if ($ollamaCmd -and $respuesta) {
+    $tieneVL = $respuesta.models.name -contains "qwen3-vl:4b"
+    Check "Modelo qwen3-vl:4b descargado (revisor visual de diseño)" $tieneVL
+}
+$comfyPath = "C:\ComfyUI\run_nvidia_gpu.bat"
+if (Test-Path $comfyPath) {
+    Write-Host "[INFO] ComfyUI instalado en C:\ComfyUI — se abre a mano, no corre como servicio (ver docs/capa-diseno.md)." -ForegroundColor Gray
+} else {
+    Write-Host "[INFO] ComfyUI no instalado (opcional — solo hace falta para generar assets de diseño, ver docs/capa-diseno.md)." -ForegroundColor Gray
+}
+
 # Tarea de backup
 $tareaBackup = Get-ScheduledTask -TaskName "IA-Local-Piloto-Backup" -ErrorAction SilentlyContinue
 Check "Tarea programada de backup configurada" ($null -ne $tareaBackup)

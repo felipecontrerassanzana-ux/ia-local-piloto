@@ -11,7 +11,9 @@ Piloto real de un LLM autoalojado (Qwen 2.5 Coder 7B vía Ollama) sobre un equip
 - **Modelo:** Qwen 2.5 Coder 7B (Q4_K_M para partir, Q8_0 "best for your GPU"). Fundamentación completa en `docs/fundamentacion-modelo.md`.
 - **Sin Docker por defecto:** Qdrant y Open WebUI corren nativos en Windows (no contenedores) — el equipo tiene solo 16GB de RAM y WSL2 reserva 50% por defecto. Ver `docs/docker-y-recursos.md`. `05-instalar-docker.ps1` existe solo como respaldo opcional.
 - **Motor de código:** Ollama. Goose y Qwen Code para agente/edición de proyectos; Continue.dev para trabajo dentro del editor; Aider como alternativa de terminal.
-- **Acceso remoto:** Cloudflare Tunnel + dominio propio + Cloudflare Access — no Tailscale Funnel (queda como respaldo).
+- **Acceso remoto por navegador (Open WebUI):** Cloudflare Tunnel + dominio propio + Cloudflare Access.
+- **Acceso remoto de agentes de código (Qwen Code/Goose):** Tailscale — no Cloudflare, ver `docs/qwen-code-a-fondo.md`.
+- **Capa de diseño:** `DESIGN.md` (sistema de componentes a usar, no inventar estilos) + Qwen3-VL 4B como revisor visual + ComfyUI/Stable Diffusion 1.5 para generar assets — ambos modelos nuevos entran/salen de VRAM bajo demanda, nunca compiten con el modelo de código por espacio fijo. Ver `docs/capa-diseno.md`.
 - **Todo gratuito / self-hosted** — no proponer servicios pagos sin que Felipe lo pida explícitamente.
 
 ## Convenciones de este repo

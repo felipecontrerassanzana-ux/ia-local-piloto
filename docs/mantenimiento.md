@@ -36,6 +36,7 @@ Revisión mensual (ej. el primer fin de semana de cada mes), checklist fijo:
 - [ ] **Continue.dev:** se actualiza solo como cualquier extensión de VS Code, solo confirmar que no quedó desactivada la actualización automática.
 - [ ] **cloudflared:** revisar versión, actualizar (Cloudflare publica actualizaciones de seguridad con cierta frecuencia).
 - [ ] **Open WebUI:** revisar changelog oficial antes de actualizar (a veces cambian variables de entorno o requieren migración de base de datos) — no actualizar a ciegas.
+- [ ] **Qwen3-VL, ComfyUI:** revisar si salió una versión más chica/mejor del revisor visual o del motor de imágenes (agregado 2026-08-27) — mismo criterio que el modelo de código, la familia de modelos de visión también evoluciona seguido.
 - [ ] **Confirmar que el backup semanal (punto 2) efectivamente se está generando** — revisar que el archivo más reciente en Drive tenga fecha de la semana, no asumir que "está andando" sin mirar.
 - [ ] **Confirmar que los servicios siguen configurados para iniciar solos** (punto 1) — sobre todo después de cualquier actualización grande de Windows, que a veces resetea configuraciones de inicio.
 
@@ -55,6 +56,9 @@ A pedido explícito de Felipe, se revisó cada pieza del stack (ver `arquitectur
 | BGE-M3 (embeddings) | Gratis, open-source | |
 | Qdrant | Gratis, self-hosted | (existe una versión cloud paga, no es la que se usa acá) |
 | Mem0 (si se llega a sumar) | Gratis, self-hosted | (existe una versión cloud paga, no es la que se usaría acá) |
+| Qwen3-VL 4B | Gratis, pesos abiertos | Revisor visual de diseño, vía Ollama |
+| ComfyUI | Gratis, open-source | Motor de generación de imágenes |
+| Stable Diffusion 1.5 | Gratis, pesos abiertos (mirror de Comfy-Org) | Checkpoint de generación de imágenes |
 | **Cloudflare Tunnel** | **Gratis**, sin costo aparte | Verificado 2026-08-26, incluido en cualquier cuenta de Cloudflare |
 | **Cloudflare Access** | **Gratis hasta 50 usuarios** | Verificado 2026-08-26 en la página oficial de precios — un solo usuario está muy por debajo del límite |
 | **Tailscale** | **Gratis** (plan Personal) | Verificado 2026-08-27 en la página oficial de precios: hasta 6 usuarios, dispositivos ilimitados — usado para conectar Qwen Code/Goose remotos, ver `qwen-code-a-fondo.md` |

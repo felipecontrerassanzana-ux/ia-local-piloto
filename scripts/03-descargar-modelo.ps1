@@ -1,8 +1,9 @@
 ﻿<#
 .SINOPSIS
-  Descarga Qwen 2.5 Coder 7B en dos cuantizaciones para comparar (ver docs/modelo-elegido.md).
-  Tags confirmados en ollama.com/library/qwen2.5-coder/tags (2026-08-26).
-  Correr DESPUÉS de 02-configurar-ollama.ps1 (para que se descarguen ya en la ruta del HDD).
+  Descarga Qwen 2.5 Coder 7B en dos cuantizaciones para comparar (ver docs/modelo-elegido.md),
+  el modelo de visión para revisión de diseño (ver docs/capa-diseno.md), y los embeddings del RAG.
+  Tags confirmados en ollama.com/library/qwen2.5-coder/tags y ollama.com/library/qwen3-vl/tags (2026-08-27).
+  Correr DESPUÉS de 02-configurar-ollama.ps1 (para que se descarguen ya en la ruta del NVMe).
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -24,6 +25,11 @@ Write-Host ""
 Write-Host "Descargando bge-m3 (~1.2GB) — embeddings para el RAG, corre en la misma GPU vía Ollama" -ForegroundColor Cyan
 Write-Host "(NO se instala como librería de Python aparte — ver docs/docker-y-recursos.md, por qué)." -ForegroundColor Cyan
 ollama pull bge-m3
+
+Write-Host ""
+Write-Host "Descargando qwen3-vl:4b (~3.3GB) — revisor visual de diseño, ver docs/capa-diseno.md" -ForegroundColor Cyan
+Write-Host "(entra y sale de VRAM bajo demanda, no compite con el modelo de código por espacio fijo)." -ForegroundColor Cyan
+ollama pull qwen3-vl:4b
 
 Write-Host ""
 Write-Host "Modelos descargados. Listado actual:" -ForegroundColor Green

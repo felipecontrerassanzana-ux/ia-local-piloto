@@ -79,6 +79,14 @@ Distinto a los scripts anteriores en un punto: además de instalar (Node.js vía
 
 Instala Tailscale vía winget, igual patrón que `08-instalar-cloudflared` (misma familia: un servicio que crea una red privada/túnel saliente). La diferencia está en cómo se autentica: Cloudflare usa un **token** que se pega una sola vez al correr el script (se genera antes, en el dashboard); Tailscale usa un **login interactivo por navegador** (`tailscale up` abre una URL, uno inicia sesión con su cuenta ahí) — no hay token que copiar y pegar, así que el script no puede completarlo por uno, solo detecta si ya se hizo (`tailscale status`) y avisa si falta. Existe una forma de automatizarlo con una "auth key" generada en el dashboard, pero es una pieza más específica de la cuenta que no se justifica para un uso de un solo equipo.
 
+## 15-instalar-comfyui — un "servicio" que a propósito no se registra como servicio
+
+Distinto de todos los scripts anteriores que instalan un motor (Ollama, Qdrant, Open WebUI, cloudflared): esos sí quedan corriendo en segundo plano, con Tarea Programada e inicio automático. **ComfyUI no** — se instala pero se deja para abrir a mano. La razón es de presupuesto de VRAM, no de descuido: si ComfyUI quedara siempre corriendo con el checkpoint de Stable Diffusion cargado, competiría por VRAM con el modelo de código todo el tiempo, incluso cuando nadie está generando una imagen — rompiendo la regla explícita de este proyecto de no tocar la cuantización del modelo de código para hacerle espacio a otra cosa (ver `capa-diseno.md`).
+
+**Por qué .7z y no .zip:** el paquete portable de ComfyUI se distribuye solo en formato `.7z` (más eficiente que `.zip` para archivos grandes) — el script instala 7-Zip vía winget si no está, y lo usa para extraer. Es la misma idea que "instalar una herramienta si falta" que ya se ve en otros scripts (Node.js en `13-instalar-qwen-code.ps1`, por ejemplo), solo que acá la herramienta que falta es un extractor de archivos, no un lenguaje de programación.
+
+**Por qué ComfyUI y no AUTOMATIC1111 (la opción más conocida):** AUTOMATIC1111 exige una versión exacta de Python (3.10.6) porque versiones más nuevas no son compatibles con la librería `torch` que usa por debajo — eso chocaría con el Python 3.12 que ya se instala para el resto del proyecto en `12-instalar-herramientas-dev.ps1`, obligando a mantener dos Pythons distintos en el mismo equipo. ComfyUI resuelve esto trayendo su propio Python empaquetado dentro del `.7z` — no depende del Python que ya esté instalado en el sistema.
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):

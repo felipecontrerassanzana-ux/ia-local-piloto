@@ -38,5 +38,5 @@ Es un equipo de **uso compartido**, no una máquina dedicada en exclusiva a este
 ## Pendiente de verificar en el equipo real (antes de instalar)
 
 - [x] Sistema operativo — resuelto 2026-08-26: Windows 11 Pro 25H2.
-- [ ] Espacio en disco disponible en cada unidad (NVMe y HDD) — el modelo + embeddings + índices de RAG de prueba no deberían superar unos 10-15GB, pero confirmar cuánto hay libre hoy en cada disco.
+- [ ] Espacio en disco disponible en cada unidad (NVMe y HDD) — modelo de código (ambas cuantizaciones) + embeddings + `qwen3-vl:4b` + ComfyUI/Stable Diffusion 1.5 + índices de RAG de prueba no deberían superar unos **25GB, todo en el NVMe** (ver `almacenamiento.md`, corregido 2026-08-27) — confirmar cuánto hay libre hoy en cada disco.
 - [ ] Versión de drivers NVIDIA / CUDA instalada — verificado automáticamente por `scripts/00-verificar-equipo.ps1`.

@@ -35,6 +35,8 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 - `docs/mantenimiento.md` — continuidad tras corte de luz (sin UPS por ahora), backup a Drive personal, checklist mensual de actualizaciones, y confirmación de que toda la estructura es gratuita.
 - `docs/como-funcionan-los-agentes.md` — cómo funcionan por dentro Goose y Qwen Code (ciclo de vida de sesión, qué archivo de contexto lee cada uno, MCP, subagentes, skills) — para entender el motor y los addons, no solo instalarlos.
 - `AGENTS.md` (raíz) — instrucciones reales que Goose y Qwen Code leen automáticamente al trabajar en este proyecto: decisiones ya tomadas, convenciones, restricciones duras del equipo, qué revisar antes de proponer algo nuevo.
+- `DESIGN.md` (raíz) — reglas de diseño del frontend (qué sistema de componentes usar, revisión visual obligatoria) para que el resultado no dependa de que el modelo de código "invente" estilo. Ver `docs/capa-diseno.md` para el porqué completo.
+- `docs/capa-diseno.md` — **por qué el frontend siempre "queda cojo" con un modelo de solo texto, y cómo se resuelve**: revisor visual (`qwen3-vl:4b`), generador de assets (ComfyUI + Stable Diffusion 1.5), y el loop generar → revisar → corregir — todo protegiendo la VRAM del modelo de código, que no se toca.
 - `docs/plan-pruebas.md` — protocolo de evaluación y criterios de éxito de este piloto.
 - `docs/decisiones.md` — bitácora cronológica de decisiones (mismo patrón que los otros repos).
 - `docs/almacenamiento.md` — cómo repartir el modelo/RAG/proyectos entre el NVMe y el HDD.
