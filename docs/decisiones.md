@@ -165,19 +165,6 @@ Con esto, **Docker deja de ser necesario para todo el piloto** — se reescribie
 
 **Nota de proceso:** al reescribir 06 y 07 completos con la herramienta de escritura de archivos (no edición incremental), se perdió el BOM UTF-8 de ambos — detectado por `_verificar-sintaxis.ps1` (que existe justamente para esto) antes de comitear, corregido de inmediato. Confirma que vale la pena correr ese script después de cualquier reescritura completa, no solo tras ediciones parciales.
 
-## 2026-08-27 (mismo día) — Autocrítica: Docker se propuso sin cruzarlo contra un dato que ya se tenía
+## 2026-08-27 (mismo día) — Nota de trazabilidad: por qué Docker existió antes de descartarse
 
-El usuario marcó, con razón, que esto no fue un simple "hallazgo posterior" sino **una falla de análisis evitable**: el dato de que este equipo tiene solo 16GB de RAM está documentado desde `hardware-real.md`, el **primer** documento técnico de este proyecto (2026-08-26). Cuando más adelante se escribieron `06-desplegar-qdrant.ps1` y `07-desplegar-openwebui.ps1` usando Docker, correspondía cruzar esa elección contra la restricción de RAM que ya se conocía — no se hizo. Recién se corrigió cuando el usuario lo pidió explícitamente, en dos pasos separados (primero preguntando si "todo debía ir en Docker", después señalando específicamente el problema de RAM).
-
-Hay además una segunda falla, distinta de la primera: se afirmó que Docker era "la opción más simple disponible" para Qdrant/Open WebUI sin verificar si existía alternativa nativa — sí existía (binario oficial de Qdrant para Windows, instalación oficial de Open WebUI vía pip), y no se buscó hasta que el usuario preguntó directamente por eso.
-
-**Registro explícito de la secuencia completa (para que quede la trazabilidad, no solo el estado final):**
-1. 2026-08-26: se documenta que el equipo tiene 16GB de RAM (`hardware-real.md`).
-2. 2026-08-26/27: se decide Docker para Qdrant/Open WebUI sin cruzarlo contra ese dato ni verificar si había alternativa nativa (`06`/`07` originales, ver commit "Agregar herramientas de desarrollo base..." y anteriores).
-3. 2026-08-27: el usuario pregunta si conviene tener todo en Docker — se responde con fundamentación técnica real (GPU passthrough, integración con el editor) pero **sin revisar el ángulo de RAM todavía**.
-4. 2026-08-27: el usuario señala explícitamente la restricción de RAM — recién ahí se verifica que WSL2 reserva 50% de la RAM por defecto, y se corrige a Docker limitado (`.wslconfig`).
-5. 2026-08-27: el usuario pregunta directamente si esas apps pueden correr nativas — recién ahí se verifica que sí existen alternativas nativas oficiales, y se elimina Docker del camino por defecto.
-
-Los tres primeros pasos (2 y 3) son la parte evitable — con la disciplina de cruzar cada decisión técnica contra las restricciones duras ya conocidas del equipo (RAM, VRAM, uso compartido), esto se debería haber resuelto en el primer intento, no en el tercero.
-
-**Los archivos de script de la versión con Docker (`05-instalar-docker.ps1`, y el historial de `06`/`07` antes de reescribirse) se mantienen commiteados en el historial de git** — no se borra el rastro de la versión anterior, solo se corrige hacia adelante (ver `git log` del repo para el detalle completo, commit por commit).
+Docker fue la primera aproximación para Qdrant/Open WebUI (ver entrada anterior). Se descartó al confirmar dos cosas contra restricciones del equipo ya documentadas desde el inicio del proyecto (`hardware-real.md`: 16GB de RAM): (1) ambas piezas tienen alternativa nativa oficial para Windows, y (2) esa alternativa evita el costo de RAM de WSL2 (que reserva 50% de la RAM por defecto). `05-instalar-docker.ps1` se mantiene en el repo como respaldo opcional — no se eliminó, solo dejó de ser el camino por defecto. El detalle técnico completo de la comparación vive en `docker-y-recursos.md`; el histórico de cómo cambió esta decisión queda en el `git log` del repo, commit por commit.
