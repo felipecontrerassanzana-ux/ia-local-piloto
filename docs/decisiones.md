@@ -244,3 +244,12 @@ El usuario pidió profundizar en dos preguntas puntuales sobre la documentación
 - **Encontrado un ajuste real que faltaba:** el ejemplo oficial de Qwen Code para modelos locales (Ollama/vLLM/LM Studio) incluye `timeout: 300000`, `streamIdleTimeoutMs: 600000` y `maxRetries: 1` — pensados específicamente para que un modelo local en hardware modesto no corte una respuesta por tardarse más que un modelo en la nube. La configuración que genera `13-instalar-qwen-code.ps1` no los traía. Corregido, con los mismos valores del ejemplo oficial.
 - **Encontrada una función no mapeada:** `qwen serve` (modo daemon) — Qwen Code puede correr como servidor HTTP con una interfaz web propia, compartiendo una sesión entre varios clientes. Es alpha (`v0.16-alpha`) y la propia documentación dice que el endurecimiento remoto llega en un parche posterior — se documentó como algo a revisar más adelante, no se suma al plan de instalación actual por no estar maduro.
 - Se actualizaron `modelo-elegido.md`, `qwen-code-a-fondo.md`, `aprendizaje-scripts.md` y `scripts/13-instalar-qwen-code.ps1` con estos hallazgos.
+
+## 2026-08-27 (mismo día) — Continuidad de sesión ante corte de luz/apagado, local vs. remoto
+
+El usuario preguntó si, trabajando con Qwen Code/Goose, se puede retomar una conversación después de apagar el equipo o un corte de luz — igual que esta conversación de Claude Code sigue después de un auto-compact. Verificado contra documentación oficial de cada herramienta:
+
+- **Qwen Code confirma explícitamente** que `qwen --continue`/`--resume` sobrevive a cerrar la terminal y a reiniciar el equipo — el historial se guarda en disco, no en memoria.
+- **Goose** guarda las sesiones en SQLite (`sessions.db`, desde 1.10.0) — al estar en disco debería sobrevivir igual, pero la documentación oficial no lo confirma con las mismas palabras explícitas que Qwen Code (queda marcado como razonable, no 100% verificado con cita textual).
+- **Hallazgo estructural importante:** el historial vive en el disco de quien corre el proceso de Qwen Code/Goose, no en Ollama (que no guarda estado) ni en la nube. Una sesión iniciada local en el equipo piloto y una iniciada remota (Qwen Code en otro dispositivo, conectado por Tailscale) **no se sincronizan entre sí** — cada una vive en su propio disco. Open WebUI es la excepción: su historial vive en el servidor, por eso se ve igual desde cualquier navegador con el mismo login.
+- Documentado en `docs/como-funcionan-los-agentes.md`, nueva sección "Continuidad de sesión: qué pasa si se corta la luz o se apaga el equipo".

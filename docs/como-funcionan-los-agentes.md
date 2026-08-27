@@ -9,6 +9,20 @@
 3. **Corre la conversación/tarea**, con acceso a herramientas (shell, archivos, MCP) según qué esté habilitado.
 4. **Al terminar (o periódicamente), algunas herramientas actualizan su memoria** — deciden qué vale la pena guardar para la próxima vez.
 
+## Continuidad de sesión: qué pasa si se corta la luz o se apaga el equipo (agregado 2026-08-27)
+
+Esto es distinto de la memoria automática de arriba — acá no se trata de "qué aprendió la herramienta para la próxima vez", sino de **retomar la conversación misma donde quedó**, igual que esta conversación de Claude Code sigue después de un auto-compact. Verificado contra documentación oficial de cada herramienta:
+
+- **Qwen Code:** `qwen --continue` retoma automáticamente la conversación más reciente; `qwen --resume` muestra un selector con todas las sesiones guardadas (resumen, tiempo transcurrido, cantidad de mensajes, rama de git). **Confirmado explícitamente en la documentación oficial que sobrevive a cerrar la terminal y a reiniciar el equipo** — el historial completo de mensajes se guarda en disco (no en memoria), junto con el estado de las herramientas usadas y la configuración del modelo. Si el corte de luz pasa justo mientras el modelo está generando una respuesta, lo más probable es que se pierda esa respuesta puntual en curso, pero todo lo anterior queda intacto y recuperable con `--continue`.
+- **Goose:** desde la versión 1.10.0 guarda las sesiones en una base de datos SQLite (`sessions.db`) en vez de archivos sueltos — al ser una base de datos en disco (no en memoria), en principio también sobrevive a un reinicio, aunque la documentación oficial no lo confirma con esas palabras exactas como sí lo hace la de Qwen Code (queda como algo razonable de asumir, no 100% verificado con cita textual). Se retoma con `goose session --resume` (la más reciente) o `goose session --resume --name <nombre>` (una específica).
+
+**El detalle que sí importa para "local o remota":** ese historial de conversación vive en el disco del equipo donde corre el proceso de Qwen Code/Goose — **no** en Ollama (que no guarda nada, cada consulta es independiente) ni en ningún lado "en la nube". Eso significa:
+
+- Si trabajás **local**, en el equipo piloto mismo, el historial queda en ese equipo — se retoma ahí sin depender de la red ni de si el túnel/Tailscale están activos en ese momento.
+- Si trabajás **remoto** (Qwen Code corriendo en tu notebook, conectado por Tailscale al Ollama del equipo piloto, ver `qwen-code-a-fondo.md`), el historial queda en **tu notebook**, no en el equipo piloto — porque el proceso de Qwen Code corre ahí, no en la máquina servidor.
+- **Estas dos sesiones no se sincronizan solas entre sí:** si empezás una conversación local en el equipo piloto y después querés seguirla desde el notebook (o al revés), `--continue` no la va a encontrar — cada dispositivo tiene su propio historial separado, a menos que se copie el archivo/carpeta de sesión a mano de un equipo al otro (no es un flujo soportado oficialmente, sería una solución casera).
+- **Open WebUI es la excepción** — a diferencia de Qwen Code/Goose, su historial de chat vive en el servidor (el equipo piloto), no en el dispositivo que lo mira. Por eso desde cualquier navegador, en cualquier equipo, con el mismo login, se ve la misma conversación — es justamente lo que permite retomarla "desde donde sea", a costa de necesitar el navegador y no ser un agente que edita archivos directamente.
+
 ## Archivos de contexto persistente — quién lee qué
 
 | Archivo | Quién lo lee | Quién lo escribe | Alcance |
