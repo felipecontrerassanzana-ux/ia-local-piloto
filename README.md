@@ -1,6 +1,8 @@
 # IA Local Piloto
 
-Piloto real de un LLM autoalojado sobre un equipo concreto que ya se tiene: **RTX 5070 12GB / 16GB RAM / AMD Ryzen 5 3600**. Es un proyecto **independiente**, no una carpeta ni una extensión de los otros tres repos de `Documents/Proyectos IA/`.
+Piloto real de un LLM autoalojado sobre un equipo concreto que ya se tiene: **RTX 5070 12GB / 16GB RAM / AMD Ryzen 5 3600, Windows 11 Pro 25H2**. Es un proyecto **independiente**, no una carpeta ni una extensión de los otros tres repos de `Documents/Proyectos IA/`.
+
+Repositorio: [github.com/felipecontrerassanzana-ux/ia-local-piloto](https://github.com/felipecontrerassanzana-ux/ia-local-piloto) (privado).
 
 ## Por qué es un proyecto aparte
 
