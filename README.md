@@ -35,6 +35,7 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 - `docs/plan-pruebas.md` — protocolo de evaluación y criterios de éxito de este piloto.
 - `docs/decisiones.md` — bitácora cronológica de decisiones (mismo patrón que los otros repos).
 - `docs/almacenamiento.md` — cómo repartir el modelo/RAG/proyectos entre el NVMe y el HDD.
+- `docs/docker-y-recursos.md` — qué va en Docker y qué no (y por qué), cómo se interconectan los contenedores, y el presupuesto real de RAM en un equipo de 16GB (WSL2 reserva la mitad por defecto si no se limita).
 - `docs/resultados.md` — se crea una vez haya pruebas reales corridas en el equipo.
 - `docs/aprendizaje-scripts.md` — **qué hace cada script y por qué**, explicado en conceptos (variables de entorno, servicios de Windows, volúmenes de Docker, Tareas Programadas) — para entender el montaje, no solo ejecutarlo.
 - `docs/pruebas-rendimiento.md` — esquema de pruebas de estrés post-instalación (tok/s real, estabilidad bajo carga, límite real de contexto) — distinto de `plan-pruebas.md` (que evalúa calidad, no rendimiento).

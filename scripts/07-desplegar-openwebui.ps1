@@ -23,6 +23,7 @@ Write-Host "Creando contenedor de Open WebUI..." -ForegroundColor Cyan
 docker run -d `
     --name open-webui `
     --restart unless-stopped `
+    --memory="1g" `
     -p 3000:8080 `
     --add-host=host.docker.internal:host-gateway `
     -v open-webui:/app/backend/data `

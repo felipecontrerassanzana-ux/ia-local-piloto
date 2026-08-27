@@ -36,11 +36,16 @@ A diferencia de Ollama, Goose no está en winget — se instala con `Invoke-WebR
 
 Open WebUI y Qdrant no tienen instalador nativo de Windows — se distribuyen como **imágenes de contenedor** (un paquete que incluye el programa y todo lo que necesita para correr, aislado del resto del sistema). Docker Desktop es el programa que sabe ejecutar esos contenedores en Windows. Sin Docker, esos dos pasos no se pueden hacer.
 
+## 05-instalar-docker — el límite de RAM de WSL2 (agregado 2026-08-27)
+
+Además de instalar Docker Desktop, este script crea `%UserProfile%\.wslconfig` con `memory=4GB`. Esto no es un capricho: WSL2 (la máquina virtual Linux sobre la que corre Docker Desktop en Windows) **reserva por defecto el 50% de la RAM total del equipo** — confirmado en la documentación oficial de Microsoft. En un equipo de 16GB, eso son 8GB solo para la capa de Docker, antes de correr una sola imagen. Ver `docker-y-recursos.md` para el presupuesto completo de RAM y por qué esto importa en este equipo específico (compartido, sin margen de sobra).
+
 ## 06-desplegar-qdrant y 07-desplegar-openwebui — `docker run` explicado
 
 Ambos scripts usan el mismo patrón de comando, vale la pena entenderlo una vez:
 
 - `--name` le pone un nombre fijo al contenedor (para poder referirse a él después, en vez de un ID random).
+- `--memory="1g"` limita cuánta RAM puede usar ese contenedor como máximo — una segunda defensa además del límite de WSL2 de arriba, para que ningún contenedor se coma todo el margen asignado (ver `docker-y-recursos.md`).
 - `--restart unless-stopped` es la política de reinicio — le dice a Docker "si este contenedor se cae o el equipo se reinicia, vuelve a levantarlo solo, salvo que alguien lo haya detenido a propósito". Es la pieza que resuelve la continuidad de estos dos servicios (ver `mantenimiento.md`).
 - `-p 6333:6333` (o `3000:8080`) conecta un puerto de tu equipo real (izquierda) a un puerto dentro del contenedor (derecha) — así `localhost:3000` en tu navegador llega al Open WebUI que vive aislado dentro del contenedor.
 - `-v nombre:/ruta` es un **volumen** — una carpeta que Docker gestiona por fuera del contenedor, para que los datos (la base de datos de Open WebUI, el índice de Qdrant) sobrevivan aunque el contenedor se borre y se vuelva a crear.

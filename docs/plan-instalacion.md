@@ -43,11 +43,13 @@ Ver `herramientas-trabajo.md` para el detalle completo y las alternativas evalua
 
 ## Paso 2 — Embeddings, base vectorial e interfaz web
 
-- [ ] Instalar Docker Desktop, si no está ya (`scripts/05-instalar-docker.ps1`) — necesario para Open WebUI y Qdrant.
-- [ ] Levantar Qdrant (`scripts/06-desplegar-qdrant.ps1`).
-- [ ] Levantar Open WebUI apuntando al Ollama del equipo (`scripts/07-desplegar-openwebui.ps1`).
+Ver `docker-y-recursos.md` antes de este paso — explica qué va en Docker y por qué, y el presupuesto real de RAM en un equipo de 16GB (WSL2 reserva la mitad por defecto si no se capa).
+
+- [ ] Instalar Docker Desktop, si no está ya (`scripts/05-instalar-docker.ps1`) — necesario para Open WebUI y Qdrant. **Deja configurado `.wslconfig` con límite de 4GB de RAM para WSL2 automáticamente.**
+- [ ] Levantar Qdrant (`scripts/06-desplegar-qdrant.ps1`) — con límite de memoria de 1GB.
+- [ ] Levantar Open WebUI apuntando al Ollama del equipo (`scripts/07-desplegar-openwebui.ps1`) — con límite de memoria de 1GB.
 - [ ] Crear la primera cuenta en Open WebUI (queda como admin, cierra el registro público automáticamente — ver `acceso-remoto.md`).
-- [ ] Instalar/descargar BGE-M3 como modelo de embeddings, y armar un pipeline básico de prueba con documentos propios.
+- [ ] BGE-M3 se descarga con `scripts/03-descargar-modelo.ps1` (`ollama pull bge-m3`) — corre en la misma GPU vía Ollama, **no** como proceso Python aparte (ver `docker-y-recursos.md`). Armar el pipeline básico de prueba con documentos propios queda para cuando se conecte el RAG real.
 
 ## Paso 3 — Acceso remoto y autenticación
 

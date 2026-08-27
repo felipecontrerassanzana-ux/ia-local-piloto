@@ -142,3 +142,14 @@ El usuario preguntó específicamente si existe una extensión de Qwen para VS C
 Requiere Node.js 22+ (se instala vía npm). Se creó `scripts/13-instalar-qwen-code.ps1` + `.bat` — instala Node.js si falta, instala Qwen Code, y genera automáticamente `~/.qwen/settings.json` apuntando al Ollama local (sin pisar una configuración existente). Pasó por `_verificar-sintaxis.ps1` sin hallazgos nuevos.
 
 Se actualizó `herramientas-trabajo.md` con una comparación Qwen Code vs. Goose (ambos responden "una app como Claude Code" — Qwen Code tiene extensión de VS Code oficial y es del propio fabricante del modelo; Goose es más agnóstico de modelo y con más extensiones vía MCP) — recomendación: no elegir uno solo, ambos apuntan al mismo Ollama sin competir por recursos distintos.
+
+## 2026-08-27 — Qué va en Docker (fundamentado) y el presupuesto real de RAM
+
+El usuario preguntó si idealmente todo debería ir en Docker. Se respondió que no, con fundamentación técnica (Ollama necesita paso de GPU vía WSL2 si se dockeriza, más frágil que la app nativa; Goose/Continue.dev/Qwen Code necesitan tocar el sistema de archivos/editor real; cloudflared como servicio nativo arranca antes que cualquier contenedor) y se pidió dejarlo documentado, más cómo habilitar/interconectar, más un hallazgo aparte: con 16GB de RAM compartidos, hay que tener cuidado.
+
+Se creó `docker-y-recursos.md`, con un hallazgo importante verificado contra documentación oficial de Microsoft (`learn.microsoft.com/windows/wsl/wsl-config`): **WSL2 reserva por defecto el 50% de la RAM total de Windows** — en este equipo de 16GB, hasta 8GB solo para Docker Desktop, antes de correr una imagen. Se corrigieron los scripts en consecuencia:
+- `05-instalar-docker.ps1`: ahora crea `%UserProfile%\.wslconfig` con límite de 4GB para WSL2.
+- `06-desplegar-qdrant.ps1` y `07-desplegar-openwebui.ps1`: `--memory="1g"` agregado a cada contenedor.
+- `03-descargar-modelo.ps1`: se agregó `ollama pull bge-m3` — se confirmó que BGE-M3 está disponible directo en la biblioteca de Ollama (1,2GB, 567M params), corre en la misma GPU que el modelo de código, evitando sumar un proceso Python aparte que consuma RAM del sistema. Se corrigió `plan-instalacion.md` Paso 2 en consecuencia (antes decía vagamente "instalar/descargar BGE-M3" sin mecanismo concreto).
+
+Presupuesto estimado con las correcciones: de ~14-15GB de 16GB (sin margen, si no se corrige nada) a ~9,5GB (margen real de ~6,5GB) — queda pendiente medir el uso real una vez instalado y corregir la estimación. Todos los scripts modificados pasaron por `_verificar-sintaxis.ps1` sin hallazgos nuevos.

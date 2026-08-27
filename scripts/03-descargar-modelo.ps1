@@ -21,6 +21,11 @@ Write-Host "Descargando qwen2.5-coder:7b-instruct-q8_0 (~8.1GB) — recomendado 
 ollama pull qwen2.5-coder:7b-instruct-q8_0
 
 Write-Host ""
+Write-Host "Descargando bge-m3 (~1.2GB) — embeddings para el RAG, corre en la misma GPU vía Ollama" -ForegroundColor Cyan
+Write-Host "(NO se instala como librería de Python aparte — ver docs/docker-y-recursos.md, por qué)." -ForegroundColor Cyan
+ollama pull bge-m3
+
+Write-Host ""
 Write-Host "Modelos descargados. Listado actual:" -ForegroundColor Green
 ollama list
 
