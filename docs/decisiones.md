@@ -193,3 +193,12 @@ El usuario aclaró que su pregunta anterior sobre "parser+linter+BOM como regla"
 - **Se aclaró la distinción que sigue aplicando:** esto es una capacidad de la aplicación Qwen Code, no del modelo Qwen 2.5 Coder 7B en sí (que sigue sin estado) — misma relación que entre Claude Code y el modelo que lo potencia.
 
 Se actualizó `herramientas-trabajo.md` con una sección nueva y se corrigió la tabla comparativa Qwen Code vs. Goose para incluir esta diferencia real.
+
+## 2026-08-27 (mismo día) — Base de conocimiento del motor + archivo de arranque para los agentes
+
+El usuario pidió dos cosas: (1) que cómo funcionan el motor y los addons (Qwen Code, Goose) quede en una base de conocimiento, porque de eso depende cómo se interactúa con ellos; (2) un archivo con instrucciones iniciales que permita arrancar de forma esquemática y efectiva desde el principio, según el tipo de proyecto.
+
+- Se creó `docs/como-funcionan-los-agentes.md`: ciclo de vida de una sesión (contexto vacío → carga de archivos persistentes → tarea → actualización de memoria), tabla de qué archivo lee cada herramienta (`AGENTS.md`, `QWEN.md`, `.goosehints`, `.continue/rules`, memoria automática de Qwen Code), y explicación de MCP/SubAgents/Skills/extensiones.
+- **Hallazgo verificado que simplificó todo:** `AGENTS.md` es un archivo que **Goose lee por defecto** (confirmado en `goose-docs.ai`: `CONTEXT_FILE_NAMES` por defecto es `["AGENTS.md", ".goosehints"]`) **y Qwen Code también lee automáticamente** si existe — un solo archivo sirve para ambas herramientas, sin duplicar instrucciones en formatos separados.
+- Se creó `AGENTS.md` en la raíz de este repo — instrucciones reales (no genéricas): decisiones ya cerradas, convenciones (incluyendo la de no narrar autocrítica en `decisiones.md`, aplicando la corrección de un par de turnos atrás), restricciones duras del equipo, y qué revisar antes de proponer algo nuevo.
+- Se propagó la plantilla genérica a `ia-local/plantillas/AGENTS.md` (adaptable según tipo de proyecto: scripts, investigación, caso de negocio, desarrollo de software) y se documentó en `ia-local/docs/arquitectura.md`.

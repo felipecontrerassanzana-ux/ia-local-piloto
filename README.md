@@ -32,6 +32,8 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 - `docs/motor-alternativas.md` — alternativas a Ollama si el piloto necesita más funciones que solo código (LocalAI para voz/imagen/visión, LM Studio como GUI, Open WebUI como interfaz web).
 - `docs/acceso-remoto.md` — cómo acceder por navegador desde afuera sin IP fija (Tailscale Funnel / Cloudflare Tunnel), con la condición real de este equipo (fibra Movistar 800 megas, sin IP fija).
 - `docs/mantenimiento.md` — continuidad tras corte de luz (sin UPS por ahora), backup a Drive personal, checklist mensual de actualizaciones, y confirmación de que toda la estructura es gratuita.
+- `docs/como-funcionan-los-agentes.md` — cómo funcionan por dentro Goose y Qwen Code (ciclo de vida de sesión, qué archivo de contexto lee cada uno, MCP, subagentes, skills) — para entender el motor y los addons, no solo instalarlos.
+- `AGENTS.md` (raíz) — instrucciones reales que Goose y Qwen Code leen automáticamente al trabajar en este proyecto: decisiones ya tomadas, convenciones, restricciones duras del equipo, qué revisar antes de proponer algo nuevo.
 - `docs/plan-pruebas.md` — protocolo de evaluación y criterios de éxito de este piloto.
 - `docs/decisiones.md` — bitácora cronológica de decisiones (mismo patrón que los otros repos).
 - `docs/almacenamiento.md` — cómo repartir el modelo/RAG/proyectos entre el NVMe y el HDD.
