@@ -16,7 +16,7 @@ Corrida manual, uno por uno, de 17 scripts en el orden numérico de archivo **no
 
 ## Orden de ejecución manual, paso a paso (si no se usa `instalar-todo.bat` — sigue `../docs/instalacion/plan-instalacion.md`)
 
-Los 17 pasos numerados viven en **`scripts/pasos/`** (ej. `pasos\00-verificar-equipo.bat`) — son los módulos que `instalar-todo.bat` orquesta, y también se pueden correr sueltos desde ahí. Lo que queda en `scripts/` (esta carpeta) son las herramientas que se corren directo: el instalador, el verificador de salud, y las de mantenimiento del repo mismo.
+Los pasos numerados (00 a 16) viven en **`scripts/pasos/`** (ej. `pasos\00-verificar-equipo.bat`) — son los módulos que `instalar-todo.bat` orquesta, y también se pueden correr sueltos desde ahí. Lo que queda en `scripts/` (esta carpeta) son las herramientas que se corren directo: el instalador, el verificador de salud, y las de mantenimiento del repo mismo.
 
 | # | Script (en `pasos/`) | Qué hace | Necesita algo tuyo antes de correr |
 |---|---|---|---|
@@ -36,6 +36,7 @@ Los 17 pasos numerados viven en **`scripts/pasos/`** (ej. `pasos\00-verificar-eq
 | 13 | `13-instalar-qwen-code.bat` | Instala Node.js + Qwen Code (el agente hecho por el propio equipo de Qwen) y configura el proveedor apuntando al Ollama local | No — instala Node.js si falta, y deja `settings.json` ya configurado |
 | 14 | `14-instalar-tailscale.bat` | Instala Tailscale — red privada para conectar Qwen Code/Goose desde un dispositivo remoto sin exponer nada a internet. Ver `../docs/herramientas/qwen-code-a-fondo.md` | **Sí** — el login (`tailscale up`) es interactivo, abre el navegador para autenticar |
 | 15 | `15-instalar-comfyui.bat` | Instala ComfyUI (portable) + checkpoint de Stable Diffusion 1.5 — generador de assets para la capa de diseño. **No** se registra como inicio automático a propósito (protege la VRAM del modelo de código). Ver `../docs/arquitectura/capa-diseno.md` | No |
+| 16 | `16-instalar-monitor-estado.bat` | Registra el "Monitor de estado" — servidor HTTP liviano (`monitor-estado-servidor.ps1`, sin dependencias nuevas) con un dashboard en tiempo real (`http://localhost:8090/`) y un JSON de estado (`http://localhost:8090/estado`), alcanzable también por Tailscale. Ver `../docs/operacion/monitor-estado.md` | No (opcional: agregar el dominio público en Cloudflare después, ver ese doc) |
 
 ## Herramientas de esta carpeta (`scripts/`, top-level — no viven en `pasos/`)
 

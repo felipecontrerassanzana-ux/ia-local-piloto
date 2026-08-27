@@ -57,6 +57,10 @@ Felipe confirmó que la conexión remota es para su propio uso — no espera otr
 
 **Sobre el ancho de banda de subida (Felipe cree que el plan es "800 sincrónico", simétrico):** se toma como supuesto de trabajo razonable, pero sigue sin confirmarse con un test real — no bloquea nada de lo planeado (Cloudflare Tunnel funciona igual sea cual sea la velocidad, solo cambia qué tan rápido se siente desde afuera), así que queda como verificación de bajo costo para hacer cuando se pueda, no como paso obligatorio antes de avanzar.
 
+## Segunda ruta en el mismo túnel — el monitor de estado (agregado 2026-08-27)
+
+El mismo túnel de Cloudflare de arriba puede exponer más de un "Public Hostname" a la vez, cada uno apuntando a un puerto local distinto — no hace falta un túnel nuevo por cada servicio. Para ver el dashboard del monitor de estado (`../operacion/monitor-estado.md`) desde internet, basta con agregar en el mismo dashboard de Zero Trust otra entrada apuntando a `http://localhost:8090` (ej. `estado.tudominio.cl`), protegida por el mismo Cloudflare Access ya configurado. Es un paso opcional — sin él, el monitor sigue siendo alcanzable local (`http://localhost:8090`) y por Tailscale.
+
 ## Nota: esto cubre acceso por navegador — para agentes de código remotos (Qwen Code/Goose), ver otro documento
 
 Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar desde un navegador. Es un caso distinto de "quiero correr Qwen Code en el VS Code de otro dispositivo, apuntando directo al servidor de este equipo" — ese caso (con sus propios modos de conexión y su propia recomendación, Tailscale) queda documentado en `../herramientas/qwen-code-a-fondo.md` § "Modos de conexión, de local a remoto fuera de la red".
@@ -71,3 +75,4 @@ Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar de
 - [ ] Configurar Cloudflare Access sobre ese túnel con la lista de correos autorizados (para empezar, solo el de Felipe).
 - [ ] Crear la primera cuenta de Open WebUI (queda como admin, cierra el registro público automáticamente).
 - [ ] Instalar Tailscale — ya no es solo un respaldo de esto: es la recomendación principal para conectar Qwen Code/Goose remotos (ver `../herramientas/qwen-code-a-fondo.md`), además de servir como acceso rápido de respaldo mientras se configura Cloudflare Tunnel.
+- [ ] (Opcional) Agregar una segunda "Public Hostname" al mismo túnel, apuntando a `http://localhost:8090`, para ver el monitor de estado desde internet (ver `monitor-estado.md`).

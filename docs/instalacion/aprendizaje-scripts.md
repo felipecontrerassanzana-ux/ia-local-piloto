@@ -87,6 +87,16 @@ Distinto de todos los scripts anteriores que instalan un motor (Ollama, Qdrant, 
 
 **Por qué ComfyUI y no AUTOMATIC1111 (la opción más conocida):** AUTOMATIC1111 exige una versión exacta de Python (3.10.6) porque versiones más nuevas no son compatibles con la librería `torch` que usa por debajo — eso chocaría con el Python 3.12 que ya se instala para el resto del proyecto en `12-instalar-herramientas-dev.ps1`, obligando a mantener dos Pythons distintos en el mismo equipo. ComfyUI resuelve esto trayendo su propio Python empaquetado dentro del `.7z` — no depende del Python que ya esté instalado en el sistema.
 
+## 16-instalar-monitor-estado — un `HttpListener` en vez de un framework web
+
+Agregado 2026-08-27, a pedido de Felipe: quería poder revisar de un vistazo que todo el stack sigue funcionando, tanto estando en el mismo equipo como conectado remoto. `16-instalar-monitor-estado.ps1` solo registra la Tarea Programada (mismo patrón que Qdrant/Open WebUI) — el trabajo real lo hace `monitor-estado-servidor.ps1`, el archivo que esa tarea deja corriendo todo el tiempo.
+
+**Por qué `System.Net.HttpListener` y no un framework (Flask, Express, etc.):** cualquier framework real hubiera significado sumar Python o Node.js como dependencia de un componente que solo sirve para reportar estado — desproporcionado, y este proyecto ya evita dependencias nuevas cuando existe una opción nativa razonable (mismo criterio que llevó a Qdrant/Open WebUI nativos en vez de Docker, ver `../arquitectura/docker-y-recursos.md`). `HttpListener` es parte de .NET, viene con Windows, y alcanza de sobra para dos rutas (`/estado`, `/`) sin ningún tráfico serio.
+
+**Por qué escucha en todas las interfaces, no solo `localhost`:** para que sea alcanzable por Tailscale desde otro dispositivo (no solo desde el equipo mismo). Esto trajo un detalle no obvio: Windows Firewall bloquea conexiones entrantes nuevas por defecto aunque el listener esté escuchando bien — el script agrega una regla de firewall explícita para el puerto, sin la cual el monitor "funcionaría" en el equipo pero sería invisible desde cualquier otro lado, un fallo silencioso difícil de diagnosticar. El acceso vía Cloudflare Tunnel no la necesita (tráfico de loopback, no pasa por ese firewall).
+
+**Por qué el dashboard no es un Artifact de Claude:** se consideró primero, pero el sandbox de los Artifacts bloquea llamadas de red a hosts externos casi por completo — no podría hacer `fetch()` a este equipo aunque quisiera. El dashboard es en cambio una página HTML común, servida por el propio monitor, sin esa restricción. Ver `../operacion/monitor-estado.md` para el detalle completo (qué chequea, cómo se llega a él, limitaciones honestas).
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):

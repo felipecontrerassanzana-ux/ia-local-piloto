@@ -54,6 +54,12 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
                                     │  qwen3-vl:4b (revisor visual) │  ← vía Ollama, entra/sale solo
                                     │  ComfyUI + SD 1.5 (generador) │  ← app aparte, no auto-inicia
                                     └─────────────────────────────┘
+
+   (aparte, monitoreo — no participa del flujo de inferencia)
+                                    ┌─────────────────────────────┐
+   Felipe, local/Tailscale/    ───▶ │  Monitor de estado (:8090)   │  ← HttpListener nativo, sin
+   internet (2ª ruta Cloudflare)    │  dashboard + JSON de estado  │    dependencias nuevas, chequea
+                                    └─────────────────────────────┘    todo lo de arriba
 ```
 
 ## Piezas y de dónde sale cada decisión
@@ -76,6 +82,7 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 | Capa de diseño (generación de assets) | ComfyUI + Stable Diffusion 1.5 — **no** inicia con Windows a propósito, se abre solo cuando hace falta | `capa-diseno.md` |
 | Almacenamiento de modelos | **NVMe**, no HDD (corregido 2026-08-27 — los modelos se intercambian varias veces por sesión) | `almacenamiento.md` |
 | Continuidad, backup y actualizaciones | BIOS auto-encendido + servicios en inicio, backup a Drive, checklist mensual | `../operacion/mantenimiento.md` |
+| Monitor de estado en tiempo real | Servidor HTTP nativo (`HttpListener`, sin dependencias) — dashboard + JSON, alcanzable local/Tailscale/Cloudflare | `../operacion/monitor-estado.md` |
 
 ## Puntos proactivos — estado tras las respuestas de Felipe (2026-08-26)
 
@@ -101,5 +108,6 @@ Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y docum
 - [ ] Activar rate limiting básico en Cloudflare al configurar el Tunnel.
 - [x] Crear `14-instalar-tailscale.ps1`/`.bat` y el switch `-PermitirRed` (`OLLAMA_HOST=0.0.0.0`) — resuelto 2026-08-27, quedan solo por correr en el equipo real.
 - [x] Crear la capa de diseño: `15-instalar-comfyui.ps1`/`.bat`, `qwen3-vl:4b` agregado a `03-descargar-modelo.ps1`, `DESIGN.md` — resuelto 2026-08-27, ver `capa-diseno.md`, queda solo por correr en el equipo real.
+- [x] Crear el monitor de estado en tiempo real: `16-instalar-monitor-estado.ps1`/`.bat` + `monitor-estado-servidor.ps1` — resuelto 2026-08-27, ver `../operacion/monitor-estado.md`, queda solo por correr en el equipo real (y, opcionalmente, agregar la segunda ruta en Cloudflare).
 - [ ] Correr `11-prueba-estres.ps1` (rendimiento real, incluye verificar si el contexto real llega a 100K o se queda en 32K) y las pruebas de calidad de `../pruebas/plan-pruebas.md` — volcar todo en `../pruebas/resultados.md`.
 - [ ] (Baja prioridad, no bloqueante) Test de velocidad de subida real de la conexión.

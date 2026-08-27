@@ -334,3 +334,21 @@ Felipe entró a la carpeta y notó que, a pesar del orquestador nuevo, `scripts/
 - En `scripts/` (nivel superior) queda solo lo que se corre directo: `instalar-todo.bat` (el instalador), `verificar-instalacion.bat` (chequeo de salud), `_verificar-sintaxis.bat` (mantenimiento del repo mismo, ahora escanea de forma recursiva para cubrir `pasos/` también), y `instalar-git-hooks.sh`.
 - Se corrigieron todas las referencias cruzadas (`instalar-todo.ps1`, `verificar-instalacion.ps1`, los propios scripts de `pasos/` que se mencionan entre sí, y toda la documentación) — verificado con una búsqueda exhaustiva que no quedó ninguna ruta rota. `docs/decisiones.md` (esta bitácora) no se tocó en las entradas ya escritas, por ser append-only.
 - `_verificar-sintaxis.ps1` pasó de escanear solo su propia carpeta a escanear de forma recursiva (`Get-ChildItem -Recurse`, `Invoke-ScriptAnalyzer -Recurse`) — sin este cambio, los 17 scripts movidos a `pasos/` habrían dejado de revisarse sin que nadie lo notara.
+
+## 2026-08-27 (mismo día) — Rediseño visual del instalador, ajuste a pantalla, y verificar-instalación opcional
+
+Felipe probó el instalador con la GUI de 3 pestañas y dio tres observaciones más: (1) "está muy blanco"; (2) la ventana (880px fijos de alto) se salía del margen de su pantalla; (3) preguntó por qué no se puede verificar la instalación desde el propio menú. Resuelto:
+
+- Tema oscuro completo vía `Window.Resources` (estilos implícitos por tipo de control + un `ControlTemplate` propio para `TabItem`, porque el template por defecto de WPF no respeta bien `Background` en la pestaña seleccionada) — elegido por Felipe entre dos paletas propuestas. Se sumaron los tres agregados que también eligió: punto de color + fila resaltada por estado de cada paso, panel fijo con CPU/RAM/GPU/discos leído por WMI al abrir la ventana, y progreso con "X/Y pasos · % · tiempo transcurrido".
+- La ventana ahora ajusta su `Height`/`Width` a `SystemParameters.WorkArea` (con margen de 60px) al cargar, en vez de usar un tamaño fijo que podía no entrar en pantallas más chicas.
+- `verificar-instalacion.ps1` sigue siendo una herramienta independiente, pero ahora el instalador también ofrece correrlo al terminar (pregunta sí/no) — no se agregó como paso obligatorio del array `$Pasos`.
+- `_verificar-sintaxis.ps1` se dejó donde está a propósito: es la herramienta que usa el hook de git pre-commit, no aplica al flujo de instalación para el usuario final.
+
+## 2026-08-27 (mismo día) — Monitor de estado en tiempo real (`16-instalar-monitor-estado.ps1`)
+
+Felipe planteó la idea de un monitoreo en tiempo real del piloto, útil tanto local como conectado remoto (por Tailscale o por túnel). Primera idea evaluada y descartada: un Artifact de Claude como dashboard — inviable, el sandbox de los Artifacts bloquea llamadas de red a hosts externos salvo excepciones muy acotadas, no podría hacer `fetch()` a este equipo. Resuelto en su lugar con infraestructura ya decidida, sin nada nuevo:
+
+- `scripts/pasos/monitor-estado-servidor.ps1` — servidor HTTP nativo (`System.Net.HttpListener`, sin dependencias nuevas) con `GET /estado` (JSON) y `GET /` (dashboard HTML, mismo tema oscuro del instalador). Chequea lo mismo que `verificar-instalacion.ps1` (Ollama, Qdrant, Open WebUI, cloudflared, Tailscale, ComfyUI, backup) más GPU/VRAM, discos y CPU/RAM — duplicación deliberada, no un descuido (ver `docs/operacion/monitor-estado.md`).
+- `scripts/pasos/16-instalar-monitor-estado.ps1` — lo registra como Tarea Programada `Monitor-Estado-Local` (mismo patrón que Qdrant/Open WebUI, corre como `SYSTEM`) y agrega una regla de firewall para el puerto 8090 (necesaria para Tailscale; el tráfico de Cloudflare Tunnel no la necesita, es loopback).
+- Alcanzable por los dos mecanismos de acceso remoto ya decididos: local (`localhost:8090`), Tailscale directo, o agregando una segunda "Public Hostname" al mismo túnel de Cloudflare (paso manual, opcional, documentado en `acceso-remoto.md`) — sin crear infraestructura nueva.
+- Se agregó como paso 16 (último) del array `$Pasos` de `instalar-todo.ps1`, con su propio `Test-Paso`.

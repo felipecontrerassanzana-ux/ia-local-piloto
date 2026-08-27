@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Instalador único con interfaz gráfica (WPF nativo de Windows, sin Python) para todo el
-  piloto. Corre los scripts 00-15 en el ORDEN REAL de dependencias (no el orden numérico de
+  piloto. Corre los scripts 00-16 en el ORDEN REAL de dependencias (no el orden numérico de
   archivo -- ver docs/instalacion/plan-instalacion.md, ej. 07 necesita 12 primero aunque el
   número de archivo diga lo contrario), verificando cada paso antes de seguir al siguiente.
 
@@ -52,6 +52,7 @@ $script:Pasos = @(
     [PSCustomObject]@{ Id = "09"; Nombre = "Confirmar inicio automático";               Archivo = "09-configurar-inicio-automatico.ps1"; Manual = $false }
     [PSCustomObject]@{ Id = "10"; Nombre = "Configurar backup a Drive";                 Archivo = "10-configurar-backup.ps1";      Manual = $false }
     [PSCustomObject]@{ Id = "15"; Nombre = "Instalar ComfyUI + Stable Diffusion 1.5";   Archivo = "15-instalar-comfyui.ps1";       Manual = $false }
+    [PSCustomObject]@{ Id = "16"; Nombre = "Instalar monitor de estado (dashboard)";    Archivo = "16-instalar-monitor-estado.ps1"; Manual = $false }
 )
 
 # Pasos que se listan al final, no se automatizan (necesitan login/token) — ver arriba
@@ -60,6 +61,7 @@ $script:PasosManuales = @(
     "14 — Tailscale: correr scripts\pasos\14-instalar-tailscale.bat, después 'tailscale up' en una terminal para autenticar por navegador."
     "VS Code: instalar desde el Marketplace las extensiones 'Qwen Code' y 'Continue.dev' (no se puede automatizar la instalación de extensiones de otro programa)."
     "Open WebUI: entrar a http://localhost:8080 y crear la primera cuenta (queda como admin)."
+    "Monitor de estado (opcional): para verlo desde internet, agregar una segunda 'Public Hostname' al mismo túnel de Cloudflare del paso 08, apuntando a http://localhost:8090 -- queda protegido por el mismo Cloudflare Access. Sin este paso, el monitor sigue funcionando local (http://localhost:8090) y por Tailscale."
 )
 
 # ============================================================================
@@ -107,6 +109,11 @@ function Test-Paso {
             "10" { return [bool](Get-ScheduledTask -TaskName "IA-Local-Piloto-Backup" -ErrorAction SilentlyContinue) }
             "15" {
                 return (Test-Path "${script:LetraNVMe}:\ComfyUI\run_nvidia_gpu.bat") -and (Test-Path "${script:LetraNVMe}:\ComfyUI\ComfyUI\models\checkpoints\v1-5-pruned-emaonly-fp16.safetensors")
+            }
+            "16" {
+                $tarea = Get-ScheduledTask -TaskName "Monitor-Estado-Local" -ErrorAction SilentlyContinue
+                if (-not $tarea) { return $false }
+                try { Invoke-WebRequest -Uri "http://localhost:8090/estado" -TimeoutSec 5 -UseBasicParsing | Out-Null; return $true } catch { return $false }
             }
             default { return $true }
         }

@@ -91,6 +91,14 @@ Ver `../operacion/mantenimiento.md` para el detalle completo.
 
 - [ ] Correr `scripts/verificar-instalacion.ps1` — chequeo integral: Ollama responde, contexto configurado, GPU detectada, servicios activos y configurados para auto-inicio, Open WebUI accesible en LAN, túnel de Cloudflare activo, backup programado, Qwen Code configurado, y estado de Tailscale si se instaló.
 
+## Paso 5.5 — Monitor de estado en tiempo real (opcional, a pedido de Felipe)
+
+Ver `../operacion/monitor-estado.md` para el detalle completo — un dashboard/JSON de estado, pensado para revisar de un vistazo que todo sigue andando bien, tanto en el mismo equipo como remoto.
+
+- [ ] Correr `scripts/pasos/16-instalar-monitor-estado.ps1` (`.bat`) — registra la Tarea Programada "Monitor-Estado-Local" y la regla de firewall necesaria.
+- [ ] Local: `http://localhost:8090/`. Por Tailscale (Paso 3.5): `http://<IP-de-Tailscale>:8090/`.
+- [ ] (Opcional, manual) Agregar una segunda "Public Hostname" al túnel de Cloudflare del Paso 3, apuntando a `http://localhost:8090`, para verlo también desde internet.
+
 ## Paso 6 — Prueba de estrés y rendimiento
 
 - [ ] Correr `scripts/pasos/11-prueba-estres.ps1` (`.bat`) — mide tok/s real, estabilidad bajo carga sostenida, y el límite real de contexto (cierra el pendiente de `../modelo/modelo-elegido.md` sobre si el límite de 32K de Ollama es real o solo el default). Ver `../pruebas/pruebas-rendimiento.md` para cómo interpretar los resultados.
