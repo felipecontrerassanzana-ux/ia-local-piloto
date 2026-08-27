@@ -48,6 +48,7 @@ A pedido explícito de Felipe, se revisó cada pieza del stack (ver `arquitectur
 | Ollama | Gratis, open-source | Sin límites de uso local |
 | Qwen 2.5 Coder 7B | Gratis, Apache 2.0 | Sin restricción de uso comercial |
 | Goose | Gratis, open-source (Linux Foundation) | |
+| Qwen Code | Gratis, open-source (Alibaba/Qwen) | Incluye Auto-memory sin costo adicional |
 | Continue.dev | Gratis para uso local con Ollama | Sin necesidad de cuenta para esto |
 | Aider | Gratis, open-source | |
 | Open WebUI | Gratis, self-hosted | Los planes "Enterprise" son solo para soporte/SLA/branding — el uso normal no los necesita |
@@ -56,6 +57,7 @@ A pedido explícito de Felipe, se revisó cada pieza del stack (ver `arquitectur
 | Mem0 (si se llega a sumar) | Gratis, self-hosted | (existe una versión cloud paga, no es la que se usaría acá) |
 | **Cloudflare Tunnel** | **Gratis**, sin costo aparte | Verificado 2026-08-26, incluido en cualquier cuenta de Cloudflare |
 | **Cloudflare Access** | **Gratis hasta 50 usuarios** | Verificado 2026-08-26 en la página oficial de precios — un solo usuario está muy por debajo del límite |
+| **Tailscale** | **Gratis** (plan Personal) | Verificado 2026-08-27 en la página oficial de precios: hasta 6 usuarios, dispositivos ilimitados — usado para conectar Qwen Code/Goose remotos, ver `qwen-code-a-fondo.md` |
 | Dominio propio | Ya lo tiene Felipe (costo hundido, no nuevo) | |
 
 **No hay ninguna pieza de este stack que tenga costo recurrente nuevo.** El único gasto es el que ya existía (el dominio) y, a futuro si se decide, un UPS (hardware, compra única).

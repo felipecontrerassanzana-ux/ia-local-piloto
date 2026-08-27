@@ -57,6 +57,10 @@ Felipe confirmó que la conexión remota es para su propio uso — no espera otr
 
 **Sobre el ancho de banda de subida (Felipe cree que el plan es "800 sincrónico", simétrico):** se toma como supuesto de trabajo razonable, pero sigue sin confirmarse con un test real — no bloquea nada de lo planeado (Cloudflare Tunnel funciona igual sea cual sea la velocidad, solo cambia qué tan rápido se siente desde afuera), así que queda como verificación de bajo costo para hacer cuando se pueda, no como paso obligatorio antes de avanzar.
 
+## Nota: esto cubre acceso por navegador — para agentes de código remotos (Qwen Code/Goose), ver otro documento
+
+Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar desde un navegador. Es un caso distinto de "quiero correr Qwen Code en el VS Code de otro dispositivo, apuntando directo al servidor de este equipo" — ese caso (con sus propios modos de conexión y su propia recomendación, Tailscale) queda documentado en `qwen-code-a-fondo.md` § "Modos de conexión, de local a remoto fuera de la red".
+
 ## Próximos pasos
 
 - [x] Confirmar si hay CGNAT — resuelto 2026-08-26: no hay.
@@ -66,4 +70,4 @@ Felipe confirmó que la conexión remota es para su propio uso — no espera otr
 - [ ] Instalar `cloudflared` en el equipo y configurar el túnel hacia Open WebUI.
 - [ ] Configurar Cloudflare Access sobre ese túnel con la lista de correos autorizados (para empezar, solo el de Felipe).
 - [ ] Crear la primera cuenta de Open WebUI (queda como admin, cierra el registro público automáticamente).
-- [ ] (Opcional, respaldo) Dejar Tailscale instalado igual, por si se necesita acceso rápido mientras se configura Cloudflare Tunnel.
+- [ ] Instalar Tailscale — ya no es solo un respaldo de esto: es la recomendación principal para conectar Qwen Code/Goose remotos (ver `qwen-code-a-fondo.md`), además de servir como acceso rápido de respaldo mientras se configura Cloudflare Tunnel.

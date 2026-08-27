@@ -60,8 +60,9 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 | Agente para iniciar/gestionar proyectos | Goose | `herramientas-trabajo.md` |
 | Asistente dentro del editor | Qwen Code (memoria automática incluida) + Continue.dev/Aider si hace falta algo adicional | `herramientas-trabajo.md` |
 | Memoria persistente | Auto-memory de Qwen Code (automática, de fábrica). Respaldo estático: `AGENTS.md`/`.continue/rules`. Mem0 descartado por ahora | `herramientas-trabajo.md` |
-| Red / acceso remoto | Cloudflare Tunnel + dominio propio (sin CGNAT confirmado) | `acceso-remoto.md` |
-| Autenticación | Open WebUI (automática) + Cloudflare Access (correo autorizado) | `acceso-remoto.md` |
+| Red / acceso remoto (navegador) | Cloudflare Tunnel + dominio propio (sin CGNAT confirmado) | `acceso-remoto.md` |
+| Red / acceso remoto (Qwen Code/Goose) | Tailscale — red privada, conecta directo al puerto de Ollama sin exponerlo a internet | `qwen-code-a-fondo.md` |
+| Autenticación | Open WebUI (automática) + Cloudflare Access (correo autorizado) para navegador; Tailscale (identidad de dispositivo) para agentes remotos | `acceso-remoto.md`, `qwen-code-a-fondo.md` |
 | Embeddings | BGE-M3 | `../ia-local/docs/modelos.md` |
 | Base vectorial | Qdrant — **nativo, binario oficial de Windows, no Docker** | `plan-instalacion.md`, `docker-y-recursos.md` |
 | Continuidad, backup y actualizaciones | BIOS auto-encendido + servicios en inicio, backup a Drive, checklist mensual | `mantenimiento.md` |
@@ -76,7 +77,7 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 - [x] **Actualizaciones (el "P5"):** formulado en detalle como checklist mensual en `mantenimiento.md` §3, ya no es una idea vaga.
 - [ ] **Protección contra abuso a nivel de red (rate limiting en Cloudflare):** sigue pendiente de activar, no requiere nada nuevo (ya se cuenta con Cloudflare por el Tunnel).
 
-**Costos — confirmado 2026-08-26 que toda la estructura es gratuita**, pieza por pieza (tabla completa en `mantenimiento.md` §4): Ollama, Qwen, Goose, Continue.dev, Aider, Open WebUI, BGE-M3, Qdrant y Mem0 son gratis/self-hosted; **Cloudflare Tunnel no tiene costo aparte** y **Cloudflare Access es gratis hasta 50 usuarios** (Felipe solo necesita 1) — verificado directo en la página oficial de precios de Cloudflare, no de memoria.
+**Costos — confirmado 2026-08-26/27 que toda la estructura es gratuita**, pieza por pieza (tabla completa en `mantenimiento.md` §4): Ollama, Qwen, Goose, Qwen Code, Continue.dev, Aider, Open WebUI, BGE-M3, Qdrant y Mem0 son gratis/self-hosted; **Cloudflare Tunnel no tiene costo aparte**, **Cloudflare Access es gratis hasta 50 usuarios** y **Tailscale es gratis hasta 6 usuarios/dispositivos ilimitados** (Felipe solo necesita 1) — verificado directo en la página oficial de precios de cada proveedor, no de memoria.
 
 ## Próximos pasos sugeridos (orden propuesto, actualizado 2026-08-27)
 
@@ -88,5 +89,6 @@ Ya no quedan bloqueantes de diseño — todo lo de arriba está decidido y docum
 - [ ] Configurar BIOS + confirmar servicios de inicio automático (`09-configurar-inicio-automatico`, `mantenimiento.md` §1) como parte de la instalación misma, no después.
 - [ ] Configurar el backup a Drive (`10-configurar-backup`, `mantenimiento.md` §2) también como parte de la instalación.
 - [ ] Activar rate limiting básico en Cloudflare al configurar el Tunnel.
+- [ ] Crear `14-instalar-tailscale.ps1`/`.bat` (no existe todavía) y configurar `OLLAMA_HOST=0.0.0.0` — necesario para conectar Qwen Code/Goose remotos (ver `qwen-code-a-fondo.md`).
 - [ ] Correr `11-prueba-estres.ps1` (rendimiento real, incluye verificar si el contexto real llega a 100K o se queda en 32K) y las pruebas de calidad de `plan-pruebas.md` — volcar todo en `resultados.md`.
 - [ ] (Baja prioridad, no bloqueante) Test de velocidad de subida real de la conexión.
