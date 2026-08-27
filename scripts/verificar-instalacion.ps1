@@ -68,6 +68,13 @@ try {
     Check "Open WebUI responde en localhost:8080" $false
 }
 
+# Sin esto configurado, Open WebUI usa sus defaults internos (ChromaDB + otro modelo de
+# embeddings) en vez de Qdrant/BGE-M3 -- ver docs/referencia/open-webui.md
+$vectorDb = [Environment]::GetEnvironmentVariable("VECTOR_DB", "Machine")
+Check "Open WebUI configurado para usar Qdrant (VECTOR_DB=qdrant)" ($vectorDb -eq "qdrant") "(valor actual: $vectorDb)"
+$embeddingModel = [Environment]::GetEnvironmentVariable("RAG_EMBEDDING_MODEL", "Machine")
+Check "Open WebUI configurado para usar BGE-M3 (RAG_EMBEDDING_MODEL=bge-m3)" ($embeddingModel -eq "bge-m3") "(valor actual: $embeddingModel)"
+
 # Docker es opcional en este proyecto — solo se informa si está presente, no se exige.
 $dockerCmd = Get-Command docker -ErrorAction SilentlyContinue
 if ($dockerCmd) {

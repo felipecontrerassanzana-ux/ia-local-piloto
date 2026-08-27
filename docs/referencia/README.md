@@ -8,5 +8,7 @@ Distinto de las otras carpetas de `docs/`: ahí está **la decisión tomada para
 - **`qwen-2.5-coder-7b.md`** — el modelo instalado: parámetros de generación recomendados, cómo prompearlo bien para código, y un hallazgo real sobre el límite de contexto (32K vs 100K/131K, YaRN).
 - **`qwen-code.md`** — comandos reales de Qwen Code, más allá de la tabla de paridad con Claude Code — incluye un hallazgo que podría formalizar de fábrica el loop de la capa de diseño (`/model --vision`/`--image`).
 - **`goose.md`** — comandos reales de Goose, y su equivalente a los comandos personalizados de Qwen Code (Recipes).
+- **`open-webui.md`** — configuración real de RAG, incluye un hallazgo importante: sin configurar explícitamente, Open WebUI ignoraba a Qdrant/BGE-M3 y usaba sus defaults internos (ya corregido en `07-desplegar-openwebui.ps1`).
+- **`qdrant.md`** — conceptos básicos (colecciones, puntos, vectores) y API, para cuando haga falta un pipeline de RAG propio más allá de lo que ya gestiona Open WebUI.
 
-*(en construcción — próximo: el resto del stack — Open WebUI, Qdrant, Qwen3-VL, ComfyUI, Tailscale/Cloudflare)*
+*(en construcción — próximo: Qwen3-VL, ComfyUI, Tailscale/Cloudflare)*

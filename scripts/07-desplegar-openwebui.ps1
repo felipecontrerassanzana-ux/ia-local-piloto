@@ -5,6 +5,11 @@
 
   Confirmado en documentación oficial (docs.openwebui.com, 2026-08-27): "Python: Suitable
   for low-resource environments" — es un método soportado oficialmente, no un hack.
+
+  Corregido 2026-08-27: sin configurar explícitamente, Open WebUI usa sus defaults internos
+  (ChromaDB como vector store, sentence-transformers/all-MiniLM-L6-v2 para embeddings) —
+  IGNORANDO a Qdrant y BGE-M3, que ya se instalan en este piloto pero nunca quedaban
+  conectados. Ver docs/referencia/open-webui.md para el detalle completo del hallazgo.
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -42,7 +47,19 @@ if ($existe) {
     Write-Host "Tarea programada 'OpenWebUI-Local' creada — arranca con Windows, sin necesitar sesión abierta." -ForegroundColor Green
 }
 
-Write-Host "Iniciando Open WebUI ahora (para no esperar al próximo reinicio)..." -ForegroundColor Cyan
+# --- Conectar Open WebUI a Qdrant y BGE-M3 (ver docs/referencia/open-webui.md) ---
+# Sin esto, Open WebUI usa sus defaults internos (ChromaDB + sentence-transformers/all-MiniLM-L6-v2),
+# ignorando en silencio a Qdrant y BGE-M3 aunque ambos ya estén instalados y corriendo.
+Write-Host "Configurando Open WebUI para usar Qdrant (RAG) y BGE-M3 vía Ollama (embeddings)..." -ForegroundColor Cyan
+[Environment]::SetEnvironmentVariable("VECTOR_DB", "qdrant", "Machine")
+[Environment]::SetEnvironmentVariable("QDRANT_URI", "http://localhost:6333", "Machine")
+[Environment]::SetEnvironmentVariable("RAG_EMBEDDING_ENGINE", "ollama", "Machine")
+[Environment]::SetEnvironmentVariable("RAG_EMBEDDING_MODEL", "bge-m3", "Machine")
+[Environment]::SetEnvironmentVariable("RAG_OLLAMA_BASE_URL", "http://localhost:11434", "Machine")
+
+Write-Host "Reiniciando Open WebUI para que tome las variables de entorno nuevas (VECTOR_DB, RAG_*)..." -ForegroundColor Cyan
+Stop-ScheduledTask -TaskName "OpenWebUI-Local" -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 2
 Start-ScheduledTask -TaskName "OpenWebUI-Local"
 Start-Sleep -Seconds 5
 
@@ -58,3 +75,6 @@ Write-Host "  (comportamiento por defecto de Open WebUI, ver docs/operacion/acce
 Write-Host ""
 Write-Host "En Settings > Connections de Open WebUI, confirmar que apunta a Ollama en http://localhost:11434" -ForegroundColor Cyan
 Write-Host "(nativo también, así que localhost normal alcanza — ya no hace falta host.docker.internal)." -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Verificar en Settings > Admin > Documents que el motor de embeddings sea 'bge-m3' (no el default" -ForegroundColor Cyan
+Write-Host "de fábrica, sentence-transformers) y que Settings > Admin > Database/Vector muestre Qdrant conectado." -ForegroundColor Cyan
