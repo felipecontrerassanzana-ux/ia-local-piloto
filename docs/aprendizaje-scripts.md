@@ -71,6 +71,10 @@ Mismo patrón que `01-instalar-ollama.ps1` (winget, revisando primero si ya est�
 
 **Por qué `gh auth login` queda fuera del script:** es un flujo de autenticación OAuth que necesita abrir el navegador y que una persona apruebe el acceso — no hay forma de automatizarlo sin intervención humana, así que el script instala las herramientas y deja ese único paso para hacer a mano.
 
+## 13-instalar-qwen-code — instalación + configuración generada como archivo
+
+Distinto a los scripts anteriores en un punto: además de instalar (Node.js vía winget, Qwen Code vía `npm install -g`, el gestor de paquetes de Node), **genera un archivo de configuración** (`settings.json`) construyendo un objeto en PowerShell (`@{ ... }`, una tabla hash) y convirtiéndolo a JSON con `ConvertTo-Json` — más confiable que escribir el JSON como texto plano, porque PowerShell se encarga de las comillas y el formato correctos. El script revisa primero si ya existe el archivo para no pisar una configuración que la persona ya haya ajustado a mano.
+
 ## _verificar-sintaxis — probar los scripts sin instalar nada (control de calidad)
 
 Antes de confiar en cualquiera de los scripts de arriba, este revisa que estén bien escritos **sin ejecutar ni una sola de sus instrucciones reales** (no llama a `winget`, `docker` ni nada que cambie algo):

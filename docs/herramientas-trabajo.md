@@ -2,7 +2,56 @@
 
 Confirmado en la conversación anterior: Qwen 2.5 Coder 7B no tiene memoria persistente — es sin estado. Para programar/armar proyectos de forma efectiva con él (que es el uso principal de este equipo), hace falta una capa de herramientas alrededor, igual que yo (Claude) no soy solo el modelo, soy el modelo + un entorno con archivos, memoria y herramientas. Esta página documenta qué piezas existen para eso, verificadas contra documentación oficial (2026-08-26), no de memoria sin chequear.
 
-## Lo más parecido a "una app como Claude Code": Goose
+## La respuesta directa a "¿hay una extensión Qwen para VS Code?": sí, Qwen Code
+
+El usuario preguntó específicamente si existe una extensión de Qwen para VS Code que conecte con un servidor de IA local propio, igual que se usa Claude Code acá. Verificado 2026-08-26 en `github.com/QwenLM/qwen-code` (27,4k estrellas, desarrollo muy activo) y su sitio de documentación oficial:
+
+- **Qué es:** "Qwen Code" — un agente de código en el terminal hecho por el propio equipo de Qwen (Alibaba), **explícitamente construido para tener paridad de funciones con Claude Code** (la propia documentación oficial trae una tabla comparativa punto por punto: SubAgents, Memoria automática, MCP, Plan Mode, Sandboxing, hooks, etc. — todo presente en ambos).
+- **Sí tiene extensión de VS Code** (Beta, requiere VS Code 1.96+): panel lateral nativo, modo de auto-aceptar cambios, referenciar archivos con `@`, historial de conversaciones, múltiples sesiones en paralelo — se instala directo desde el Marketplace de VS Code. También hay plugins para Zed y JetBrains, y una app de escritorio.
+- **Soporta explícitamente Ollama como servidor local**, confirmado con un ejemplo de configuración oficial que usa **justo la familia Qwen** como caso de ejemplo (`baseUrl: "http://localhost:11434/v1"`, el endpoint compatible con OpenAI que expone Ollama) — no hace falta adaptar nada, es el caso de uso que la propia documentación ilustra.
+- **`QWEN.md`** — un archivo de contexto por proyecto, el equivalente exacto de `CLAUDE.md`/`.continue/rules` para este ecosistema.
+- Va más allá del editor: modo demonio (`qwen serve`, varios clientes comparten una sesión), SDKs (TypeScript/Python/Java), bots de mensajería (Telegram, WeChat, DingTalk, Feishu).
+
+**Configuración concreta para conectarlo a este piloto** — en `%USERPROFILE%\.qwen\settings.json` (settings de usuario, aplica a todas las sesiones):
+
+```json
+{
+  "env": { "OLLAMA_API_KEY": "ollama" },
+  "modelProviders": {
+    "openai": [
+      {
+        "id": "qwen2.5-coder-7b",
+        "name": "Qwen 2.5 Coder 7B (Ollama local)",
+        "envKey": "OLLAMA_API_KEY",
+        "baseUrl": "http://localhost:11434/v1",
+        "generationConfig": {
+          "contextWindowSize": 32000,
+          "samplingParams": { "temperature": 0.7, "top_p": 0.9, "max_tokens": 4096 }
+        }
+      }
+    ]
+  }
+}
+```
+
+(el `contextWindowSize` de 32000 sigue el mismo criterio conservador que `02-configurar-ollama.ps1` — ajustar junto con `OLLAMA_CONTEXT_LENGTH` cuando la prueba de estrés confirme un límite real mayor, ver `pruebas-rendimiento.md`).
+
+**Requiere Node.js 22+** (se instala vía npm: `npm install -g @qwen-code/qwen-code`) — ver `scripts/13-instalar-qwen-code.ps1`.
+
+## Qwen Code vs. Goose — cuál usar
+
+Ambos responden a la misma pregunta ("una app como Claude Code, local"), con un matiz:
+
+| | Qwen Code | Goose |
+|---|---|---|
+| Quién lo hace | El propio equipo de Qwen (Alibaba) | Block/Square, ahora Agentic AI Foundation |
+| Extensión de VS Code oficial | Sí (Beta, Marketplace) | No directamente (se usa vía terminal o su propia app de escritorio) |
+| Ejemplo oficial de config con Ollama | Sí, usando la familia Qwen específicamente | Sí, genérico (Ollama con cualquier modelo) |
+| Archivo de contexto por proyecto | `QWEN.md` | Reglas vía extensiones/Memory |
+
+**No hay que elegir uno solo** — se puede instalar Qwen Code para trabajar directo en VS Code (respuesta a la pregunta original) y tener Goose como agente de terminal para tareas más autónomas fuera del editor. Ambos apuntan al mismo Ollama, no compiten por recursos distintos.
+
+## Lo más parecido a "una app como Claude Code" en modo agente de terminal general: Goose
 
 El usuario preguntó específicamente por algo como esta misma herramienta (Claude Code) — que interactúe directo con el equipo, maneje proyectos como carpetas de trabajo, y pueda **iniciar una carpeta de proyecto por su cuenta**, no solo autocompletar código dentro de un archivo ya abierto. Eso es una categoría distinta de Continue.dev/Aider (asistentes *dentro* de un proyecto existente) — es un **agente autónomo de propósito general que corre en la máquina**. Verificado en goose-docs.ai (2026-08-26):
 

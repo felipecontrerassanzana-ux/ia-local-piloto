@@ -134,3 +134,11 @@ El usuario preguntó si para este sistema existen herramientas conectoras a GitH
 - Continue.dev/VS Code: mismo principio — VS Code trae Git integrado y la extensión oficial "GitHub Pull Requests and Issues"; Continue.dev en modo Agent también puede correr `git`/`gh` por shell.
 
 Se creó `scripts/12-instalar-herramientas-dev.ps1` + `.bat` (pasó por `_verificar-sintaxis.ps1` sin hallazgos nuevos) y se actualizaron `herramientas-trabajo.md` (nueva sección "Conectores a GitHub"), `plan-instalacion.md` (nuevo Paso 1.4) y `scripts/README.md`.
+
+## 2026-08-26 (mismo día) — Extensión Qwen para VS Code: Qwen Code
+
+El usuario preguntó específicamente si existe una extensión de Qwen para VS Code que conecte con el servidor de IA local, igual que se usa Claude Code acá. Se encontró y verificó **Qwen Code** (`github.com/QwenLM/qwen-code`, 27,4k estrellas): agente de terminal hecho por el propio equipo de Qwen, con tabla comparativa oficial de paridad de funciones contra Claude Code (SubAgents, memoria automática, MCP, Plan Mode, sandboxing), **extensión oficial de VS Code (Beta, Marketplace)**, y soporte confirmado de Ollama como proveedor local — con un ejemplo de configuración oficial que usa justo la familia Qwen (`baseUrl: http://localhost:11434/v1`). Tiene también su propio archivo de contexto por proyecto (`QWEN.md`, equivalente a `CLAUDE.md`), modo demonio multi-cliente, y SDKs.
+
+Requiere Node.js 22+ (se instala vía npm). Se creó `scripts/13-instalar-qwen-code.ps1` + `.bat` — instala Node.js si falta, instala Qwen Code, y genera automáticamente `~/.qwen/settings.json` apuntando al Ollama local (sin pisar una configuración existente). Pasó por `_verificar-sintaxis.ps1` sin hallazgos nuevos.
+
+Se actualizó `herramientas-trabajo.md` con una comparación Qwen Code vs. Goose (ambos responden "una app como Claude Code" — Qwen Code tiene extensión de VS Code oficial y es del propio fabricante del modelo; Goose es más agnóstico de modelo y con más extensiones vía MCP) — recomendación: no elegir uno solo, ambos apuntan al mismo Ollama sin competir por recursos distintos.

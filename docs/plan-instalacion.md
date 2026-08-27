@@ -35,7 +35,8 @@ Script: `scripts/02-configurar-ollama.ps1` (variables de entorno) + `scripts/03-
 
 Ver `herramientas-trabajo.md` para el detalle completo y las alternativas evaluadas.
 
-- [ ] Instalar **Goose** (`scripts/04-instalar-goose.ps1`) — para iniciar/gestionar proyectos completos.
+- [ ] Instalar **Goose** (`scripts/04-instalar-goose.ps1`) — para iniciar/gestionar proyectos completos desde la terminal.
+- [ ] Instalar **Qwen Code** (`scripts/13-instalar-qwen-code.ps1`) — el agente hecho por el propio equipo de Qwen, con extensión oficial de VS Code (Beta) — instalar esa extensión desde el Marketplace además de correr el script.
 - [ ] Instalar Continue.dev en VS Code, configurar el bloque `ollama/qwen2.5-coder-7b` — para trabajar dentro de un proyecto ya iniciado.
 - [ ] Crear `.continue/rules` con las convenciones básicas de trabajo.
 - [ ] (Opcional) Evaluar Aider como alternativa de terminal.
