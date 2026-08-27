@@ -139,27 +139,27 @@ VS Code ya trae control de código fuente (Git) integrado de fábrica, y existe 
 
 Se agrega también a la instalación base, ya que es de uso general (scripts, procesamiento de datos, herramientas de IA que a veces solo tienen SDK en Python) — paquete winget verificado: `Python.Python.3.12`. No está atado a ningún paso específico del piloto todavía, es infraestructura base para lo que se proyecte trabajar más adelante.
 
-## Memoria persistente — cómo resolverlo en la práctica
+## Memoria persistente — cómo resolverlo en la práctica (actualizado 2026-08-27)
 
-### Nivel 1 (para partir, sin instalar nada extra)
+Con Auto-memory de Qwen Code verificado (sección de arriba), la respuesta ya no es un plan de dos niveles a futuro — es una pieza que **ya viene resuelta de fábrica** en una de las dos herramientas que se van a instalar. Queda así, de mayor a menor automatización:
 
-Archivos de reglas/convenciones estáticos — `.continue/rules` en Continue, o un archivo de convenciones que Aider lea al iniciar. **Es el mismo patrón que ya se usa en los 4 repos de `Documents/Proyectos IA/`** (`decisiones.md`, bitácora mantenida a mano) — no es memoria automática, pero es memoria persistente real, sostenida por la disciplina de mantener el archivo al día, no por magia del modelo.
+### Automática, de fábrica: Auto-memory de Qwen Code
 
-### Nivel 2 (si el uso real muestra que hace falta algo que se actualice solo)
+Ya prendida por defecto en cuanto se instala Qwen Code (`13-instalar-qwen-code.ps1`) — identifica sola usuario/feedback/proyecto/referencias y las guarda en `~/.qwen/projects/<proyecto>/memory/`, sin configurar nada. Es la respuesta principal para el trabajo dentro de VS Code con Qwen Code. Ver sección de arriba para el detalle completo.
 
-**Mem0** — librería open-source dedicada a dar memoria persistente a agentes de IA, que extrae, actualiza y recupera memorias automáticamente a medida que se conversa (no hay que escribirlas a mano). Verificado en su documentación oficial (docs.mem0.ai, 2026-08-26):
+### Estática, para Continue.dev/Aider (y como respaldo legible por humanos)
 
-- Es **open-source y autoalojable** (`pip install mem0ai`, o un stack Docker con dashboard) — no depende de un servicio en la nube.
-- **Soporta Ollama tanto para el LLM de extracción como para los embeddings** — confirmado en su lista de proveedores (`components/llms/models/ollama`, `components/embedders/models/ollama`), con un cookbook oficial dedicado: *"Local Companion (Ollama) — Use when the companion must run entirely on local models"*.
-- Usa una base vectorial para guardar las memorias (por defecto Qdrant) — **el mismo tipo de componente que ya se planea instalar para el RAG de este piloto** (ver `plan-instalacion.md`), así que no es tecnología nueva, es reutilizar la misma pieza para dos propósitos.
+Archivos de reglas/convenciones estáticos — `.continue/rules` en Continue, o un archivo de convenciones que Aider lea al iniciar. Continue.dev **no** trae memoria automática (confirmado en la tabla comparativa de arriba), así que si se usa como asistente de editor en vez de o junto a Qwen Code, esta sigue siendo la única vía. **Es el mismo patrón que ya se usa en los 4 repos de `Documents/Proyectos IA/`** (`decisiones.md`, bitácora mantenida a mano) — no se actualiza sola, pero es memoria persistente real, sostenida por la disciplina de mantener el archivo al día, no por magia del modelo. `AGENTS.md` (raíz del repo) cumple este mismo rol para Goose.
 
-**Por qué no se instala de entrada:** siguiendo el mismo criterio que ya se aplicó en la elección de hardware ([[feedback-no-sobredimensionar]] — no pedir más de lo que la fase actual necesita), conviene primero validar el piloto básico (Ollama + Continue + Rules estáticas) y sumar Mem0 solo si en el uso real se nota que las reglas estáticas no alcanzan y hace falta algo que aprenda solo.
+### Mem0 — no se instala, sigue descartado
+
+Librería open-source dedicada a dar memoria persistente a agentes de IA (extrae/actualiza/recupera automáticamente, soporta Ollama de punta a punta — verificado en docs.mem0.ai, 2026-08-26). Se evaluó como el "Nivel 2" antes de confirmar que Qwen Code ya trae Auto-memory de fábrica; con eso resuelto, Mem0 dejó de ser necesario para el caso de uso principal (programar con ayuda de un agente en VS Code) y solo tendría sentido si más adelante se necesita una memoria **compartida entre herramientas distintas** (ej. que Goose y Qwen Code vean las mismas memorias) — no es el caso hoy, así que sigue sin instalarse, siguiendo el mismo criterio de no sobredimensionar ([[feedback-no-sobredimensionar]]).
 
 ## Próximos pasos
 
 - [ ] Instalar Ollama y confirmar `OLLAMA_CONTEXT_LENGTH` configurado (no dejar el default de 2K).
 - [ ] Instalar **Goose** (CLI o desktop) y configurarlo contra Ollama/Qwen 2.5 Coder 7B — es la pieza que resuelve "iniciar un proyecto/carpeta por su cuenta".
-- [ ] Instalar Continue.dev en VS Code, configurar el bloque `ollama/qwen2.5-coder-7b`, para el trabajo dentro del editor una vez que el proyecto ya existe.
-- [ ] Crear `.continue/rules` con las convenciones básicas de trabajo (puede partir vacío o con reglas mínimas, e ir creciendo con uso real).
+- [ ] Instalar **Qwen Code** (`13-instalar-qwen-code.ps1`) y su extensión de VS Code (a mano, desde el Marketplace) — resuelve tanto el trabajo dentro del editor como la memoria automática, sin depender de Continue.dev.
+- [ ] Instalar Continue.dev en VS Code solo si hace falta un asistente adicional (ej. autocompletado inline que Qwen Code no cubra); en ese caso, crear `.continue/rules` con las convenciones básicas.
 - [ ] Evaluar Aider como alternativa/complemento de terminal si el flujo de trabajo lo pide.
-- [ ] Revisar después de las primeras semanas de uso si hace falta Mem0 (Nivel 2) o si las reglas estáticas alcanzan.
+- [ ] Revisar después de las primeras semanas de uso real si hace falta compartir memoria entre Goose y Qwen Code (Mem0) — no antes.

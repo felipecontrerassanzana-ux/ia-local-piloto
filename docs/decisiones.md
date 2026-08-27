@@ -202,3 +202,10 @@ El usuario pidió dos cosas: (1) que cómo funcionan el motor y los addons (Qwen
 - **Hallazgo verificado que simplificó todo:** `AGENTS.md` es un archivo que **Goose lee por defecto** (confirmado en `goose-docs.ai`: `CONTEXT_FILE_NAMES` por defecto es `["AGENTS.md", ".goosehints"]`) **y Qwen Code también lee automáticamente** si existe — un solo archivo sirve para ambas herramientas, sin duplicar instrucciones en formatos separados.
 - Se creó `AGENTS.md` en la raíz de este repo — instrucciones reales (no genéricas): decisiones ya cerradas, convenciones (incluyendo la de no narrar autocrítica en `decisiones.md`, aplicando la corrección de un par de turnos atrás), restricciones duras del equipo, y qué revisar antes de proponer algo nuevo.
 - Se propagó la plantilla genérica a `ia-local/plantillas/AGENTS.md` (adaptable según tipo de proyecto: scripts, investigación, caso de negocio, desarrollo de software) y se documentó en `ia-local/docs/arquitectura.md`.
+
+## 2026-08-27 (mismo día) — Corrección: la fila de memoria persistente había quedado desactualizada tras confirmar Auto-memory
+
+Al revisar el estado general del proyecto se detectó que la tabla resumen de `arquitectura-piloto.md` y la sección de memoria de `herramientas-trabajo.md` seguían describiendo un plan de dos niveles ("reglas estáticas ahora, Mem0 como escalamiento futuro") que quedó superado por el hallazgo de Auto-memory documentado en la entrada anterior.
+
+- Se actualizó `arquitectura-piloto.md` (tabla y diagrama del stack) y `herramientas-trabajo.md` (sección "Memoria persistente") para reflejar que Auto-memory de Qwen Code es la solución de fábrica, `AGENTS.md`/reglas estáticas quedan como respaldo legible por humanos y para Continue.dev/Aider, y Mem0 sigue descartado — ahora por dar memoria compartida entre herramientas, no por falta de una alternativa automática.
+- Se corrigió la misma referencia en `README.md`.

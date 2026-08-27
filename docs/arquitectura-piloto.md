@@ -44,7 +44,8 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
    (en paralelo, uso LOCAL — no pasa por el túnel ni necesita login)
                                     ┌─────────────────────────────┐
    Felipe, en el equipo mismo  ───▶ │  Goose (agente CLI/desktop)   │──┐
-   o VS Code local             ───▶ │  Continue.dev (extensión)     │──┤──▶ Ollama (mismo servidor de arriba)
+   o VS Code local             ───▶ │  Qwen Code (ext., con memoria)│──┤──▶ Ollama (mismo servidor de arriba)
+                                    │  Continue.dev (si hace falta) │──┘
                                     └─────────────────────────────┘
 ```
 
@@ -57,8 +58,8 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 | Motor de inferencia | Ollama (LocalAI como escalón futuro si hace falta voz/imagen) | `motor-alternativas.md` |
 | Interfaz web + RAG | Open WebUI — **nativo vía pip, no Docker** (puerto 8080) | `motor-alternativas.md`, `docker-y-recursos.md` |
 | Agente para iniciar/gestionar proyectos | Goose | `herramientas-trabajo.md` |
-| Asistente dentro del editor | Continue.dev (+ Aider como alternativa de terminal) | `herramientas-trabajo.md` |
-| Memoria persistente | Nivel 1: reglas estáticas (`.continue/rules`). Nivel 2 (futuro): Mem0 | `herramientas-trabajo.md` |
+| Asistente dentro del editor | Qwen Code (memoria automática incluida) + Continue.dev/Aider si hace falta algo adicional | `herramientas-trabajo.md` |
+| Memoria persistente | Auto-memory de Qwen Code (automática, de fábrica). Respaldo estático: `AGENTS.md`/`.continue/rules`. Mem0 descartado por ahora | `herramientas-trabajo.md` |
 | Red / acceso remoto | Cloudflare Tunnel + dominio propio (sin CGNAT confirmado) | `acceso-remoto.md` |
 | Autenticación | Open WebUI (automática) + Cloudflare Access (correo autorizado) | `acceso-remoto.md` |
 | Embeddings | BGE-M3 | `../ia-local/docs/modelos.md` |
