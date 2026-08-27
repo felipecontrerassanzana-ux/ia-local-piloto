@@ -38,6 +38,24 @@ El usuario preguntó específicamente si existe una extensión de Qwen para VS C
 
 **Requiere Node.js 22+** (se instala vía npm: `npm install -g @qwen-code/qwen-code`) — ver `scripts/13-instalar-qwen-code.ps1`.
 
+## Auto-memory de Qwen Code — la respuesta a "¿puede identificar cosas y dejarlas establecidas solo, como vos?" (verificado 2026-08-27)
+
+El usuario preguntó, después de ver cómo Claude identifica patrones durante la conversación y los deja guardados para el futuro sin que se lo pidan explícitamente, si Qwen (como motor) puede hacer lo mismo. La respuesta corta: **el modelo Qwen 2.5 Coder 7B en sí sigue siendo sin estado** (eso no cambia, ver más abajo) — pero **Qwen Code, la aplicación, sí tiene esto integrado y activado por defecto**, confirmado en su documentación oficial (`qwenlm.github.io/qwen-code-docs/en/users/features/memory/`):
+
+- **"Auto-memory" está prendido de fábrica** (no hay que configurar nada para activarlo). Identifica sola 4 tipos de cosas mientras trabaja:
+  1. **Sobre vos** — tu rol, cómo te gusta trabajar.
+  2. **Tu feedback** — correcciones que hiciste, enfoques que confirmaste.
+  3. **Contexto del proyecto** — trabajo en curso, decisiones, objetivos no obvios desde el código.
+  4. **Referencias externas** — dashboards, trackers de tickets, links de documentación que mencionaste.
+
+  **Es, prácticamente palabra por palabra, la misma clasificación de mi propio sistema de memoria** (usuario / feedback / proyecto / referencia) — no es una coincidencia de marketing, es la misma arquitectura de fondo aplicada dos veces por equipos distintos.
+- **Dónde se guarda:** archivos markdown planos en `~/.qwen/projects/<proyecto>/memory/` — se pueden abrir, editar o borrar a mano en cualquier momento, igual que mis propios archivos de memoria.
+- **Limpieza automática:** corre sola una vez al día (`/dream`) para deduplicar y descartar entradas obsoletas — el equivalente de cuando yo reviso y actualizo memorias viejas que quedaron desactualizadas.
+- **Control manual si hace falta:** `/remember <texto>` para forzar que guarde algo, `/forget <texto>` para borrarlo, `/memory` para ver qué tiene guardado.
+- **`QWEN.md`** (ya mencionado arriba) es la otra mitad — instrucciones que **vos** escribís a mano, en vez de que el modelo las infiera solo. Mismo patrón que `CLAUDE.md`.
+
+**Por qué esto no contradice lo que se explicó antes sobre que el modelo no tiene memoria:** el auto-memory no vive en los pesos de Qwen 2.5 Coder 7B — es lógica de la aplicación Qwen Code, que usa el modelo conectado (acá, el de Ollama) para decidir qué vale la pena recordar y para redactar la nota, pero el mecanismo de guardar/recuperar archivos entre sesiones es de la herramienta, no del modelo. Es exactamente la misma relación que hay entre Claude Code (la app, con su sistema de archivos de memoria) y el modelo que la potencia — la memoria vive un nivel arriba del modelo, no adentro de él.
+
 ## Qwen Code vs. Goose — cuál usar
 
 Ambos responden a la misma pregunta ("una app como Claude Code, local"), con un matiz:
@@ -48,8 +66,9 @@ Ambos responden a la misma pregunta ("una app como Claude Code, local"), con un 
 | Extensión de VS Code oficial | Sí (Beta, Marketplace) | No directamente (se usa vía terminal o su propia app de escritorio) |
 | Ejemplo oficial de config con Ollama | Sí, usando la familia Qwen específicamente | Sí, genérico (Ollama con cualquier modelo) |
 | Archivo de contexto por proyecto | `QWEN.md` | Reglas vía extensiones/Memory |
+| **Memoria automática (identifica sola, sin que se le pida)** | **Sí, "Auto-memory" — activada por defecto**, 4 categorías documentadas, limpieza automática diaria | Existe la extensión "Memory", pero **no viene activada por defecto** y su documentación es mucho más escueta ("sistema de memoria integrado para contexto persistente", sin detalle de qué categoriza ni si limpia sola) |
 
-**No hay que elegir uno solo** — se puede instalar Qwen Code para trabajar directo en VS Code (respuesta a la pregunta original) y tener Goose como agente de terminal para tareas más autónomas fuera del editor. Ambos apuntan al mismo Ollama, no compiten por recursos distintos.
+**Para la pregunta específica de "que identifique factores solo y los deje establecidos para el futuro": Qwen Code es la respuesta más directa y mejor documentada de las dos** — viene lista de fábrica para eso. Igual no hay que elegir uno solo: se puede instalar Qwen Code para trabajar directo en VS Code con memoria automática, y tener Goose como agente de terminal para tareas más autónomas fuera del editor. Ambos apuntan al mismo Ollama, no compiten por recursos distintos.
 
 ## Lo más parecido a "una app como Claude Code" en modo agente de terminal general: Goose
 

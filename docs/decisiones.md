@@ -183,3 +183,13 @@ El control de calidad de scripts (`_verificar-sintaxis.ps1`) pasó a estar mecan
 - Se agregó `scripts/hooks/pre-commit` + `scripts/instalar-git-hooks.sh`: cualquier commit que modifique un `.ps1` corre la verificación automáticamente y se bloquea si hay errores de sintaxis o archivos sin BOM. Probado en vivo con un script deliberadamente roto (bloqueó) y un commit real válido (lo dejó pasar).
 
 Detalle completo, incluyendo la explicación del porqué de la diferencia entre intérpretes de PowerShell, en `aprendizaje-scripts.md`.
+
+## 2026-08-27 (mismo día) — Aclaración: Qwen Code sí puede identificar cosas solo, como memoria automática
+
+El usuario aclaró que su pregunta anterior sobre "parser+linter+BOM como regla" en realidad apuntaba a algo más de fondo: si Qwen (el motor) puede identificar factores durante el trabajo y dejarlos establecidos implícitamente para el futuro, igual que hace Claude. Verificado en la documentación oficial de Qwen Code (`qwenlm.github.io/qwen-code-docs/en/users/features/memory/`, 2026-08-27):
+
+- **Qwen Code tiene "Auto-memory", activado por defecto** — identifica sola 4 categorías (sobre el usuario, su feedback, contexto del proyecto, referencias externas) casi idénticas a la propia taxonomía de memoria de Claude (usuario/feedback/proyecto/referencia). Se guarda como markdown plano en `~/.qwen/projects/<proyecto>/memory/`, con limpieza automática diaria (`/dream`) y comandos manuales (`/remember`, `/forget`, `/memory`).
+- Comparado con Goose: su extensión "Memory" existe pero no viene activada por defecto y está mucho menos documentada.
+- **Se aclaró la distinción que sigue aplicando:** esto es una capacidad de la aplicación Qwen Code, no del modelo Qwen 2.5 Coder 7B en sí (que sigue sin estado) — misma relación que entre Claude Code y el modelo que lo potencia.
+
+Se actualizó `herramientas-trabajo.md` con una sección nueva y se corrigió la tabla comparativa Qwen Code vs. Goose para incluir esta diferencia real.
