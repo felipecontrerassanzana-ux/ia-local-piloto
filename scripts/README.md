@@ -4,7 +4,17 @@ Cada script `.ps1` tiene un lanzador `.bat` con el mismo nombre — **correr el 
 
 No hay que cambiar la política de ejecución de PowerShell del sistema — los `.bat` ya la pasan por alto (`-ExecutionPolicy Bypass`) solo para esa ejecución puntual.
 
-## Orden de ejecución (sigue `../docs/instalacion/plan-instalacion.md`)
+## `instalar-todo.bat` — instalador único con interfaz gráfica (2026-08-27, recomendado)
+
+Corrida manual, uno por uno, de 17 scripts en el orden numérico de archivo **no funciona** — el orden real de dependencias no coincide con la numeración (ej. `07` necesita `12` instalado primero, aunque el número diga lo contrario). `instalar-todo.bat` resuelve esto: una ventana (WPF nativo de Windows, sin Python) que corre los pasos automatizables **en el orden real**, verifica cada uno antes de seguir al siguiente, y se detiene con un error claro si algo no queda bien — no sigue a ciegas.
+
+- Pide la letra del NVMe y la carpeta de backup de Drive una sola vez, al principio.
+- Los pasos que necesitan login/token (Cloudflare, Tailscale) quedan **deliberadamente al final**, listados con instrucciones — no pausan la instalación automática.
+- **Nota honesta:** mientras corre un paso largo (una descarga, una instalación), Windows puede marcar la ventana como "No responde" — es esperable (cada paso corre directo, sin hilo aparte, para minimizar riesgo de bugs de concurrencia sin poder probarlos antes en el equipo real), no es que se colgó. Ver `../docs/instalacion/aprendizaje-scripts.md` para el porqué de esta decisión.
+- Verificado hasta donde se pudo sin una sesión interactiva real: sintaxis correcta, el XAML carga como ventana WPF de verdad y los 9 controles se resuelven por nombre — el flujo completo (correr los pasos de verdad) todavía no se probó en el equipo real del piloto.
+- Los 17 scripts individuales de abajo **siguen existiendo y funcionando igual** — el instalador los reutiliza tal cual, no los reemplaza. Sirven para correr un paso puntual de nuevo, o si se prefiere no usar la GUI.
+
+## Orden de ejecución manual, paso a paso (si no se usa `instalar-todo.bat` — sigue `../docs/instalacion/plan-instalacion.md`)
 
 | # | Script | Qué hace | Necesita algo tuyo antes de correr |
 |---|---|---|---|
@@ -29,7 +39,7 @@ No hay que cambiar la política de ejecución de PowerShell del sistema — los 
 
 **Antes de correr nada, leer `../docs/instalacion/aprendizaje-scripts.md`** — explica qué hace cada script y por qué, para que esto sea parte de entender el proyecto, no solo ejecutarlo.
 
-**Control de calidad ya aplicado (2026-08-26/27):** todos los scripts pasaron por `_verificar-sintaxis.bat` antes de subirse — se encontró y corrigió un bug real (detección de tipo de disco en `00-verificar-equipo.ps1`), un problema de codificación (faltaba BOM UTF-8), y un tercero más sutil: el propio `_verificar-sintaxis.ps1` fallaba en silencio al correr vía `powershell.exe` (el intérprete real que usan los `.bat`, distinto de pwsh 7) porque el proveedor NuGet no estaba bootstrapeado — corregido, y ahora avisa en vez de fallar en silencio. Detalle completo en `../docs/instalacion/aprendizaje-scripts.md`.
+**Control de calidad ya aplicado (2026-08-26/27):** todos los scripts pasaron por `_verificar-sintaxis.bat` antes de subirse — se encontró y corrigió un bug real (detección de tipo de disco en `00-verificar-equipo.ps1`), un problema de codificación (faltaba BOM UTF-8), y un tercero más sutil: el propio `_verificar-sintaxis.ps1` fallaba en silencio al correr vía `powershell.exe` (el intérprete real que usan los `.bat`, distinto de pwsh 7) porque el proveedor NuGet no estaba bootstrapeado — corregido, y ahora avisa en vez de fallar en silencio. `instalar-todo.ps1` pasó por el mismo control, más una verificación adicional del XAML (XML válido, carga como ventana WPF real, controles resueltos por nombre) — el parser de sintaxis no valida XAML por sí solo. Detalle completo en `../docs/instalacion/aprendizaje-scripts.md`.
 
 **Hook de git instalado:** `.git/hooks/pre-commit` corre `_verificar-sintaxis.ps1` automáticamente en cada commit que toque un `.ps1`, y bloquea el commit si encuentra errores reales — instalado con `bash scripts/instalar-git-hooks.sh` (correr una vez por cada copia local del repo, git no versiona los hooks). Probado en vivo: bloquea scripts rotos, deja pasar commits válidos.
 

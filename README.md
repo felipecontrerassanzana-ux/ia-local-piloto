@@ -40,8 +40,8 @@ Fuera de `docs/`:
 - **`AGENTS.md`** (raíz) — instrucciones reales que Goose y Qwen Code leen automáticamente al trabajar en este proyecto: decisiones ya tomadas, convenciones, restricciones duras del equipo, qué revisar antes de proponer algo nuevo.
 - **`DESIGN.md`** (raíz) — reglas de diseño del frontend (qué sistema de componentes usar, revisión visual obligatoria) para que el resultado no dependa de que el modelo de código "invente" estilo.
 - **`docs/decisiones.md`** — bitácora cronológica de decisiones (mismo patrón que los otros repos) — queda fuera de las subcarpetas porque se consulta todo el tiempo.
-- **`scripts/`** — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic. Ver `scripts/README.md` para el orden y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye el chequeo integral (`verificar-instalacion.bat`) y la prueba de estrés (`11-prueba-estres.bat`).
+- **`scripts/`** — **instalación ejecutable, no solo documentada**: un `.ps1` por paso más su `.bat` con elevación de permisos (UAC) para correrlo con doble clic, más `instalar-todo.bat` como instalador único con interfaz gráfica que corre todos los pasos automatizables en el orden real de dependencias, verificando cada uno. Ver `scripts/README.md` para el detalle y qué necesita input tuyo (token de Cloudflare, ruta de Drive). Incluye el chequeo integral (`verificar-instalacion.bat`) y la prueba de estrés (`11-prueba-estres.bat`).
 
 ## Estado actual
 
-Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Ver `docs/instalacion/plan-instalacion.md` para el orden de pasos y `scripts/README.md` para cómo correrlos.
+Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Instalador recomendado: `scripts/instalar-todo.bat`. Ver `docs/instalacion/plan-instalacion.md` para el detalle paso a paso y `scripts/README.md` para cómo correr cualquiera de los dos.

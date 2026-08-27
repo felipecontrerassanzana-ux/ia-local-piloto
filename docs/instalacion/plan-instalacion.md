@@ -2,6 +2,8 @@
 
 Estado: **planificado, sin ejecutar todavía en el equipo real.** Cada paso se marca cuando efectivamente se hace en la máquina, no antes. Cada paso tiene un script correspondiente en `scripts/` — ver `scripts/README.md` para cómo correrlos.
 
+**Recomendado (2026-08-27):** correr `scripts/instalar-todo.bat` en vez de los pasos de abajo uno por uno — es una ventana única que corre todo en el orden real de dependencias (que no coincide con el orden numérico de los archivos) y verifica cada paso antes de seguir. Los pasos de abajo describen el mismo trabajo desglosado, útil para entender qué hace cada pieza o para correr un paso puntual de nuevo.
+
 Sigue el stack ya definido en `../arquitectura/arquitectura-piloto.md` (esquema completo) y en `../ia-local/docs/arquitectura.md` (conceptos generales), adaptado a que acá sí hay una GPU dedicada real.
 
 ## Paso 0 — Verificar el equipo antes de instalar

@@ -34,4 +34,4 @@ Piloto real de un LLM autoalojado (Qwen 2.5 Coder 7B vía Ollama) sobre un equip
 
 ## Estado actual
 
-Documentación y scripts completos — **ningún script se ha ejecutado todavía en el equipo real del piloto**. Ver `docs/instalacion/plan-instalacion.md` para el orden de pasos.
+Documentación y scripts completos — **ningún script se ha ejecutado todavía en el equipo real del piloto**. Instalador único con GUI en `scripts/instalar-todo.bat` (recomendado, corre todo en el orden real de dependencias con verificación entre pasos) — ver `docs/instalacion/plan-instalacion.md` para el detalle desglosado.
