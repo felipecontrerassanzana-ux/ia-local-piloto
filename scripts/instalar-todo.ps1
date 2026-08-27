@@ -13,11 +13,16 @@
   ver docs/instalacion/aprendizaje-scripts.md), en el orden correcto, con verificación
   automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo aparte para
   chequeos posteriores (no ligados a una instalación en curso).
+
+  Interfaz con 3 pestañas (agregado 2026-08-27, a pedido de Felipe): Progreso (checklist +
+  parámetros), Consola (lo que cada script va imprimiendo), y Logs generados (los archivos
+  que los scripts individuales dejan en logs/, ver scripts/README.md § Logs).
 #>
 
 . "$PSScriptRoot\pasos\_elevar.ps1"
 
 $script:CarpetaPasos = Join-Path $PSScriptRoot "pasos"
+$script:CarpetaLogs = Join-Path (Split-Path $PSScriptRoot -Parent) "logs"
 
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName PresentationCore
@@ -103,52 +108,90 @@ function Test-Paso {
 }
 
 # ============================================================================
-# XAML de la ventana
+# XAML de la ventana — 3 pestañas: Progreso, Consola, Logs generados
 # ============================================================================
 
 [xml]$xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Instalador — IA Local Piloto" Height="780" Width="900"
+        Title="Instalador — IA Local Piloto" Height="820" Width="920"
         WindowStartupLocation="CenterScreen">
     <Grid Margin="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="180"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="IA Local Piloto — Instalación completa" FontSize="18" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <GroupBox Grid.Row="1" Header="Parámetros" Margin="0,0,0,10" Padding="8">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                    <TextBlock Text="Letra del disco NVMe:" Width="220" VerticalAlignment="Center"/>
-                    <TextBox Name="TxtNVMe" Width="40" Text="C"/>
-                    <TextBlock Text="  (confirmar con el reporte del Paso 00 antes de avanzar)" FontStyle="Italic" Foreground="Gray" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                    <TextBlock Text="Carpeta de Google Drive (backup):" Width="220" VerticalAlignment="Center"/>
-                    <TextBox Name="TxtBackup" Width="400" Text=""/>
-                </StackPanel>
-                <CheckBox Name="ChkDocker" Content="Instalar Docker también (opcional/respaldo, normalmente no hace falta)" Margin="0,4,0,0"/>
-                <CheckBox Name="ChkRed" Content="Preparar el equipo para conexión remota de agentes (activa OLLAMA_HOST=0.0.0.0 — instalar Tailscale aparte después)" Margin="0,4,0,0"/>
-            </StackPanel>
-        </GroupBox>
+        <TabControl Grid.Row="1" Name="Pestanas">
 
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" BorderBrush="Gray" BorderThickness="1">
-            <StackPanel Name="PanelPasos" Margin="6"/>
-        </ScrollViewer>
+            <TabItem Header="Progreso">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-        <TextBox Name="TxtLog" Grid.Row="3" Margin="0,10,0,0" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
-                 HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" TextWrapping="NoWrap"/>
+                    <GroupBox Grid.Row="0" Header="Parámetros" Margin="0,0,0,10" Padding="8">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="Letra del disco NVMe:" Width="220" VerticalAlignment="Center"/>
+                                <TextBox Name="TxtNVMe" Width="40" Text="C"/>
+                                <TextBlock Text="  (confirmar con el reporte del Paso 00 antes de avanzar)" FontStyle="Italic" Foreground="Gray" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBlock Text="Carpeta de Google Drive (backup):" Width="220" VerticalAlignment="Center"/>
+                                <TextBox Name="TxtBackup" Width="400" Text=""/>
+                            </StackPanel>
+                            <CheckBox Name="ChkDocker" Content="Instalar Docker también (opcional/respaldo, normalmente no hace falta)" Margin="0,4,0,0"/>
+                            <CheckBox Name="ChkRed" Content="Preparar el equipo para conexión remota de agentes (activa OLLAMA_HOST=0.0.0.0 — instalar Tailscale aparte después)" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </GroupBox>
 
-        <ProgressBar Name="Barra" Grid.Row="4" Height="18" Margin="0,10,0,6" Minimum="0" Maximum="100"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" BorderBrush="Gray" BorderThickness="1">
+                        <StackPanel Name="PanelPasos" Margin="6"/>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
+            <TabItem Header="Consola">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="Gray"
+                               Text="Lo que cada script va imprimiendo, paso por paso, a medida que corre — esto es la salida real de scripts\pasos\*.ps1, no un resumen."/>
+                    <TextBox Name="TxtLog" Grid.Row="1" IsReadOnly="True" VerticalScrollBarVisibility="Auto"
+                             HorizontalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="11" TextWrapping="NoWrap"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Logs generados">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="0,0,0,6" TextWrapping="Wrap" Foreground="Gray"
+                               Text="Archivos que algunos scripts dejan aparte en logs/ (ej. la prueba de estrés genera un .csv y un resumen) — no todos los pasos generan uno, la mayoría solo imprimen en la pestaña Consola."/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Name="BtnAbrirLogs" Content="Abrir carpeta de logs" Width="180" Height="28" Margin="0,0,8,0"/>
+                        <Button Name="BtnActualizarLogs" Content="Actualizar lista" Width="140" Height="28"/>
+                    </StackPanel>
+                    <ListBox Name="ListaLogs" Grid.Row="2" FontFamily="Consolas" FontSize="11"/>
+                </Grid>
+            </TabItem>
+
+        </TabControl>
+
+        <ProgressBar Name="Barra" Grid.Row="2" Height="18" Margin="0,10,0,6" Minimum="0" Maximum="100"/>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Name="BtnIniciar" Content="Iniciar instalación" Width="160" Height="32" Margin="0,0,8,0"/>
             <Button Name="BtnCerrar" Content="Cerrar" Width="100" Height="32"/>
         </StackPanel>
@@ -159,15 +202,19 @@ function Test-Paso {
 $reader = New-Object System.Xml.XmlNodeReader $xaml
 $window = [Windows.Markup.XamlReader]::Load($reader)
 
-$TxtNVMe    = $window.FindName("TxtNVMe")
-$TxtBackup  = $window.FindName("TxtBackup")
-$ChkDocker  = $window.FindName("ChkDocker")
-$ChkRed     = $window.FindName("ChkRed")
-$PanelPasos = $window.FindName("PanelPasos")
-$TxtLog     = $window.FindName("TxtLog")
-$Barra      = $window.FindName("Barra")
-$BtnIniciar = $window.FindName("BtnIniciar")
-$BtnCerrar  = $window.FindName("BtnCerrar")
+$TxtNVMe          = $window.FindName("TxtNVMe")
+$TxtBackup        = $window.FindName("TxtBackup")
+$ChkDocker        = $window.FindName("ChkDocker")
+$ChkRed           = $window.FindName("ChkRed")
+$PanelPasos       = $window.FindName("PanelPasos")
+$TxtLog           = $window.FindName("TxtLog")
+$Barra            = $window.FindName("Barra")
+$BtnIniciar       = $window.FindName("BtnIniciar")
+$BtnCerrar        = $window.FindName("BtnCerrar")
+$Pestanas         = $window.FindName("Pestanas")
+$ListaLogs        = $window.FindName("ListaLogs")
+$BtnAbrirLogs     = $window.FindName("BtnAbrirLogs")
+$BtnActualizarLogs = $window.FindName("BtnActualizarLogs")
 
 # Una fila de texto por paso, guardadas para poder actualizar el color/estado después
 $script:FilasPaso = @{}
@@ -194,6 +241,33 @@ function Actualizar-Fila {
     $fila.Foreground = $Color
 }
 
+function Actualizar-ListaLogs {
+    $ListaLogs.Items.Clear()
+    if (Test-Path $script:CarpetaLogs) {
+        $archivos = Get-ChildItem $script:CarpetaLogs -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending
+        if ($archivos) {
+            foreach ($a in $archivos) { $ListaLogs.Items.Add("$($a.LastWriteTime.ToString('yyyy-MM-dd HH:mm'))   $($a.Name)") | Out-Null }
+        } else {
+            $ListaLogs.Items.Add("(carpeta logs/ vacía todavía — algunos pasos, como la prueba de estrés, todavía no corrieron)") | Out-Null
+        }
+    } else {
+        $ListaLogs.Items.Add("(carpeta logs/ no existe todavía — se crea sola cuando un script escribe el primer log)") | Out-Null
+    }
+}
+
+# ============================================================================
+# Pestaña "Logs generados"
+# ============================================================================
+
+$BtnAbrirLogs.Add_Click({
+    if (-not (Test-Path $script:CarpetaLogs)) {
+        New-Item -ItemType Directory -Force -Path $script:CarpetaLogs | Out-Null
+    }
+    Start-Process explorer.exe $script:CarpetaLogs
+})
+
+$BtnActualizarLogs.Add_Click({ Actualizar-ListaLogs })
+
 # ============================================================================
 # Botón: iniciar instalación
 # ============================================================================
@@ -209,6 +283,8 @@ $BtnIniciar.Add_Click({
         $BtnIniciar.IsEnabled = $true
         return
     }
+
+    $Pestanas.SelectedIndex = 1  # saltar a la pestaña "Consola" para que se vea el progreso en vivo
 
     Escribir-Log "=== Instalación iniciada — $(Get-Date) ==="
     Escribir-Log "NVMe: ${script:LetraNVMe}:  |  Backup: $carpetaBackup  |  Docker opcional: $($ChkDocker.IsChecked)  |  Preparar red: $($ChkRed.IsChecked)"
@@ -262,10 +338,12 @@ $BtnIniciar.Add_Click({
             Actualizar-Fila -Id $p.Id -Estado "FALLÓ" -Color "Red"
             Escribir-Log "<<< Paso $($p.Id) NO PASÓ LA VERIFICACIÓN — instalación detenida acá."
             Escribir-Log "    Revisar el log de arriba, corregir, y volver a correr este instalador (los pasos ya OK no se repiten a mano, pero si se corre de nuevo sí se re-ejecutan todos — no hay resumen de dónde quedó todavía)."
-            [System.Windows.MessageBox]::Show("El paso $($p.Id) ($($p.Nombre)) no pasó la verificación. Revisar el log antes de seguir.", "Instalación detenida") | Out-Null
+            [System.Windows.MessageBox]::Show("El paso $($p.Id) ($($p.Nombre)) no pasó la verificación. Revisar el log en la pestaña 'Consola' antes de seguir.", "Instalación detenida") | Out-Null
             $fallo = $true
         }
     }
+
+    Actualizar-ListaLogs
 
     if (-not $fallo) {
         Escribir-Log ""
@@ -273,7 +351,7 @@ $BtnIniciar.Add_Click({
         Escribir-Log ""
         Escribir-Log "Quedan estos pasos MANUALES (necesitan login/token, no se automatizan a propósito):"
         foreach ($m in $script:PasosManuales) { Escribir-Log "  - $m" }
-        [System.Windows.MessageBox]::Show("Instalación automática completa. Quedan pasos manuales listados en el log (Cloudflare, Tailscale, extensiones de VS Code).", "Listo") | Out-Null
+        [System.Windows.MessageBox]::Show("Instalación automática completa. Quedan pasos manuales listados en la pestaña 'Consola' (Cloudflare, Tailscale, extensiones de VS Code).", "Listo") | Out-Null
     }
 
     $BtnIniciar.IsEnabled = $true
@@ -281,7 +359,9 @@ $BtnIniciar.Add_Click({
 
 $BtnCerrar.Add_Click({ $window.Close() })
 
-Escribir-Log "Instalador listo. Confirmá la letra del NVMe (ver el reporte del Paso 00 si no estás seguro) y la carpeta de backup, y presioná 'Iniciar instalación'."
+Actualizar-ListaLogs
+
+Escribir-Log "Instalador listo. Confirmá la letra del NVMe (ver el reporte del Paso 00 si no estás seguro) y la carpeta de backup en la pestaña 'Progreso', y presioná 'Iniciar instalación'."
 Escribir-Log ""
 Escribir-Log "IMPORTANTE: cada paso corre de forma directa, sin hilo aparte -- mientras un paso largo está"
 Escribir-Log "corriendo (una descarga, una instalación), Windows puede marcar esta ventana como 'No responde'."
