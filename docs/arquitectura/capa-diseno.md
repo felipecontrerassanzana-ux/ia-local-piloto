@@ -32,7 +32,9 @@ Felipe fue explícito en esto: la cuantización de Qwen 2.5 Coder 7B (Q4_K_M o Q
 4. El feedback vuelve a Qwen Code/Goose, que corrige.
 5. Si falta un asset que no existe en el sistema de componentes (un ícono, una ilustración), se genera con ComfyUI (API en `http://localhost:8188/prompt` una vez abierto) antes de continuar.
 
-**Pendiente de formalizar:** empaquetar este loop como una Skill invocable por nombre (Qwen Code y Goose soportan Skills, ver `../herramientas/como-funcionan-los-agentes.md`) — no se armó todavía porque no se verificó el formato exacto de archivo que usa cada herramienta para definir una Skill propia. Por ahora queda como procedimiento documentado en esta página, aplicable a mano.
+**Actualizado 2026-08-27 — encontrado un mecanismo nativo que podría simplificar los pasos 2-3:** investigando Qwen Code a fondo (ver `../referencia/qwen-code.md`) se encontró que tiene un comando `/model --vision <modelo>` diseñado exactamente para este caso — "configura el modelo puente de visión usado para transcribir imágenes cuando el modelo principal es de solo texto". Configurando `qwen3-vl:4b` ahí, Qwen Code lo invocaría solo cada vez que se le pase una imagen, sin necesidad de armar el paso de "pasarle la captura a mano" como procedimiento separado. También existe `/model --image <modelo>` para una herramienta de generación de imágenes incorporada — **pendiente de confirmar si ComfyUI puede exponerse de forma compatible con esto** (su API real es por "workflow" JSON, no un endpoint simple tipo OpenAI de imágenes) — de confirmarse, cerraría el paso 5 también de forma nativa.
+
+**Formalización del loop — ya resuelto para Qwen Code, pendiente para Goose:** en vez de una Skill, la forma más directa es un **comando personalizado** de Qwen Code (`.qwen/commands/diseno/revisar.md`, versionado en este repo) — ver el ejemplo completo en `../referencia/qwen-code.md`. Goose tiene el concepto equivalente (**Recipes**, ver `../referencia/goose.md`), pero el formato exacto del archivo no se verificó en detalle todavía — pendiente de armar cuando se confirme la sintaxis en el equipo real.
 
 ## Presupuesto de VRAM (con el modelo de código protegido)
 
@@ -48,8 +50,9 @@ Cada uno entra solo en los 12GB por separado — nunca hace falta que los tres c
 
 - [ ] Correr `scripts/15-instalar-comfyui.ps1` en el equipo real y confirmar tiempos de generación reales (no medidos todavía, nada se ha ejecutado en el equipo piloto).
 - [ ] Definir el mecanismo de captura de pantalla para el caso de app de escritorio nativa (el caso web con Playwright ya está resuelto).
-- [ ] Formalizar el loop generar→revisar→corregir como Skill real, una vez verificado el formato de Skills de Qwen Code/Goose.
-- [ ] Medir en la práctica si 100K de contexto (una vez confirmado) alcanza para incluir capturas + reglas de diseño + código sin degradar la respuesta.
+- [x] Formalizar el loop como comando invocable — resuelto para Qwen Code (comando personalizado `.qwen/commands/diseno/revisar.md`, ver `../referencia/qwen-code.md`); pendiente el equivalente en Goose (Recipe, formato exacto sin verificar aún, ver `../referencia/goose.md`).
+- [ ] Confirmar si `/model --vision`/`--image` de Qwen Code pueden reemplazar los pasos manuales 2-3-5 del loop de arriba — en particular si ComfyUI puede exponerse compatible con `--image` (su API es por workflow JSON, no confirmado que encaje).
+- [ ] Medir en la práctica si el contexto real disponible (ver `../referencia/qwen-2.5-coder-7b.md` — 32K confirmado, más allá de eso degrada calidad sin YaRN) alcanza para incluir capturas + reglas de diseño + código sin degradar la respuesta.
 
 ## Fuentes consultadas (2026-08-27)
 
@@ -57,3 +60,5 @@ Cada uno entra solo en los 12GB por separado — nunca hace falta que los tres c
 - [ComfyUI — Releases en GitHub](https://github.com/Comfy-Org/ComfyUI/releases) — build portable para Windows/NVIDIA.
 - [AUTOMATIC1111/stable-diffusion-webui — README](https://github.com/AUTOMATIC1111/stable-diffusion-webui) — confirma el requisito de Python 3.10.6 exacto.
 - [Comfy-Org/stable-diffusion-v1-5-archive — Hugging Face](https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive) — mirror oficial del checkpoint original de RunwayML, dado de baja en 2024.
+- [Commands — Qwen Code Docs](https://github.com/QwenLM/qwen-code/blob/main/docs/users/features/commands.md) — confirma `/model --vision`/`--image` y los comandos personalizados en `.qwen/commands/`.
+- [CLI Commands — Goose Docs](https://goose-docs.ai/docs/guides/goose-cli-commands/) — confirma Recipes como equivalente de Goose a los comandos personalizados.

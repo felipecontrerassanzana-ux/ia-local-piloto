@@ -5,6 +5,8 @@ Material de estudio por herramienta/modelo — para tener dominio completo de ca
 Distinto de las otras carpetas de `docs/`: ahí está **la decisión tomada para este piloto** (por qué este modelo, por qué esta herramienta); acá está **cómo dominar la herramienta en sí**, útil incluso si mañana se cambia de decisión.
 
 - **`ollama.md`** — el motor de inferencia: CLI completo, API REST, variables de entorno de rendimiento (Flash Attention, cuantización de KV cache, concurrencia), y cómo se relacionan con el resto del stack.
-- **`qwen-2.5-coder-7b.md`** — el modelo instalado: parámetros de generación recomendados, cómo prompearlo bien para código, límites reales conocidos.
+- **`qwen-2.5-coder-7b.md`** — el modelo instalado: parámetros de generación recomendados, cómo prompearlo bien para código, y un hallazgo real sobre el límite de contexto (32K vs 100K/131K, YaRN).
+- **`qwen-code.md`** — comandos reales de Qwen Code, más allá de la tabla de paridad con Claude Code — incluye un hallazgo que podría formalizar de fábrica el loop de la capa de diseño (`/model --vision`/`--image`).
+- **`goose.md`** — comandos reales de Goose, y su equivalente a los comandos personalizados de Qwen Code (Recipes).
 
-*(en construcción — próximo: Qwen Code, Goose, después el resto del stack)*
+*(en construcción — próximo: el resto del stack — Open WebUI, Qdrant, Qwen3-VL, ComfyUI, Tailscale/Cloudflare)*
