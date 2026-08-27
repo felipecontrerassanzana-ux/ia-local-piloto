@@ -253,3 +253,14 @@ El usuario preguntó si, trabajando con Qwen Code/Goose, se puede retomar una co
 - **Goose** guarda las sesiones en SQLite (`sessions.db`, desde 1.10.0) — al estar en disco debería sobrevivir igual, pero la documentación oficial no lo confirma con las mismas palabras explícitas que Qwen Code (queda marcado como razonable, no 100% verificado con cita textual).
 - **Hallazgo estructural importante:** el historial vive en el disco de quien corre el proceso de Qwen Code/Goose, no en Ollama (que no guarda estado) ni en la nube. Una sesión iniciada local en el equipo piloto y una iniciada remota (Qwen Code en otro dispositivo, conectado por Tailscale) **no se sincronizan entre sí** — cada una vive en su propio disco. Open WebUI es la excepción: su historial vive en el servidor, por eso se ve igual desde cualquier navegador con el mismo login.
 - Documentado en `docs/como-funcionan-los-agentes.md`, nueva sección "Continuidad de sesión: qué pasa si se corta la luz o se apaga el equipo".
+
+## 2026-08-27 (mismo día) — Investigado: ¿hace falta un pack de ajustes de SQLite para este hardware?
+
+El usuario preguntó, a partir de una experiencia real documentada en su repo `softland-server-runbook` (SQL Server sin `max server memory` fijado en un servidor de 15,9GB de RAM), si convendría lo mismo acá para el SQLite que usa Goose (`sessions.db`). Investigado a fondo, la conclusión es que **no hay una acción pendiente real**, por razones estructurales, no por falta de revisión:
+
+- El riesgo de SQL Server (proceso servidor que reclama RAM de forma agresiva sin límite fijado) no se replica en SQLite — es una librería embebida con comportamiento conservador por defecto (`cache_size` ~2MB), el problema inverso al de SQL Server.
+- Goose no expone ninguna forma de configurar los `PRAGMA` de su `sessions.db` — no hay perilla que ajustar sin modificar el código de Goose.
+- Open WebUI (que también usa SQLite, `webui.db`) sí expone `DATABASE_ENABLE_SQLITE_WAL`, pero **ya viene activado por defecto desde la versión 0.6.23** — el ajuste más relevante ya está aplicado sin hacer nada.
+- La escala tampoco es comparable: 38 bases de producción de un ERP vs. el historial de conversación de un solo usuario en su propio equipo.
+
+Documentado en `docs/como-funcionan-los-agentes.md` — el objetivo es dejar registrado que se investigó y por qué no hace falta acción, no solo omitirlo en silencio.
