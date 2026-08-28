@@ -31,6 +31,11 @@
   Los tokens (entrada/salida) se muestran como metrica aparte, no como si fueran equivalentes
   al tiempo -- varian mucho segun la complejidad de la tarea, no son un buen proxy de esfuerzo.
 
+  Si un proyecto en la config trae "repoPath", el script tambien corre `git` sobre esa carpeta
+  (una vez por proyecto, no por bloque) para saber si vive solo local o tiene remoto (GitHub),
+  y si hay cambios sin commitear o commits sin pushear en ese momento -- relevante porque horas
+  invertidas en un proyecto que nunca se subio a ningun lado es tiempo sin respaldo real.
+
 .PARAMETER ConfigPath
   Que proyectos reconocer y como. Ver bitacora-proyectos.example.json -- copiarlo a
   bitacora-proyectos.json (sin ".example") y completar con tus propios proyectos. Ese archivo
@@ -85,6 +90,56 @@ function Detectar-Proyecto {
         }
     }
     return $null
+}
+
+function Obtener-EstadoRepo {
+    # Info de "vive local vs. GitHub" para un proyecto -- no se calcula por bloque (seria
+    # correr git cientos de veces), se calcula una sola vez por proyecto al armar projectMeta.
+    param([string]$RepoPath)
+
+    if ([string]::IsNullOrWhiteSpace($RepoPath)) { return $null }
+    if (-not (Test-Path $RepoPath)) {
+        return [ordered]@{ carpetaExiste = $false; esRepoGit = $false }
+    }
+    if (-not (Test-Path (Join-Path $RepoPath ".git"))) {
+        return [ordered]@{ carpetaExiste = $true; esRepoGit = $false }
+    }
+    $gitCmd = Get-Command git -ErrorAction SilentlyContinue
+    if (-not $gitCmd) {
+        return [ordered]@{ carpetaExiste = $true; esRepoGit = $true; gitNoDisponible = $true }
+    }
+
+    $remoto = $null
+    try {
+        $lineasRemoto = git -C $RepoPath remote -v 2>$null
+        if ($lineasRemoto) {
+            $primera = @($lineasRemoto)[0]
+            if ($primera -match '^\S+\s+(\S+)') { $remoto = $matches[1] }
+        }
+    } catch { }
+
+    $sinCommitear = $false
+    try {
+        $porcelain = git -C $RepoPath status --porcelain 2>$null
+        $sinCommitear = [bool]$porcelain
+    } catch { }
+
+    $commitsSinPushear = 0
+    if ($remoto) {
+        try {
+            $cuenta = git -C $RepoPath rev-list --count '@{u}..HEAD' 2>$null
+            if ($cuenta -match '^\d+$') { $commitsSinPushear = [int]$cuenta }
+        } catch { }
+    }
+
+    return [ordered]@{
+        carpetaExiste     = $true
+        esRepoGit         = $true
+        tieneRemoto       = [bool]$remoto
+        remoto            = $remoto
+        sinCommitear      = $sinCommitear
+        commitsSinPushear = $commitsSinPushear
+    }
 }
 
 $carpetaSesiones = Join-Path $env:USERPROFILE ".claude\projects"
@@ -267,9 +322,16 @@ foreach ($b in $fusionados) {
     })
 }
 
+Write-Host "Chequeando estado de repo (local/GitHub) de cada proyecto con repoPath configurado..." -ForegroundColor Cyan
+
 $projectMeta = [ordered]@{}
 foreach ($regla in $reglas) {
-    $projectMeta[$regla.clave] = [ordered]@{ label = $regla.etiqueta; color = $regla.color; desc = $regla.desc }
+    $entrada = [ordered]@{ label = $regla.etiqueta; color = $regla.color; desc = $regla.desc }
+    if ($regla.repoPath) {
+        $estadoRepo = Obtener-EstadoRepo -RepoPath $regla.repoPath
+        if ($estadoRepo) { $entrada['repo'] = $estadoRepo }
+    }
+    $projectMeta[$regla.clave] = $entrada
 }
 $projectMeta[$defecto.clave] = [ordered]@{ label = $defecto.etiqueta; color = $defecto.color; desc = $defecto.desc }
 

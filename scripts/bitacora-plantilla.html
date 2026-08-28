@@ -21,6 +21,9 @@
     --accent-soft: #f0dcc4;
     --shadow: 0 1px 2px rgba(43, 32, 10, 0.05), 0 10px 28px -16px rgba(43, 32, 10, 0.28);
     --radius: 10px;
+    --ok: #4d7c3a; --ok-soft: #e3ecd8;
+    --warn: #a15c1f; --warn-soft: #f3e2cc;
+    --neutral-soft: #e8e1d1;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -28,6 +31,9 @@
       --text: #f2e8d4; --text-dim: #b8a985; --text-faint: #7d7154;
       --accent: #e2a13d; --accent-text: #1c1509; --accent-soft: #3a2c12;
       --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px -16px rgba(0,0,0,0.6);
+      --ok: #8fbf6f; --ok-soft: #263a1c;
+      --warn: #e0a568; --warn-soft: #3d2c15;
+      --neutral-soft: #2d2618;
     }
   }
   :root[data-theme="dark"] {
@@ -35,6 +41,9 @@
     --text: #f2e8d4; --text-dim: #b8a985; --text-faint: #7d7154;
     --accent: #e2a13d; --accent-text: #1c1509; --accent-soft: #3a2c12;
     --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px -16px rgba(0,0,0,0.6);
+    --ok: #8fbf6f; --ok-soft: #263a1c;
+    --warn: #e0a568; --warn-soft: #3d2c15;
+    --neutral-soft: #2d2618;
   }
 
   * { box-sizing: border-box; }
@@ -105,7 +114,14 @@
   .project-desc .pd-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
   .project-desc .pd-title h3 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15rem; }
   .project-desc .pd-title .pd-stats { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-faint); }
-  .project-desc .pd-body { font-size: 0.86rem; color: var(--text-dim); line-height: 1.5; max-width: 62ch; }
+  .project-desc .pd-body { font-size: 0.86rem; color: var(--text-dim); line-height: 1.5; max-width: 62ch; margin-bottom: 10px; }
+  .repo-badge {
+    display: inline-flex; align-items: center; gap: 6px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+  }
+  .repo-badge.repo-ok { background: var(--ok-soft); color: var(--ok); }
+  .repo-badge.repo-warn { background: var(--warn-soft); color: var(--warn); }
+  .repo-badge.repo-neutral { background: var(--neutral-soft); color: var(--text-faint); }
 
   section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px 22px; margin-bottom: 20px; box-shadow: var(--shadow); }
   section .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
@@ -333,6 +349,20 @@ function renderProjectNav() {
   });
 }
 
+function repoBadgeHtml(meta) {
+  const r = meta && meta.repo;
+  if (!r) return '';
+  if (!r.carpetaExiste) return `<span class="repo-badge repo-warn">⚠ carpeta no encontrada</span>`;
+  if (!r.esRepoGit) return `<span class="repo-badge repo-neutral">sin control de versiones</span>`;
+  if (r.gitNoDisponible) return `<span class="repo-badge repo-neutral">git no disponible para chequear</span>`;
+  if (!r.tieneRemoto) return `<span class="repo-badge repo-warn">solo local, sin remoto</span>`;
+  const pendientes = [];
+  if (r.sinCommitear) pendientes.push('cambios sin commitear');
+  if (r.commitsSinPushear > 0) pendientes.push(r.commitsSinPushear + ' commit' + (r.commitsSinPushear > 1 ? 's' : '') + ' sin pushear');
+  if (pendientes.length) return `<span class="repo-badge repo-warn">GitHub · ${pendientes.join(' · ')}</span>`;
+  return `<span class="repo-badge repo-ok">GitHub · al día</span>`;
+}
+
 function renderProjectDesc() {
   const el = document.getElementById('projectDesc');
   const k = state.selectedProject;
@@ -353,6 +383,7 @@ function renderProjectDesc() {
   el.innerHTML = `
     <div class="pd-title"><h3 class="display">${meta.label || k}</h3><span class="pd-stats">${fmtHM(totalForProject(k))} · ${activeDaysForSel.length} días · ${tokStr}</span></div>
     <div class="pd-body">${meta.desc || 'Sin descripción.'}</div>
+    ${repoBadgeHtml(meta)}
   `;
 }
 

@@ -437,3 +437,14 @@ Con los acentos ya corregidos, Felipe probó de nuevo y señaló algo obvio en r
 - `bitacora-horas.bat` — pasa `-AbrirNavegador` siempre, y el `pause` final quedó condicionado a que el script haya terminado con error (`%ERRORLEVEL% NEQ 0`) — si todo sale bien, la ventana de CMD se cierra sola; si algo falla, se queda abierta con el mensaje para poder leerlo.
 
 Verificado corriendo el `.bat` real de punta a punta (`cmd /c`): termina con código de salida 0 y sin pedir tecla cuando todo sale bien.
+
+## 2026-08-28 (mismo día, más tarde) — Estado de repo (local vs. GitHub) por proyecto en la bitácora
+
+Felipe preguntó si sería relevante saber, para la bitácora de horas, si cada proyecto vive solo en el equipo o está en GitHub — con el razonamiento correcto de que horas invertidas en algo sin respaldo remoto es una señal de riesgo, no solo un dato curioso. Pidió ambos niveles (badge simple + estado vivo) en la misma pasada.
+
+**Agregado:**
+- `bitacora-proyectos.json`/`.example.json` — campo opcional `repoPath` por proyecto. Completado con las rutas reales de `ia-local-piloto`, `ia-local`, `ia-tecnoingenieria` y `cumplimiento-tecnoingenieria`; dejado sin `repoPath` en `deeptutor` (no es un repo git, es un contenedor Docker) y `proyectos-md` (el archivo vive fuera de cualquier repo, a propósito, ver `PROYECTOS.md` de `ia-local`).
+- `bitacora-horas.ps1` — nueva función `Obtener-EstadoRepo`: para cada proyecto con `repoPath`, corre `git remote -v` (¿tiene remoto?), `git status --porcelain` (¿hay cambios sin commitear?) y `git rev-list --count @{u}..HEAD` (¿cuántos commits sin pushear?) — una sola vez por proyecto al generar, no por cada bloque de tiempo.
+- `bitacora-plantilla.html` — badge en la tarjeta de descripción del proyecto seleccionado: verde "GitHub · al día", ámbar "GitHub · cambios sin commitear"/"N commits sin pushear" o "solo local, sin remoto", gris "sin control de versiones" (para proyectos sin `repoPath`). Colores semánticos nuevos (`--ok`/`--warn`/`--neutral-soft`) agregados a los tres bloques de tema (claro, oscuro por sistema, oscuro forzado), separados del color categórico de cada proyecto.
+
+**Verificado con datos reales, no solo en teoría:** al generar la bitácora en el momento, detectó correctamente que `ia-local-piloto` tenía cambios sin commitear de verdad (los que se estaban escribiendo en esa misma pasada), que `ia-tecnoingenieria` y `cumplimiento-tecnoingenieria` no tienen remoto, y que `ia-local` estaba al día. Confirmado visualmente con Playwright en claro y oscuro.

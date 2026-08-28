@@ -1,10 +1,10 @@
 {
-  "_comentario": "Copiar este archivo a bitacora-proyectos.json (sin '.example') y completar con tus propios proyectos -- ese archivo queda fuera de git a propósito (ver .gitignore), porque los nombres de tus otros repos son tuyos, no de este piloto. El orden importa: la primera regla que matchea gana, así que poné los nombres más específicos primero (ej. 'mi-proyecto-piloto' antes que 'mi-proyecto', si uno es sub-string del otro).",
+  "_comentario": "Copiar este archivo a bitacora-proyectos.json (sin '.example') y completar con tus propios proyectos -- ese archivo queda fuera de git a propósito (ver .gitignore), porque los nombres de tus otros repos son tuyos, no de este piloto. El orden importa: la primera regla que matchea gana, así que poné los nombres más específicos primero (ej. 'mi-proyecto-piloto' antes que 'mi-proyecto', si uno es sub-string del otro). 'repoPath' es opcional -- si el proyecto es un repo git local, agregalo para que la bitácora muestre si tiene remoto (GitHub), si hay cambios sin commitear, y si hay commits sin pushear. Omitilo si el proyecto no es un repo git (ej. un contenedor Docker, o un archivo suelto fuera de cualquier repo).",
   "umbralHuecoMinutos": 20,
   "offsetHorasZonaHoraria": -4,
   "proyectoPorDefecto": { "clave": "general", "etiqueta": "General / otros", "color": "#8d99ae", "desc": "Conversación sin un archivo de proyecto específico identificado en las acciones registradas." },
   "reglas": [
-    { "clave": "ia-local-piloto", "etiqueta": "IA Local Piloto", "color": "#4cc9f0", "desc": "Este piloto -- LLM autoalojado sobre hardware propio.", "patrones": ["ia-local-piloto"] },
+    { "clave": "ia-local-piloto", "etiqueta": "IA Local Piloto", "color": "#4cc9f0", "desc": "Este piloto -- LLM autoalojado sobre hardware propio.", "patrones": ["ia-local-piloto"], "repoPath": "C:\\Users\\TuUsuario\\Documents\\Proyectos IA\\ia-local-piloto" },
     { "clave": "ejemplo-otro-proyecto", "etiqueta": "Otro proyecto (ejemplo)", "color": "#f9844a", "desc": "Reemplazar esta entrada por uno de tus propios proyectos.", "patrones": ["nombre-carpeta-del-otro-proyecto"] }
   ]
 }
