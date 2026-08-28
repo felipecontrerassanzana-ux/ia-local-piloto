@@ -1,6 +1,6 @@
 ﻿<#
 .SINOPSIS
-  Instala Goose CLI (ver docs/herramientas/herramientas-trabajo.md).
+  Instala Goose CLI (ver docs/herramientas/01-herramientas-trabajo.md).
   Fuente verificada 2026-08-26: goose-docs.ai/docs/getting-started/installation (pestaña Windows > goose CLI).
 #>
 

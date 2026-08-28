@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Instala y deja corriendo Open WebUI NATIVO en Windows (vía pip) — sin Docker.
-  Ver docs/arquitectura/docker-y-recursos.md. Requiere Python (scripts/pasos/12-instalar-herramientas-dev.ps1).
+  Ver docs/arquitectura/03-docker-y-recursos.md. Requiere Python (scripts/pasos/12-instalar-herramientas-dev.ps1).
 
   Confirmado en documentación oficial (docs.openwebui.com, 2026-08-27): "Python: Suitable
   for low-resource environments" — es un método soportado oficialmente, no un hack.
@@ -9,7 +9,7 @@
   Corregido 2026-08-27: sin configurar explícitamente, Open WebUI usa sus defaults internos
   (ChromaDB como vector store, sentence-transformers/all-MiniLM-L6-v2 para embeddings) —
   IGNORANDO a Qdrant y BGE-M3, que ya se instalan en este piloto pero nunca quedaban
-  conectados. Ver docs/referencia/open-webui.md para el detalle completo del hallazgo.
+  conectados. Ver docs/referencia/05-open-webui.md para el detalle completo del hallazgo.
 #>
 
 . "$PSScriptRoot\_elevar.ps1"
@@ -31,7 +31,7 @@ if ($openwebui) {
     pip install open-webui
 }
 
-# Registrar como Tarea Programada para que arranque solo con Windows (ver docs/operacion/mantenimiento.md §1)
+# Registrar como Tarea Programada para que arranque solo con Windows (ver docs/operacion/01-mantenimiento.md §1)
 $existe = Get-ScheduledTask -TaskName "OpenWebUI-Local" -ErrorAction SilentlyContinue
 if ($existe) {
     Write-Host "La tarea programada 'OpenWebUI-Local' ya existe." -ForegroundColor Yellow
@@ -47,7 +47,7 @@ if ($existe) {
     Write-Host "Tarea programada 'OpenWebUI-Local' creada — arranca con Windows, sin necesitar sesión abierta." -ForegroundColor Green
 }
 
-# --- Conectar Open WebUI a Qdrant y BGE-M3 (ver docs/referencia/open-webui.md) ---
+# --- Conectar Open WebUI a Qdrant y BGE-M3 (ver docs/referencia/05-open-webui.md) ---
 # Sin esto, Open WebUI usa sus defaults internos (ChromaDB + sentence-transformers/all-MiniLM-L6-v2),
 # ignorando en silencio a Qdrant y BGE-M3 aunque ambos ya estén instalados y corriendo.
 Write-Host "Configurando Open WebUI para usar Qdrant (RAG) y BGE-M3 vía Ollama (embeddings)..." -ForegroundColor Cyan
@@ -71,7 +71,7 @@ Write-Host ""
 Write-Host "PASO MANUAL IMPORTANTE:" -ForegroundColor Yellow
 Write-Host "  Entra a http://localhost:8080 y crea la PRIMERA cuenta ahora mismo." -ForegroundColor Yellow
 Write-Host "  Esa cuenta queda como administrador, y el registro público se cierra automáticamente" -ForegroundColor Yellow
-Write-Host "  (comportamiento por defecto de Open WebUI, ver docs/operacion/acceso-remoto.md) — no dejar esto para después." -ForegroundColor Yellow
+Write-Host "  (comportamiento por defecto de Open WebUI, ver docs/operacion/02-acceso-remoto.md) — no dejar esto para después." -ForegroundColor Yellow
 Write-Host ""
 Write-Host "En Settings > Connections de Open WebUI, confirmar que apunta a Ollama en http://localhost:11434" -ForegroundColor Cyan
 Write-Host "(nativo también, así que localhost normal alcanza — ya no hace falta host.docker.internal)." -ForegroundColor Cyan

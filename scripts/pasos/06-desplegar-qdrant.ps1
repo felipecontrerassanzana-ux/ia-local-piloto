@@ -1,7 +1,7 @@
 ﻿<#
 .SINOPSIS
   Instala y deja corriendo Qdrant (base vectorial para el RAG) NATIVO en Windows —
-  sin Docker. Ver docs/arquitectura/docker-y-recursos.md: en un equipo de 16GB, evitar la capa
+  sin Docker. Ver docs/arquitectura/03-docker-y-recursos.md: en un equipo de 16GB, evitar la capa
   de WSL2/Docker Desktop cuando existe una alternativa nativa real ahorra varios GB de RAM.
 
   Binario oficial verificado en github.com/qdrant/qdrant/releases (2026-08-27):
@@ -36,7 +36,7 @@ if (Test-Path $exePath) {
 
 New-Item -ItemType Directory -Force -Path "$instalarEn\storage" | Out-Null
 
-# Registrar como Tarea Programada para que arranque solo con Windows (ver docs/operacion/mantenimiento.md §1)
+# Registrar como Tarea Programada para que arranque solo con Windows (ver docs/operacion/01-mantenimiento.md §1)
 $existe = Get-ScheduledTask -TaskName "Qdrant-Local" -ErrorAction SilentlyContinue
 if ($existe) {
     Write-Host "La tarea programada 'Qdrant-Local' ya existe." -ForegroundColor Yellow

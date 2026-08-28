@@ -10,7 +10,7 @@
 
   Código de salida: 0 si no hay errores de sintaxis ni archivos sin BOM (los hallazgos de
   lint no bloquean, incluyen los aceptados a propósito); 1 si hay algo real que corregir.
-  Pensado para usarse desde `scripts/hooks/pre-commit` — ver docs/instalacion/aprendizaje-scripts.md.
+  Pensado para usarse desde `scripts/hooks/pre-commit` — ver docs/instalacion/02-aprendizaje-scripts.md.
 
   Escanea de forma recursiva (top-level: instalar-todo.ps1, verificar-instalacion.ps1;
   scripts/pasos/: los 17 módulos de instalación) — no asumir que todo vive en una sola carpeta.

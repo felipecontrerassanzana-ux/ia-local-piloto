@@ -13,11 +13,11 @@ Es un proyecto **independiente y autocontenido** — no depende de nada externo 
 ## Qué usa de `ia-local` (sin duplicar)
 
 Este proyecto parte de la base teórica ya construida en el repo hermano `../ia-local/`:
-- `../ia-local/docs/modelos.md` — catálogo de modelos y su VRAM real.
-- `../ia-local/docs/hardware.md` — contexto de hardware y precios.
-- `../ia-local/docs/arquitectura.md` — stack de RAG, motor de inferencia, protocolo de evaluación de modelos.
-- `../ia-local/docs/conceptos-fundamentales.md` — teoría de cuantización, VRAM, RAG, etc.
-- `../ia-local/docs/guia-aprendizaje.md` — la guía previa (pensada para un notebook sin GPU); este proyecto es el paso siguiente, con GPU real.
+- `../ia-local/docs/02-modelos.md` — catálogo de modelos y su VRAM real.
+- `../ia-local/docs/03-hardware.md` — contexto de hardware y precios.
+- `../ia-local/docs/04-arquitectura.md` — stack de RAG, motor de inferencia, protocolo de evaluación de modelos.
+- `../ia-local/docs/01-conceptos-fundamentales.md` — teoría de cuantización, VRAM, RAG, etc.
+- `../ia-local/docs/06-guia-aprendizaje.md` — la guía previa (pensada para un notebook sin GPU); este proyecto es el paso siguiente, con GPU real.
 
 Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equipo, la decisión de modelo para este hardware puntual, los pasos reales de instalación, el plan de pruebas, y los resultados medidos de verdad (no de un sitio de benchmarks de terceros).
 
@@ -44,4 +44,4 @@ Fuera de `docs/`:
 
 ## Estado actual
 
-Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Instalador recomendado: `scripts/instalar-todo.bat`. Ver `docs/instalacion/plan-instalacion.md` para el detalle paso a paso y `scripts/README.md` para cómo correr cualquiera de los dos.
+Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Instalador recomendado: `scripts/instalar-todo.bat`. Ver `docs/instalacion/01-plan-instalacion.md` para el detalle paso a paso y `scripts/README.md` para cómo correr cualquiera de los dos.

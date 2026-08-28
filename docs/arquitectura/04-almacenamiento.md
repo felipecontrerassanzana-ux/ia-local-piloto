@@ -6,7 +6,7 @@ El equipo tiene dos discos: **NVMe ~500GB** (rápido, más chico) y **HDD 1TB** 
 
 Lo que se lee/escribe **repetidamente durante una sesión de trabajo** va en el NVMe. Lo que se lee **una sola vez, o casi nunca** (backups, overflow) puede vivir en el HDD sin costo real de rendimiento.
 
-**Por qué cambió el criterio:** la versión anterior de esta guía asumía que un modelo se carga una sola vez al arrancar Ollama y se queda en VRAM todo el día — bajo esa idea, el HDD era aceptable para los pesos del modelo. Con el diseño de intercambio de modelos bajo demanda (coder de código / revisor visual de diseño / generador de imágenes, ver `capa-diseno.md`), un modelo se carga y descarga de VRAM **varias veces por sesión**, no una sola vez — cada intercambio paga el costo de leer el disco de nuevo. La diferencia real: un HDD mecánico ronda 100-160 MB/s, un NVMe ronda 2.000-7.000+ MB/s — para un modelo de ~4-5GB, eso es la diferencia entre ~30 segundos de espera por cada cambio de tarea (HDD) y 1-2 segundos (NVMe).
+**Por qué cambió el criterio:** la versión anterior de esta guía asumía que un modelo se carga una sola vez al arrancar Ollama y se queda en VRAM todo el día — bajo esa idea, el HDD era aceptable para los pesos del modelo. Con el diseño de intercambio de modelos bajo demanda (coder de código / revisor visual de diseño / generador de imágenes, ver `02-capa-diseno.md`), un modelo se carga y descarga de VRAM **varias veces por sesión**, no una sola vez — cada intercambio paga el costo de leer el disco de nuevo. La diferencia real: un HDD mecánico ronda 100-160 MB/s, un NVMe ronda 2.000-7.000+ MB/s — para un modelo de ~4-5GB, eso es la diferencia entre ~30 segundos de espera por cada cambio de tarea (HDD) y 1-2 segundos (NVMe).
 
 | Qué | Dónde | Por qué |
 |---|---|---|
@@ -28,7 +28,7 @@ Confirmado en la documentación oficial de Ollama (`docs/windows.mdx`): se cambi
 
 El script `scripts/pasos/02-configurar-ollama.ps1` deja esto configurado automáticamente — solo hay que confirmar la letra de unidad correcta del NVMe antes de correrlo (parámetro `-LetraNVMe`, default `C`).
 
-ComfyUI (el motor de generación de imágenes, ver `capa-diseno.md`) guarda su propio checkpoint en `models/checkpoints/` dentro de su carpeta de instalación — el script `15-instalar-comfyui.ps1` la instala directo en el NVMe, no hace falta configurarlo aparte.
+ComfyUI (el motor de generación de imágenes, ver `02-capa-diseno.md`) guarda su propio checkpoint en `models/checkpoints/` dentro de su carpeta de instalación — el script `15-instalar-comfyui.ps1` la instala directo en el NVMe, no hace falta configurarlo aparte.
 
 ## Pendiente de confirmar
 

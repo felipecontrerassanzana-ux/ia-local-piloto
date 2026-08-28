@@ -11,7 +11,7 @@
   no para lectura humana en consola. Es duplicación deliberada, no un descuido: uno imprime
   texto coloreado para una persona, el otro arma JSON para un navegador/otro programa, y no
   vale la pena la abstracción extra para dos scripts de este tamaño (ver
-  docs/operacion/monitor-estado.md).
+  docs/operacion/03-monitor-estado.md).
 
   Alcance de red: escucha en TODAS las interfaces (prefijo "http://+:PUERTO/"), no solo
   localhost -- así se puede ver desde otro dispositivo por Tailscale sin pasar por Cloudflare.
@@ -90,7 +90,7 @@ function Obtener-Estado {
         tareaConfigurada = [bool]$infoBackup
         ultimaEjecucion  = if ($infoBackup) { $infoBackup.LastRunTime } else { $null }
         ultimoResultado  = if ($infoBackup) { $infoBackup.LastTaskResult } else { $null }
-        # El backup corre semanal (domingos 3am, ver docs/operacion/mantenimiento.md) -- más de
+        # El backup corre semanal (domingos 3am, ver docs/operacion/01-mantenimiento.md) -- más de
         # 8 días sin corrida (1 día de margen) es señal de que la tarea se rompió en silencio,
         # no solo que "todavía no le toca". Sin esto, una tarea rota se ve igual que una sana
         # (agregado 2026-08-27, a pedido de Felipe).

@@ -2,7 +2,7 @@
 .SINOPSIS
   Instalador único con interfaz gráfica (WPF nativo de Windows, sin Python) para todo el
   piloto. Corre los scripts 00-16 en el ORDEN REAL de dependencias (no el orden numérico de
-  archivo -- ver docs/instalacion/plan-instalacion.md, ej. 07 necesita 12 primero aunque el
+  archivo -- ver docs/instalacion/01-plan-instalacion.md, ej. 07 necesita 12 primero aunque el
   número de archivo diga lo contrario), verificando cada paso antes de seguir al siguiente.
 
   Pasos que necesitan login/token (Cloudflare, Tailscale) quedan deliberadamente AL FINAL,
@@ -10,7 +10,7 @@
   2026-08-27, ver docs/decisiones.md).
 
   No reemplaza los scripts individuales -- los reutiliza tal cual (viven en scripts/pasos/,
-  ver docs/instalacion/aprendizaje-scripts.md), en el orden correcto, con verificación
+  ver docs/instalacion/02-aprendizaje-scripts.md), en el orden correcto, con verificación
   automática entre cada uno. `verificar-instalacion.ps1` sigue existiendo aparte como
   herramienta independiente (chequeos en cualquier momento, no ligados a una instalación en
   curso) -- al terminar la instalación automática, este instalador también ofrece correrlo

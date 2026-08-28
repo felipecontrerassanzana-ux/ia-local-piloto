@@ -34,11 +34,11 @@ Sigue siendo válida (ver detalle ya investigado: gratis, funciona sin importar 
 
 **Opción A — Cloudflare Tunnel con el dominio propio.** Da lo mejor de ambos mundos: URL con el dominio de Felipe, sin exponer el router de la casa, sin límite de tráfico, y sin depender del hosting reseller (que ya se descartó como intermediario). La Opción B queda documentada como alternativa si en algún momento se prefiere sacar a Cloudflare del camino por completo.
 
-**Qué exponer:** la interfaz de Open WebUI (ver `../herramientas/motor-alternativas.md`), no el puerto crudo de Ollama — con autenticación (usuario/clave) activada en Open WebUI antes de dejar el túnel activo de forma permanente.
+**Qué exponer:** la interfaz de Open WebUI (ver `../herramientas/04-motor-alternativas.md`), no el puerto crudo de Ollama — con autenticación (usuario/clave) activada en Open WebUI antes de dejar el túnel activo de forma permanente.
 
 ## Autenticación — qué existe y qué activar (verificado 2026-08-26, docs.openwebui.com)
 
-Importante distinguir dos cosas que quedaron mezcladas en la pregunta: **Goose** (el agente, ver `../herramientas/herramientas-trabajo.md`) corre local en el equipo — no está expuesto a internet, así que no necesita login propio, solo importa quién tiene acceso físico/remoto al equipo en sí. Lo que sí queda expuesto a internet por el túnel es **Open WebUI**, y ahí la autenticación es necesaria, no opcional — pero ya viene resuelta en gran parte por defecto:
+Importante distinguir dos cosas que quedaron mezcladas en la pregunta: **Goose** (el agente, ver `../herramientas/01-herramientas-trabajo.md`) corre local en el equipo — no está expuesto a internet, así que no necesita login propio, solo importa quién tiene acceso físico/remoto al equipo en sí. Lo que sí queda expuesto a internet por el túnel es **Open WebUI**, y ahí la autenticación es necesaria, no opcional — pero ya viene resuelta en gran parte por defecto:
 
 - **Login con correo/contraseña — activado automáticamente, sin configurar nada:** confirmado en la guía oficial de "Hardening": *"Signup is open only until the first user registers, who becomes the administrator. After that, signup is automatically disabled."* — es decir, apenas Felipe cree su cuenta la primera vez (queda como admin), **el registro público se cierra solo** — nadie más puede crear una cuenta nueva sin que él la vuelva a habilitar explícitamente.
 - **Aprobación manual de cuentas nuevas:** si en algún momento se reactiva el registro (`ENABLE_SIGNUP=true`), toda cuenta nueva cae por defecto en estado **"pending"** — no puede usar nada hasta que un admin la apruebe a mano. No es necesario configurar esto, es el comportamiento por defecto.
@@ -59,11 +59,11 @@ Felipe confirmó que la conexión remota es para su propio uso — no espera otr
 
 ## Segunda ruta en el mismo túnel — el monitor de estado (agregado 2026-08-27)
 
-El mismo túnel de Cloudflare de arriba puede exponer más de un "Public Hostname" a la vez, cada uno apuntando a un puerto local distinto — no hace falta un túnel nuevo por cada servicio. Para ver el dashboard del monitor de estado (`../operacion/monitor-estado.md`) desde internet, basta con agregar en el mismo dashboard de Zero Trust otra entrada apuntando a `http://localhost:8090` (ej. `estado.tudominio.cl`), protegida por el mismo Cloudflare Access ya configurado. Es un paso opcional — sin él, el monitor sigue siendo alcanzable local (`http://localhost:8090`) y por Tailscale.
+El mismo túnel de Cloudflare de arriba puede exponer más de un "Public Hostname" a la vez, cada uno apuntando a un puerto local distinto — no hace falta un túnel nuevo por cada servicio. Para ver el dashboard del monitor de estado (`../operacion/03-monitor-estado.md`) desde internet, basta con agregar en el mismo dashboard de Zero Trust otra entrada apuntando a `http://localhost:8090` (ej. `estado.tudominio.cl`), protegida por el mismo Cloudflare Access ya configurado. Es un paso opcional — sin él, el monitor sigue siendo alcanzable local (`http://localhost:8090`) y por Tailscale.
 
 ## Nota: esto cubre acceso por navegador — para agentes de código remotos (Qwen Code/Goose), ver otro documento
 
-Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar desde un navegador. Es un caso distinto de "quiero correr Qwen Code en el VS Code de otro dispositivo, apuntando directo al servidor de este equipo" — ese caso (con sus propios modos de conexión y su propia recomendación, Tailscale) queda documentado en `../herramientas/qwen-code-a-fondo.md` § "Modos de conexión, de local a remoto fuera de la red".
+Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar desde un navegador. Es un caso distinto de "quiero correr Qwen Code en el VS Code de otro dispositivo, apuntando directo al servidor de este equipo" — ese caso (con sus propios modos de conexión y su propia recomendación, Tailscale) queda documentado en `../herramientas/02-qwen-code-a-fondo.md` § "Modos de conexión, de local a remoto fuera de la red".
 
 ## Próximos pasos
 
@@ -74,5 +74,5 @@ Todo lo de arriba es sobre **exponer la interfaz web** (Open WebUI) para usar de
 - [ ] Instalar `cloudflared` en el equipo y configurar el túnel hacia Open WebUI.
 - [ ] Configurar Cloudflare Access sobre ese túnel con la lista de correos autorizados (para empezar, solo el de Felipe).
 - [ ] Crear la primera cuenta de Open WebUI (queda como admin, cierra el registro público automáticamente).
-- [ ] Instalar Tailscale — ya no es solo un respaldo de esto: es la recomendación principal para conectar Qwen Code/Goose remotos (ver `../herramientas/qwen-code-a-fondo.md`), además de servir como acceso rápido de respaldo mientras se configura Cloudflare Tunnel.
-- [ ] (Opcional) Agregar una segunda "Public Hostname" al mismo túnel, apuntando a `http://localhost:8090`, para ver el monitor de estado desde internet (ver `monitor-estado.md`).
+- [ ] Instalar Tailscale — ya no es solo un respaldo de esto: es la recomendación principal para conectar Qwen Code/Goose remotos (ver `../herramientas/02-qwen-code-a-fondo.md`), además de servir como acceso rápido de respaldo mientras se configura Cloudflare Tunnel.
+- [ ] (Opcional) Agregar una segunda "Public Hostname" al mismo túnel, apuntando a `http://localhost:8090`, para ver el monitor de estado desde internet (ver `03-monitor-estado.md`).

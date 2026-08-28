@@ -1,8 +1,8 @@
 # Pruebas de estrés y rendimiento post-instalación
 
-Esto es distinto de `plan-pruebas.md`: aquel evalúa **calidad** (¿la respuesta es correcta?, ¿alucina?, ¿el español es natural?) con tareas de programación reales, juzgadas por una persona. Este documento evalúa **rendimiento técnico puro**: velocidad, estabilidad bajo carga, y el límite real de contexto — con números medidos, no juicio de calidad. Script: `scripts/pasos/11-prueba-estres.ps1`.
+Esto es distinto de `01-plan-pruebas.md`: aquel evalúa **calidad** (¿la respuesta es correcta?, ¿alucina?, ¿el español es natural?) con tareas de programación reales, juzgadas por una persona. Este documento evalúa **rendimiento técnico puro**: velocidad, estabilidad bajo carga, y el límite real de contexto — con números medidos, no juicio de calidad. Script: `scripts/pasos/11-prueba-estres.ps1`.
 
-## Por qué hace falta esto además de `plan-pruebas.md`
+## Por qué hace falta esto además de `01-plan-pruebas.md`
 
 Varios números usados en este proyecto son **estimaciones de terceros** (willitrunai.com) o **valores por defecto de una página de catálogo** (ollama.com/library) — nunca medidos en este equipo exacto. Esta prueba cierra esa brecha con datos de primera mano, usando los propios campos de métricas que Ollama devuelve en cada respuesta (documentado oficialmente en `github.com/ollama/ollama/docs/api.md`): `prompt_eval_count`, `eval_count`, `eval_duration`, etc. — no es un cronómetro externo aproximado, es lo que el propio motor reporta.
 
@@ -12,7 +12,7 @@ Varios números usados en este proyecto son **estimaciones de terceros** (willit
 
 Establece un número de referencia (tok/s) en condiciones ideales (poco contexto, GPU "fría"). Sirve como punto de comparación para las otras dos pruebas — si algo más adelante da mucho menos que esto, hay un problema que investigar, no es "normal".
 
-**Qué comparar:** el promedio debería acercarse a los ~98 tok/s estimados por willitrunai.com para Q4_K_M (ver `../modelo/modelo-elegido.md`) — no tiene que ser idéntico (es otra metodología de medición), pero si está muy por debajo (ej. menos de 50 tok/s), algo no está bien configurado (revisar si el modelo está cargando en GPU o si está haciendo offload a CPU — ver `ollama ps`, columna `PROCESSOR`).
+**Qué comparar:** el promedio debería acercarse a los ~98 tok/s estimados por willitrunai.com para Q4_K_M (ver `../modelo/02-modelo-elegido.md`) — no tiene que ser idéntico (es otra metodología de medición), pero si está muy por debajo (ej. menos de 50 tok/s), algo no está bien configurado (revisar si el modelo está cargando en GPU o si está haciendo offload a CPU — ver `ollama ps`, columna `PROCESSOR`).
 
 ### 2. Carga sostenida — 20 repeticiones seguidas
 
@@ -22,16 +22,16 @@ El mismo prompt, veinte veces seguidas sin pausa. El objetivo es detectar **degr
 - Si el tok/s se mantiene estable (variación menor a ~10%): el equipo aguanta uso sostenido sin problema térmico.
 - Si cae progresivamente: revisar la temperatura de GPU registrada en el archivo de resumen (capturada antes/después con `nvidia-smi`) — sobre ~83-85°C en una GPU NVIDIA moderna suele activar throttling automático (reducción de velocidad para no sobrecalentarse). Si se confirma esto, es un dato real para decidir si hace falta mejorar la ventilación del gabinete antes de darle uso diario pesado.
 
-### 3. Rampa de contexto — el pendiente que quedó abierto en `../modelo/modelo-elegido.md`
+### 3. Rampa de contexto — el pendiente que quedó abierto en `../modelo/02-modelo-elegido.md`
 
 Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 8K, 32K, 64K y 100K+ tokens — Ollama mismo informa el conteo real vía `prompt_eval_count`, no hace falta adivinarlo) y pide un resumen corto de cada uno.
 
-**Actualizado 2026-08-27 — esta prueba ya no responde toda la pregunta por sí sola.** Investigado a fondo (ver `../referencia/qwen-2.5-coder-7b.md`): el `config.json` real del modelo confirma que **32K es el contexto con el que fue entrenado** (`max_position_embeddings: 32768`), no un default arbitrario de Ollama — para llegar a 128K/131K hace falta activar YaRN explícitamente, algo que Ollama todavía no expone de forma completa. Esto significa que "no tira error" y "sostiene el contexto sin perder calidad" son dos preguntas distintas:
+**Actualizado 2026-08-27 — esta prueba ya no responde toda la pregunta por sí sola.** Investigado a fondo (ver `../referencia/02-qwen-2.5-coder-7b.md`): el `config.json` real del modelo confirma que **32K es el contexto con el que fue entrenado** (`max_position_embeddings: 32768`), no un default arbitrario de Ollama — para llegar a 128K/131K hace falta activar YaRN explícitamente, algo que Ollama todavía no expone de forma completa. Esto significa que "no tira error" y "sostiene el contexto sin perder calidad" son dos preguntas distintas:
 
 **Cómo interpretar el resultado, con esta distinción en mente:**
 - Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa **sin error**: solo confirma que Ollama acepta la configuración — **no confirma que la calidad se mantenga**. No asumir automáticamente que "sostiene el contexto en la práctica" solo por no fallar.
 - Si el script falla o corta en un tamaño específico: eso sí es un límite duro real, documentar como tal.
-- **El paso que falta y que esta prueba no cubre:** evaluar si el resumen generado a 64K/100K+ es tan bueno como el de 8K/32K — eso es una pregunta de calidad, no de estrés técnico. Agregar ese caso a `plan-pruebas.md` con una persona revisando si el modelo realmente "recordó" el contenido lejano del texto largo, no solo si respondió algo. Registrar ambos resultados (técnico y de calidad) en `resultados.md`.
+- **El paso que falta y que esta prueba no cubre:** evaluar si el resumen generado a 64K/100K+ es tan bueno como el de 8K/32K — eso es una pregunta de calidad, no de estrés técnico. Agregar ese caso a `01-plan-pruebas.md` con una persona revisando si el modelo realmente "recordó" el contenido lejano del texto largo, no solo si respondió algo. Registrar ambos resultados (técnico y de calidad) en `resultados.md`.
 
 ## Qué hacer con los resultados
 

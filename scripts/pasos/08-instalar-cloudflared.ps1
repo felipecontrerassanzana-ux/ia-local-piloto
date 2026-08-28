@@ -2,7 +2,7 @@
 .SINOPSIS
   Instala cloudflared y lo registra como servicio de Windows usando un túnel creado desde el
   dashboard de Cloudflare Zero Trust (método "remotely-managed", el más simple para uso personal).
-  Ver docs/operacion/acceso-remoto.md para la decisión y docs/operacion/mantenimiento.md para la continuidad.
+  Ver docs/operacion/02-acceso-remoto.md para la decisión y docs/operacion/01-mantenimiento.md para la continuidad.
 
 .PARAMETER Token
   El token del túnel, obtenido así (paso manual, no se puede automatizar — es específico de tu cuenta):
@@ -10,8 +10,8 @@
     2. Elegir "Cloudflared" como conector, ponerle un nombre (ej. "ia-local-piloto").
     3. En el paso de instalación, Cloudflare muestra un comando para Windows con un token largo
        (empieza con "eyJ..."). Copiar SOLO el valor del token y pasarlo acá.
-    4. En "Public Hostname", apuntar el subdominio elegido (ver docs/arquitectura/almacenamiento.md) al servicio
-       local http://localhost:8080 (Open WebUI nativo, ver docs/arquitectura/docker-y-recursos.md — no Ollama directo).
+    4. En "Public Hostname", apuntar el subdominio elegido (ver docs/arquitectura/04-almacenamiento.md) al servicio
+       local http://localhost:8080 (Open WebUI nativo, ver docs/arquitectura/03-docker-y-recursos.md — no Ollama directo).
 #>
 
 param(
@@ -37,4 +37,4 @@ Get-Service -Name "cloudflared" -ErrorAction SilentlyContinue | Format-Table Nam
 
 Write-Host ""
 Write-Host "cloudflared NO se actualiza solo en Windows (confirmado en la documentación oficial) —" -ForegroundColor Yellow
-Write-Host "queda anotado en el checklist mensual de docs/operacion/mantenimiento.md, revisar manualmente." -ForegroundColor Yellow
+Write-Host "queda anotado en el checklist mensual de docs/operacion/01-mantenimiento.md, revisar manualmente." -ForegroundColor Yellow

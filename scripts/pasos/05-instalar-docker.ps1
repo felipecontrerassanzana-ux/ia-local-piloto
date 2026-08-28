@@ -1,6 +1,6 @@
 ﻿<#
 .SINOPSIS
-  OPCIONAL — no forma parte del camino por defecto (ver docs/arquitectura/docker-y-recursos.md, actualizado
+  OPCIONAL — no forma parte del camino por defecto (ver docs/arquitectura/03-docker-y-recursos.md, actualizado
   2026-08-27). Open WebUI y Qdrant ahora corren NATIVOS en Windows sin Docker (06/07), lo que
   evita la sobrecarga de RAM de WSL2 en un equipo de 16GB. Correr este script solo si:
   (a) se prefiere Docker por algún motivo, o (b) la instalación nativa de Qdrant/Open WebUI
@@ -25,16 +25,16 @@ winget install --id Docker.DockerDesktop -e --accept-source-agreements --accept-
 Write-Host ""
 Write-Host "Docker Desktop instalado. Hay que:" -ForegroundColor Yellow
 Write-Host "  1. Abrirlo manualmente una vez para aceptar los términos y que arranque el motor."
-Write-Host "  2. En Settings > General, confirmar que 'Start Docker Desktop when you log in' esté activado (continuidad, ver docs/operacion/mantenimiento.md)."
+Write-Host "  2. En Settings > General, confirmar que 'Start Docker Desktop when you log in' esté activado (continuidad, ver docs/operacion/01-mantenimiento.md)."
 Write-Host "  3. Si el equipo no tiene WSL2 habilitado, el instalador debería pedirlo — reiniciar si lo solicita."
 
-# --- Capar la RAM de WSL2 (crítico en un equipo de 16GB — ver docs/arquitectura/docker-y-recursos.md) ---
+# --- Capar la RAM de WSL2 (crítico en un equipo de 16GB — ver docs/arquitectura/03-docker-y-recursos.md) ---
 # Por defecto WSL2 reserva el 50% de la RAM total de Windows (8GB en este equipo),
 # confirmado en la documentación oficial de Microsoft (learn.microsoft.com/windows/wsl/wsl-config).
 $wslConfigPath = "$env:USERPROFILE\.wslconfig"
 if (Test-Path $wslConfigPath) {
     Write-Host ""
-    Write-Host "Ya existe $wslConfigPath — no se sobrescribe. Confirmar a mano que tenga un límite de memoria razonable (ver docs/arquitectura/docker-y-recursos.md)." -ForegroundColor Yellow
+    Write-Host "Ya existe $wslConfigPath — no se sobrescribe. Confirmar a mano que tenga un límite de memoria razonable (ver docs/arquitectura/03-docker-y-recursos.md)." -ForegroundColor Yellow
 } else {
     @"
 [wsl2]

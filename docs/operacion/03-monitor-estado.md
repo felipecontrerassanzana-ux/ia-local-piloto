@@ -43,7 +43,7 @@ La idea original era "¿se puede armar un dashboard como Artifact?" — la respu
 
 **Dos agregados tras revisar con Felipe si esto ya mostraba lo que hace falta (2026-08-27, mismo día):**
 - **Temperatura de GPU** — agregada como cuarto gráfico de tendencia (junto a CPU/GPU%/VRAM%). En un equipo compartido con la GPU trabajando seguido, es una señal temprana de un problema térmico, no solo un dato curioso.
-- **Backup atrasado** — el backup corre semanal (domingos 3am, ver `mantenimiento.md`); antes, la tarjeta de Backup mostraba la fecha de la última corrida tal cual, sin importar si fue ayer o hace un mes. Ahora `Obtener-Estado` calcula `atrasado` (más de 8 días sin corrida, con 1 día de margen) y la tarjeta pasa a una píldora roja "ATRASADO" — sin esto, una tarea de backup rota en silencio se veía igual que una sana.
+- **Backup atrasado** — el backup corre semanal (domingos 3am, ver `01-mantenimiento.md`); antes, la tarjeta de Backup mostraba la fecha de la última corrida tal cual, sin importar si fue ayer o hace un mes. Ahora `Obtener-Estado` calcula `atrasado` (más de 8 días sin corrida, con 1 día de margen) y la tarjeta pasa a una píldora roja "ATRASADO" — sin esto, una tarea de backup rota en silencio se veía igual que una sana.
 
 **Nota sobre la duplicación con `verificar-instalacion.ps1`:** los chequeos son deliberadamente parecidos (mismos puertos, mismos nombres de tarea) pero **no comparten código** — uno imprime texto coloreado para que una persona lo lea en consola, el otro arma JSON para un navegador. Con dos scripts de este tamaño, no vale la pena la abstracción de una función compartida; el riesgo real de que se desalineen con el tiempo es bajo y se acepta a cambio de mantener cada uno simple y autocontenido.
 
@@ -52,8 +52,8 @@ La idea original era "¿se puede armar un dashboard como Artifact?" — la respu
 Reutiliza los dos mecanismos de acceso remoto que este proyecto ya decidió, no agrega un tercero:
 
 1. **Local, en el mismo equipo:** `http://localhost:8090/` — funciona apenas se instala el paso 16, sin configurar nada más.
-2. **Remoto por Tailscale** (ver `../herramientas/qwen-code-a-fondo.md`): `http://<IP-de-Tailscale-del-equipo>:8090/` — funciona apenas Tailscale esté conectado (Paso 3.5 de `../instalacion/plan-instalacion.md`), sin pasar por Cloudflare ni por internet.
-3. **Remoto público, opcional** (ver `acceso-remoto.md`): agregar una segunda "Public Hostname" al mismo túnel de Cloudflare que ya se crea para Open WebUI (Paso 3), apuntando a `http://localhost:8090` — queda protegido por el mismo Cloudflare Access (el correo de Felipe), sin crear un túnel nuevo ni una cuenta nueva.
+2. **Remoto por Tailscale** (ver `../herramientas/02-qwen-code-a-fondo.md`): `http://<IP-de-Tailscale-del-equipo>:8090/` — funciona apenas Tailscale esté conectado (Paso 3.5 de `../instalacion/01-plan-instalacion.md`), sin pasar por Cloudflare ni por internet.
+3. **Remoto público, opcional** (ver `02-acceso-remoto.md`): agregar una segunda "Public Hostname" al mismo túnel de Cloudflare que ya se crea para Open WebUI (Paso 3), apuntando a `http://localhost:8090` — queda protegido por el mismo Cloudflare Access (el correo de Felipe), sin crear un túnel nuevo ni una cuenta nueva.
 
 ## El detalle no obvio: el firewall de Windows
 
@@ -61,7 +61,7 @@ Reutiliza los dos mecanismos de acceso remoto que este proyecto ya decidió, no 
 
 ## Limitaciones honestas
 
-- **No es un servicio de Windows real** (como `cloudflared`) — es una Tarea Programada con reintento (3 veces, cada 1 minuto) si el proceso se cae solo. Mismo trade-off ya aceptado para Qdrant/Open WebUI, ver `docker-y-recursos.md`.
+- **No es un servicio de Windows real** (como `cloudflared`) — es una Tarea Programada con reintento (3 veces, cada 1 minuto) si el proceso se cae solo. Mismo trade-off ya aceptado para Qdrant/Open WebUI, ver `03-docker-y-recursos.md`.
 - **No hay alertas proactivas** (Slack/email/notificación push) si algo se cae — hay que abrir el dashboard o el JSON para enterarse. Para un piloto de una sola persona, agregar alertas automáticas es más infraestructura de la que hace falta hoy; si en algún momento se necesitara, sería una capa aparte, no una modificación de este monitor.
 - **No se pudo probar en el equipo real** — esta sesión de trabajo no corre en la máquina piloto (RTX 5070), así que no se pudo instalar de verdad ni ver el dashboard recibiendo datos reales de Ollama/Qdrant/etc.
 

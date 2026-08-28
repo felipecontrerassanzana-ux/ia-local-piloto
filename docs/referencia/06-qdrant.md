@@ -1,6 +1,6 @@
 # Qdrant — referencia completa
 
-La base vectorial de este piloto (ver `../arquitectura/docker-y-recursos.md` para la decisión de correrlo nativo). Este documento cubre los conceptos básicos y la API — útil sobre todo si en algún momento se arma un pipeline de RAG propio además de lo que ya usa Open WebUI. Verificado contra `qdrant.tech/documentation`, 2026-08-27.
+La base vectorial de este piloto (ver `../arquitectura/03-docker-y-recursos.md` para la decisión de correrlo nativo). Este documento cubre los conceptos básicos y la API — útil sobre todo si en algún momento se arma un pipeline de RAG propio además de lo que ya usa Open WebUI. Verificado contra `qdrant.tech/documentation`, 2026-08-27.
 
 ## Conceptos básicos
 
@@ -37,7 +37,7 @@ client.search(collection_name="mi_coleccion", query_vector=[...], limit=10)
 
 ## Panel de administración
 
-Con Qdrant corriendo nativo (`06-desplegar-qdrant.ps1`), el dashboard web está en `http://localhost:6333/dashboard` — permite ver colecciones, contar puntos, y probar búsquedas sin escribir código. Útil para confirmar que Open WebUI efectivamente está guardando algo ahí (ver `open-webui.md` — antes de la corrección del 2026-08-27, Open WebUI usaba ChromaDB en vez de esto, así que el dashboard de Qdrant habría aparecido vacío aunque el RAG "funcionara" con otro motor por debajo).
+Con Qdrant corriendo nativo (`06-desplegar-qdrant.ps1`), el dashboard web está en `http://localhost:6333/dashboard` — permite ver colecciones, contar puntos, y probar búsquedas sin escribir código. Útil para confirmar que Open WebUI efectivamente está guardando algo ahí (ver `05-open-webui.md` — antes de la corrección del 2026-08-27, Open WebUI usaba ChromaDB en vez de esto, así que el dashboard de Qdrant habría aparecido vacío aunque el RAG "funcionara" con otro motor por debajo).
 
 ## Cuándo esto importa más allá de Open WebUI
 

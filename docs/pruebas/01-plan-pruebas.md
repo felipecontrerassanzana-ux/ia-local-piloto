@@ -1,6 +1,6 @@
 # Plan de pruebas
 
-Adaptado del "Protocolo de evaluación de modelos candidatos" de `../ia-local/docs/arquitectura.md`, con foco en programación (el caso de uso de este equipo) y en esta máquina específica.
+Adaptado del "Protocolo de evaluación de modelos candidatos" de `../ia-local/docs/04-arquitectura.md`, con foco en programación (el caso de uso de este equipo) y en esta máquina específica.
 
 ## Tareas de prueba
 
@@ -24,4 +24,4 @@ Adaptado del "Protocolo de evaluación de modelos candidatos" de `../ia-local/do
 
 ## Registro de resultados
 
-Los resultados reales medidos van en `resultados.md` (se crea cuando haya datos que registrar, no antes) — con fecha, tarea evaluada, y métricas concretas. No repetir ahí lo que ya es teoría (eso vive en `../ia-local/docs/conceptos-fundamentales.md` §7, "cómo leer benchmarks sin creérselos literalmente") — acá van solo mediciones propias de este equipo.
+Los resultados reales medidos van en `resultados.md` (se crea cuando haya datos que registrar, no antes) — con fecha, tarea evaluada, y métricas concretas. No repetir ahí lo que ya es teoría (eso vive en `../ia-local/docs/01-conceptos-fundamentales.md` §7, "cómo leer benchmarks sin creérselos literalmente") — acá van solo mediciones propias de este equipo.

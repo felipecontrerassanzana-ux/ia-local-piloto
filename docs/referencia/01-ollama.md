@@ -10,7 +10,7 @@ El motor de inferencia de este piloto. Este documento cubre el CLI completo, la 
 | `ollama pull <modelo>` | Descarga sin ejecutar. |
 | `ollama rm <modelo>` | Elimina un modelo del disco. |
 | `ollama ls` (o `ollama list`) | Lista los modelos descargados. |
-| `ollama ps` | Lista los modelos **cargados en VRAM ahora mismo** — el comando clave para verificar qué está consumiendo memoria en un momento dado, central para el diseño de intercambio de modelos de `../arquitectura/capa-diseno.md`. |
+| `ollama ps` | Lista los modelos **cargados en VRAM ahora mismo** — el comando clave para verificar qué está consumiendo memoria en un momento dado, central para el diseño de intercambio de modelos de `../arquitectura/02-capa-diseno.md`. |
 | `ollama stop <modelo>` | Descarga el modelo de VRAM inmediatamente, sin esperar el timeout de inactividad. |
 | `ollama show --modelfile <modelo>` | Muestra la configuración completa de un modelo (parámetros, plantilla, sistema). |
 | `ollama create <nombre> -f Modelfile` | Crea una variante personalizada de un modelo (ver sección Modelfile abajo). |
@@ -43,7 +43,7 @@ Por defecto, **un modelo queda cargado en VRAM 5 minutos después de la última 
 
 ## Variables de entorno de rendimiento — no cubiertas en otros documentos del proyecto
 
-Encontradas al investigar esto a fondo (2026-08-27) — relevantes directamente para la duda abierta de si el contexto real de 100K es alcanzable en la práctica (ver `../modelo/modelo-elegido.md`):
+Encontradas al investigar esto a fondo (2026-08-27) — relevantes directamente para la duda abierta de si el contexto real de 100K es alcanzable en la práctica (ver `../modelo/02-modelo-elegido.md`):
 
 - **`OLLAMA_FLASH_ATTENTION=1`** — Ollama la activa sola si el modelo/hardware la soportan, pero se puede forzar. Reduce el uso de memoria a medida que crece el contexto — directamente relevante para intentar sostener 100K de contexto en 12GB.
 - **`OLLAMA_KV_CACHE_TYPE`** — cuantización de la caché KV (contexto), default `f16`. `q8_0` usa la mitad de memoria que `f16` "con una pérdida de precisión muy pequeña, normalmente sin impacto notable en la calidad" (textual de la doc oficial). `q4_0` usa un cuarto, con más pérdida. **Advertencia textual de la propia doc: "modelos con un conteo de GQA alto (ej. Qwen2) pueden ver un impacto mayor en precisión por la cuantización"** — Qwen está nombrado explícitamente como una familia sensible a esto, así que conviene probar `q8_0` primero (no `q4_0` de entrada) y verificar calidad antes de confiar en él para el contexto largo.
@@ -67,8 +67,8 @@ Se construye con `ollama create qwen-coder-100k -f Modelfile` y después se usa 
 
 ## Dónde se guarda todo
 
-- Modelos: carpeta definida por `OLLAMA_MODELS` (en este piloto, el NVMe — ver `../arquitectura/almacenamiento.md`).
-- El servidor escucha por defecto solo en `127.0.0.1:11434` — `OLLAMA_HOST` lo cambia (usado en este piloto vía el switch `-PermitirRed` de `02-configurar-ollama.ps1`, ver `../herramientas/qwen-code-a-fondo.md`).
+- Modelos: carpeta definida por `OLLAMA_MODELS` (en este piloto, el NVMe — ver `../arquitectura/04-almacenamiento.md`).
+- El servidor escucha por defecto solo en `127.0.0.1:11434` — `OLLAMA_HOST` lo cambia (usado en este piloto vía el switch `-PermitirRed` de `02-configurar-ollama.ps1`, ver `../herramientas/02-qwen-code-a-fondo.md`).
 
 ## Fuentes consultadas (2026-08-27)
 

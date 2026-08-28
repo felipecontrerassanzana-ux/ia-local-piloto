@@ -1,6 +1,6 @@
 # Alternativas a Ollama (motor de inferencia)
 
-El plan de instalación parte con Ollama por ser lo más simple para arrancar (ver `../ia-local/docs/arquitectura.md`), pero el usuario quiere que este piloto cumpla **distintas funciones**, no solo servir un modelo de código. Esto evalúa qué tan lejos llega Ollama y qué alternativas existen si se necesita más — verificado contra documentación oficial de cada proyecto (2026-08-26).
+El plan de instalación parte con Ollama por ser lo más simple para arrancar (ver `../ia-local/docs/04-arquitectura.md`), pero el usuario quiere que este piloto cumpla **distintas funciones**, no solo servir un modelo de código. Esto evalúa qué tan lejos llega Ollama y qué alternativas existen si se necesita más — verificado contra documentación oficial de cada proyecto (2026-08-26).
 
 ## Ollama — qué cubre y dónde se queda corto
 
@@ -29,7 +29,7 @@ Corre con o sin GPU (cada función tiene camino de CPU probado), soporta CUDA (r
 ### Otras mencionadas (no verificadas en profundidad esta vez, quedan para evaluar si hace falta)
 
 - **text-generation-webui (oobabooga):** muy extensible por plugins (incluye extensiones de imagen/voz), popular en la comunidad de código abierto.
-- **vLLM:** ya evaluado en `../ia-local/docs/arquitectura.md` — se justifica solo con concurrencia real de varios usuarios, no es la prioridad de este piloto todavía.
+- **vLLM:** ya evaluado en `../ia-local/docs/04-arquitectura.md` — se justifica solo con concurrencia real de varios usuarios, no es la prioridad de este piloto todavía.
 
 ## Capa de interfaz encima del motor: Open WebUI
 
@@ -37,9 +37,9 @@ Independiente de qué motor se use abajo (Ollama o LocalAI, ambos hablan API com
 
 - Interfaz tipo chat en el navegador, multi-usuario, con **RAG incorporado** (subir documentos y consultarlos, sin armar el pipeline a mano si no se necesita algo más custom).
 - Se conecta a Ollama, OpenAI, Anthropic, vLLM "y más" — no ata este piloto a un solo motor.
-- Historial de conversaciones incorporado — ya mencionado en `../ia-local/docs/arquitectura.md` como posible solución de logging sin construir nada aparte.
+- Historial de conversaciones incorporado — ya mencionado en `../ia-local/docs/04-arquitectura.md` como posible solución de logging sin construir nada aparte.
 
-**Hallazgo nuevo, para explorar más adelante (no adoptar todavía):** Open WebUI ahora tiene un producto hermano más nuevo, **"Open WebUI Computer"** — un agente que opera directo sobre archivos/terminal/git de la máquina real, con acceso por navegador (incluso desde el celular) ya incorporado. Se ve prometedor para exactamente lo que se está buscando (multi-función + acceso remoto), pero es un producto que "se mueve más rápido" (en desarrollo activo) y no se verificó todavía cómo funciona su acceso remoto por dentro (si depende de una cuenta/servicio de terceros o es 100% local) — **no recomendar sin esa verificación**, dado que el diseño de este proyecto prioriza que todo quede local. Ver `../operacion/acceso-remoto.md` para la solución ya verificada mientras tanto.
+**Hallazgo nuevo, para explorar más adelante (no adoptar todavía):** Open WebUI ahora tiene un producto hermano más nuevo, **"Open WebUI Computer"** — un agente que opera directo sobre archivos/terminal/git de la máquina real, con acceso por navegador (incluso desde el celular) ya incorporado. Se ve prometedor para exactamente lo que se está buscando (multi-función + acceso remoto), pero es un producto que "se mueve más rápido" (en desarrollo activo) y no se verificó todavía cómo funciona su acceso remoto por dentro (si depende de una cuenta/servicio de terceros o es 100% local) — **no recomendar sin esa verificación**, dado que el diseño de este proyecto prioriza que todo quede local. Ver `../operacion/02-acceso-remoto.md` para la solución ya verificada mientras tanto.
 
 ## Decisión final (2026-08-26, cerrada)
 
@@ -47,4 +47,4 @@ Independiente de qué motor se use abajo (Ollama o LocalAI, ambos hablan API com
 
 **Escalamiento (no ahora, solo si se necesita de verdad):** migrar a LocalAI si aparece una necesidad real y concreta de otra función (imágenes, voz) — no antes. El costo de migrar después es bajo porque LocalAI habla el mismo tipo de API (Ollama-compatible) — las herramientas ya configuradas solo necesitarían apuntar a otra URL, no reconfigurarse desde cero. Mismo criterio que ya se aplicó con el hardware: no sumar alcance/infraestructura antes de que el uso real lo pida (ver [[feedback-no-sobredimensionar]]).
 
-**Open WebUI** se suma de todas formas como interfaz web — no depende de si el motor es Ollama o LocalAI, y es la pieza que se expone por el acceso remoto (ver `../operacion/acceso-remoto.md`).
+**Open WebUI** se suma de todas formas como interfaz web — no depende de si el motor es Ollama o LocalAI, y es la pieza que se expone por el acceso remoto (ver `../operacion/02-acceso-remoto.md`).

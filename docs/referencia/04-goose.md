@@ -1,6 +1,6 @@
 # Goose — referencia completa
 
-El agente general de este piloto (ver `../herramientas/herramientas-trabajo.md` para la decisión). Cubre el CLI completo y, en particular, el equivalente de Goose a los "comandos personalizados" de Qwen Code — para poder formalizar el mismo procedimiento (ej. el loop de revisión de diseño) en las dos herramientas, no solo en una. Verificado contra `goose-docs.ai`, 2026-08-27.
+El agente general de este piloto (ver `../herramientas/01-herramientas-trabajo.md` para la decisión). Cubre el CLI completo y, en particular, el equivalente de Goose a los "comandos personalizados" de Qwen Code — para poder formalizar el mismo procedimiento (ej. el loop de revisión de diseño) en las dos herramientas, no solo en una. Verificado contra `goose-docs.ai`, 2026-08-27.
 
 ## Comandos principales
 
@@ -17,7 +17,7 @@ El agente general de este piloto (ver `../herramientas/herramientas-trabajo.md` 
 
 ## Recipes — el equivalente de Goose a los comandos personalizados de Qwen Code
 
-Igual que Qwen Code tiene `.qwen/commands/*.md` para guardar prompts reutilizables (ver `qwen-code.md`), Goose tiene **Recipes**:
+Igual que Qwen Code tiene `.qwen/commands/*.md` para guardar prompts reutilizables (ver `03-qwen-code.md`), Goose tiene **Recipes**:
 
 | Comando | Qué hace |
 |---|---|
@@ -26,7 +26,7 @@ Igual que Qwen Code tiene `.qwen/commands/*.md` para guardar prompts reutilizabl
 | `goose recipe open` | Lanza un recipe en la app de escritorio |
 | `goose recipe deeplink` | Genera un link para compartir un recipe |
 
-**Aplicado a este piloto:** el mismo loop de revisión de diseño documentado como comando personalizado de Qwen Code (`.qwen/commands/diseno/revisar.md`, ver `qwen-code.md`) debería tener su equivalente como Recipe de Goose, para que ambas herramientas puedan invocarlo — pendiente de armar el archivo real una vez se confirme la sintaxis exacta de un Recipe en el equipo real (no verificado en detalle todavía, la documentación cubre el concepto pero no se fetcheó el formato completo del archivo).
+**Aplicado a este piloto:** el mismo loop de revisión de diseño documentado como comando personalizado de Qwen Code (`.qwen/commands/diseno/revisar.md`, ver `03-qwen-code.md`) debería tener su equivalente como Recipe de Goose, para que ambas herramientas puedan invocarlo — pendiente de armar el archivo real una vez se confirme la sintaxis exacta de un Recipe en el equipo real (no verificado en detalle todavía, la documentación cubre el concepto pero no se fetcheó el formato completo del archivo).
 
 ## `goose schedule` — automatizar recipes con cron
 
@@ -46,7 +46,7 @@ Corre un recipe en un horario definido (`add`, `list`, `remove`, `run-now`). **R
 
 `/help`, `/plan`, `/mode`, `/skills`, `/compact`, `/recipe`, `/extension`, `/builtin`, `/clear`, `/exit`, `/t` (cambiar tema visual).
 
-**`/mode`** es el equivalente de Goose al `/approval-mode` de Qwen Code (ver `qwen-code.md`) — cuánta autonomía darle al agente antes de pedir aprobación. Misma recomendación que ahí: no usar el modo más autónomo en este equipo compartido.
+**`/mode`** es el equivalente de Goose al `/approval-mode` de Qwen Code (ver `03-qwen-code.md`) — cuánta autonomía darle al agente antes de pedir aprobación. Misma recomendación que ahí: no usar el modo más autónomo en este equipo compartido.
 
 ## Fuentes consultadas (2026-08-27)
 
