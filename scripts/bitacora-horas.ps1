@@ -40,11 +40,19 @@
 .PARAMETER Salida
   Donde queda el HTML generado. Por defecto logs/bitacora-horas.html (logs/ ya esta en
   .gitignore -- es un archivo generado, no documentacion del proyecto).
+
+.PARAMETER AbrirNavegador
+  Si se pasa, abre el HTML generado en el navegador predeterminado al terminar --
+  bitacora-horas.bat siempre lo pasa (correrlo a mano no debería terminar en "copiar
+  la ruta y pegarla en el navegador"). Se deja como switch, no comportamiento fijo,
+  para que una futura Tarea Programada que regenere esto solo (sin que nadie lo este
+  mirando) pueda omitirlo y no abrir una ventana de navegador sin que nadie la pidió.
 #>
 
 param(
     [string]$ConfigPath = "$PSScriptRoot\bitacora-proyectos.json",
-    [string]$Salida = "$PSScriptRoot\..\logs\bitacora-horas.html"
+    [string]$Salida = "$PSScriptRoot\..\logs\bitacora-horas.html",
+    [switch]$AbrirNavegador
 )
 
 if (-not (Test-Path $ConfigPath)) {
@@ -290,3 +298,7 @@ Write-Host ""
 Write-Host "Bitacora generada: $Salida" -ForegroundColor Green
 Write-Host "Sesiones: $($resumenSesiones.Count) -- bloques: $($bloquesSalida.Count) -- proyectos: $($todasLasClaves -join ', ')" -ForegroundColor Cyan
 Write-Host "Verla localmente: abrir el archivo, o si el monitor de estado esta corriendo, http://localhost:8090/bitacora" -ForegroundColor White
+
+if ($AbrirNavegador) {
+    Start-Process $Salida
+}

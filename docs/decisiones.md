@@ -427,3 +427,13 @@ Felipe corrió `bitacora-horas.bat` en el equipo real (no solo la verificación 
 **Corregido:** reemplazadas ambas lecturas por `[System.IO.File]::ReadAllText($ruta, [System.Text.UTF8Encoding]::new($false))` — determinístico, no depende del BOM del archivo leído ni de la configuración regional del equipo (a diferencia de `Get-Content`, que si dependía de ambas cosas). Reverificado corriendo el script **con `powershell.exe` real** (no pwsh, mismo intérprete que invoca el `.bat`) contra los logs reales de esta cuenta: título y todo el texto salen correctos, confirmado visualmente con Playwright.
 
 **Lección que se repite:** esta es la segunda vez en el proyecto que algo pasa la verificación de sintaxis pero falla en la práctica específicamente por la diferencia entre pwsh 7 y `powershell.exe` — reforzando que "probar en el intérprete real" no es opcional para este repo, es parte de darlo por terminado.
+
+## 2026-08-28 (mismo día, más tarde) — `bitacora-horas.bat` no debía terminar en "copiar la ruta a mano"
+
+Con los acentos ya corregidos, Felipe probó de nuevo y señaló algo obvio en retrospectiva que se había dejado sin resolver: el script terminaba mostrando la ruta del HTML generado y esperando que se apretara una tecla, dejando que la persona copiara esa ruta a mano y la pegara en el navegador — "qué flojera de desarrollo" para algo pensado para ser una herramienta de referencia rápida, no un paso manual más.
+
+**Corregido:**
+- `bitacora-horas.ps1` — nuevo switch `-AbrirNavegador` (no comportamiento fijo, para que una futura Tarea Programada que regenere esto sin que nadie esté mirando no abra una ventana de navegador sin que nadie la pidió) — con `Start-Process $Salida` al final si se pasa.
+- `bitacora-horas.bat` — pasa `-AbrirNavegador` siempre, y el `pause` final quedó condicionado a que el script haya terminado con error (`%ERRORLEVEL% NEQ 0`) — si todo sale bien, la ventana de CMD se cierra sola; si algo falla, se queda abierta con el mensaje para poder leerlo.
+
+Verificado corriendo el `.bat` real de punta a punta (`cmd /c`): termina con código de salida 0 y sin pedir tecla cuando todo sale bien.
