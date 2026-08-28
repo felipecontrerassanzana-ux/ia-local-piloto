@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitácora de Horas -- IA Local Piloto</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f3ede1;
+    --surface: #fbf7ee;
+    --surface-2: #ece3d1;
+    --ink-line: #d9cbaf;
+    --border: #ddd0b4;
+    --text: #2a2418;
+    --text-dim: #6d6249;
+    --text-faint: #a5987a;
+    --accent: #b5541c;
+    --accent-text: #fbf7ee;
+    --accent-soft: #f0dcc4;
+    --shadow: 0 1px 2px rgba(43, 32, 10, 0.05), 0 10px 28px -16px rgba(43, 32, 10, 0.28);
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171208; --surface: #201a10; --surface-2: #2a2214; --ink-line: #3a3018; --border: #3a3018;
+      --text: #f2e8d4; --text-dim: #b8a985; --text-faint: #7d7154;
+      --accent: #e2a13d; --accent-text: #1c1509; --accent-soft: #3a2c12;
+      --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px -16px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171208; --surface: #201a10; --surface-2: #2a2214; --ink-line: #3a3018; --border: #3a3018;
+    --text: #f2e8d4; --text-dim: #b8a985; --text-faint: #7d7154;
+    --accent: #e2a13d; --accent-text: #1c1509; --accent-soft: #3a2c12;
+    --shadow: 0 1px 2px rgba(0,0,0,0.4), 0 10px 28px -16px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background-image: linear-gradient(var(--ink-line) 1px, transparent 1px);
+    background-size: 100% 32px;
+    background-attachment: local;
+  }
+  .wrap { max-width: 1560px; margin: 0 auto; padding: 40px 32px 90px; }
+  .page-grid { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .sidebar { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .main-col { min-width: 0; }
+  @media (max-width: 900px) {
+    .page-grid { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+  .display { font-family: 'Fraunces', Georgia, serif; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header.masthead {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap;
+    padding-bottom: 18px; border-bottom: 2px solid var(--text); margin-bottom: 26px;
+  }
+  header.masthead .kicker {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 6px;
+  }
+  header.masthead h1 { font-size: 2rem; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+  header.masthead .rango { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: var(--text-dim); line-height: 1.7; }
+  header.masthead .rango b { color: var(--text); }
+
+  .ledger {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); margin-bottom: 22px; overflow: hidden;
+  }
+  .ledger .cell { padding: 16px 20px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .ledger .cell:last-child { border-right: none; }
+  .ledger .cell .label { font-family: 'JetBrains Mono', monospace; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--text-faint); }
+  .ledger .cell .value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.5rem; margin-top: 5px; letter-spacing: -0.01em; }
+  .ledger .cell .sub { font-size: 0.76rem; color: var(--text-dim); margin-top: 2px; }
+  .ledger .cell .value.withdot { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; }
+
+  .project-nav { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+  .sidebar .kicker-mini { font-family: 'JetBrains Mono', monospace; font-size: 0.64rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding: 0 2px; }
+  .pill {
+    display: flex; align-items: center; gap: 8px; padding: 9px 14px; border: none; border-bottom: 1px solid var(--border);
+    background: transparent; color: var(--text-dim); font-size: 0.76rem; font-family: 'JetBrains Mono', monospace;
+    font-weight: 500; text-align: left; cursor: pointer; transition: background 0.12s ease, color 0.12s ease;
+  }
+  .project-nav .pill:last-child { border-bottom: none; }
+  .pill:hover { background: var(--surface-2); }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .pill .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pill.active { background: var(--accent-soft); color: var(--text); font-weight: 600; }
+  .pill.active .name { color: var(--accent); }
+  .pill .count { opacity: 0.7; font-size: 0.7rem; }
+
+  .project-desc {
+    background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent);
+    border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 22px; margin-bottom: 20px;
+  }
+  .project-desc .pd-title { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .project-desc .pd-title h3 { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.15rem; }
+  .project-desc .pd-title .pd-stats { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-faint); }
+  .project-desc .pd-body { font-size: 0.86rem; color: var(--text-dim); line-height: 1.5; max-width: 62ch; }
+
+  section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px 22px; margin-bottom: 20px; box-shadow: var(--shadow); }
+  section .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; flex-wrap: wrap; gap: 6px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  section .head h2 { font-family: 'Fraunces', serif; font-size: 1.15rem; font-weight: 600; }
+  section .head .hint { font-size: 0.74rem; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+
+  .chart-box { width: 100%; }
+  #dailyChart { width: 100%; height: 190px; display: block; cursor: pointer; }
+  #hourChart { width: 100%; height: 130px; display: block; }
+  .daylabel-row { display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.64rem; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+
+  .logbook { display: flex; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto; padding-right: 4px; }
+  .logrow { transition: background 0.4s ease; border-radius: 6px; padding: 4px; margin: -4px; }
+  .logrow.flash { background: var(--accent-soft); }
+  .logrow-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+  .logrow-date { font-family: 'Fraunces', serif; font-weight: 600; font-size: 0.92rem; }
+  .logrow-date .dow { font-family: 'JetBrains Mono', monospace; font-weight: 400; font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; margin-right: 8px; }
+  .logrow-total { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-dim); }
+  .logrow-total b { color: var(--text); }
+  .timeline-track { position: relative; height: 22px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+  .timeline-block { position: absolute; top: 2px; bottom: 2px; border-radius: 2px; min-width: 2px; }
+  .timeline-block:hover { filter: brightness(1.15); outline: 1px solid var(--text); outline-offset: 0; }
+  .timeline-empty { display: flex; align-items: center; justify-content: center; color: var(--text-faint); font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; height: 100%; }
+  .timeline-axis { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; color: var(--text-faint); padding: 2px 1px 0; }
+
+  .empty { color: var(--text-faint); font-size: 0.85rem; padding: 24px 0; text-align: center; font-family: 'JetBrains Mono', monospace; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-faint); font-weight: 600; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.06em; font-family: 'JetBrains Mono', monospace; }
+  td { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; }
+
+  .legend-swatch { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+
+  #tooltip {
+    position: fixed; pointer-events: none; background: var(--text); color: var(--bg);
+    font-size: 0.72rem; padding: 5px 9px; border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    opacity: 0; transition: opacity 0.1s ease; z-index: 50; white-space: nowrap;
+  }
+
+  footer { text-align: center; color: var(--text-faint); font-size: 0.72rem; margin-top: 30px; font-family: 'JetBrains Mono', monospace; }
+  footer code { color: var(--text-dim); }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  @media (max-width: 640px) {
+    header.masthead { flex-direction: column; align-items: flex-start; }
+    header.masthead .rango { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <div class="kicker">Registro de trabajo · esta cuenta</div>
+      <h1 class="display">Bitácora de Horas</h1>
+    </div>
+    <div class="rango" id="metaInfo"></div>
+  </header>
+
+  <div class="ledger" id="heroStats"></div>
+
+  <div class="page-grid">
+    <aside class="sidebar">
+      <div class="kicker-mini">Proyectos</div>
+      <nav class="project-nav" id="projectNav"></nav>
+    </aside>
+
+    <div class="main-col">
+      <div class="project-desc" id="projectDesc"></div>
+
+      <section>
+        <div class="head">
+          <h2>Resumen diario</h2>
+          <span class="hint">click en una barra ↓ salta a esa entrada de la bitácora</span>
+        </div>
+        <div class="chart-box"><canvas id="dailyChart"></canvas></div>
+        <div class="daylabel-row" id="dayLabels"></div>
+      </section>
+
+      <section>
+        <div class="head">
+          <h2>Ventanas de tiempo, día por día</h2>
+          <span class="hint" id="logbookHint"></span>
+        </div>
+        <div class="logbook" id="logbookBody"></div>
+      </section>
+
+      <section>
+        <div class="head">
+          <h2>Distribución por hora del día</h2>
+          <span class="hint" id="tzHint"></span>
+        </div>
+        <div class="chart-box"><canvas id="hourChart"></canvas></div>
+      </section>
+
+      <section>
+        <div class="head">
+          <h2>Sesiones registradas</h2>
+          <span class="hint">una fila = una sesión de Claude Code en esta cuenta</span>
+        </div>
+        <div class="table-wrap">
+          <table id="sessionsTable">
+            <thead><tr><th>Sesión</th><th>Desde</th><th>Hasta</th><th class="num">Eventos</th><th class="num">Min. activos</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    Umbral de hueco: <code id="gapInfo"></code> min. Generado <code id="genInfo"></code> por <code>scripts/bitacora-horas.ps1</code>.
+    Atribución de proyecto por heurística (rutas de archivos tocados) según <code>scripts/bitacora-proyectos.json</code> de esta cuenta de Windows.
+  </footer>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const DATA = __DATA_JSON__;
+const state = { selectedProject: 'all' };
+const DOW = ['dom','lun','mar','mié','jue','vie','sáb'];
+
+function fmtHM(min) {
+  const h = Math.floor(min / 60);
+  const m = Math.round(min % 60);
+  if (h === 0) return m + 'm';
+  return h + 'h ' + (m < 10 ? '0' : '') + m + 'm';
+}
+function fmtTok(n) {
+  n = n || 0;
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'k';
+  return String(Math.round(n));
+}
+function fmtTime(iso, tz) {
+  const d = new Date(new Date(iso).getTime() + tz * 3600 * 1000);
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const mm = String(d.getUTCMinutes()).padStart(2, '0');
+  return hh + ':' + mm;
+}
+function fmtDateLabel(dayStr) {
+  const [y, m, d] = dayStr.split('-');
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return d + ' ' + months[parseInt(m,10)-1];
+}
+function dowOf(dayStr) {
+  const d = new Date(dayStr + 'T12:00:00Z');
+  return DOW[d.getUTCDay()];
+}
+
+const allProjectKeys = Object.keys(DATA.projectMeta);
+const sortedDays = Object.keys(DATA.dayTotals).sort();
+const sortedDaysDesc = [...sortedDays].reverse();
+
+function projectColor(key) { return DATA.projectMeta[key] ? DATA.projectMeta[key].color : '#8d99ae'; }
+function projectLabel(key) { return DATA.projectMeta[key] ? DATA.projectMeta[key].label : key; }
+function totalForProject(key) {
+  if (key === 'all') return Object.values(DATA.projectTotals).reduce((a,b)=>a+b,0);
+  return DATA.projectTotals[key] || 0;
+}
+function tokensForProject(key) {
+  const t = DATA.projectTokens || {};
+  if (key === 'all') {
+    let tin = 0, tout = 0;
+    for (const k of allProjectKeys) { const v = t[k]; if (v) { tin += v.in || 0; tout += v.out || 0; } }
+    return { in: tin, out: tout };
+  }
+  return t[key] || { in: 0, out: 0 };
+}
+
+function contentWidth(el) {
+  // clientWidth de un wrapper SIN padding propio = ancho real disponible -- evita que el
+  // canvas se dimensione con el padding de un ancestro y se salga de la caja.
+  return el.clientWidth;
+}
+
+function renderMeta() {
+  const first = sortedDays[0], last = sortedDays[sortedDays.length-1];
+  document.getElementById('metaInfo').innerHTML =
+    '<b>' + fmtDateLabel(first) + '</b> — <b>' + fmtDateLabel(last) + '</b><br>' +
+    sortedDays.length + ' días con actividad';
+  document.getElementById('gapInfo').textContent = DATA.gapThresholdMinutes;
+  document.getElementById('genInfo').textContent = new Date(DATA.generatedAt).toLocaleString('es-CL');
+  document.getElementById('tzHint').textContent = 'horario aprox. UTC' + (DATA.tzOffsetHours >= 0 ? '+' : '') + DATA.tzOffsetHours;
+}
+
+function renderHero() {
+  const el = document.getElementById('heroStats');
+  const activeDaysForSel = sortedDays.filter(d => (state.selectedProject === 'all') ? true : (DATA.dayTotals[d][state.selectedProject] > 0));
+  const selTotal = totalForProject(state.selectedProject);
+  const avg = activeDaysForSel.length ? selTotal / activeDaysForSel.length : 0;
+  const tok = tokensForProject(state.selectedProject);
+  let topProject = null, topVal = -1;
+  for (const k of allProjectKeys) { if (DATA.projectTotals[k] > topVal) { topVal = DATA.projectTotals[k]; topProject = k; } }
+
+  el.innerHTML = `
+    <div class="cell"><div class="label">${state.selectedProject === 'all' ? 'Total general' : 'Total seleccionado'}</div><div class="value mono">${fmtHM(selTotal)}</div><div class="sub">${(selTotal/60).toFixed(1)} horas</div></div>
+    <div class="cell"><div class="label">Días activos</div><div class="value mono">${activeDaysForSel.length}</div><div class="sub">de ${sortedDays.length} con registro</div></div>
+    <div class="cell"><div class="label">Promedio / día activo</div><div class="value mono">${fmtHM(avg)}</div><div class="sub">solo días con esa actividad</div></div>
+    <div class="cell"><div class="label">Mayor acumulado</div><div class="value withdot"><span class="legend-swatch" style="background:${projectColor(topProject)}"></span>${projectLabel(topProject)}</div><div class="sub">${fmtHM(topVal)}</div></div>
+    <div class="cell"><div class="label">Tokens (entrada · salida)</div><div class="value mono">${fmtTok(tok.in)} · ${fmtTok(tok.out)}</div><div class="sub">entrada incluye caché — no es proxy de esfuerzo</div></div>
+  `;
+}
+
+function renderProjectNav() {
+  const el = document.getElementById('projectNav');
+  const keys = ['all', ...allProjectKeys.filter(k => DATA.projectTotals[k] > 0).sort((a,b)=>DATA.projectTotals[b]-DATA.projectTotals[a])];
+  el.innerHTML = keys.map(k => {
+    const label = k === 'all' ? 'Todos los proyectos' : projectLabel(k);
+    const color = k === 'all' ? 'var(--accent)' : projectColor(k);
+    const total = totalForProject(k);
+    const active = state.selectedProject === k ? 'active' : '';
+    return `<button class="pill ${active}" data-key="${k}" title="${label}"><span class="dot" style="background:${color}"></span><span class="name">${label}</span><span class="count">${fmtHM(total)}</span></button>`;
+  }).join('');
+  el.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', () => { state.selectedProject = btn.dataset.key; renderAll(); });
+  });
+}
+
+function renderProjectDesc() {
+  const el = document.getElementById('projectDesc');
+  const k = state.selectedProject;
+  const activeDaysForSel = sortedDays.filter(d => k === 'all' ? true : (DATA.dayTotals[d][k] || 0) > 0);
+  const tok = tokensForProject(k);
+  const tokStr = `${fmtTok(tok.in)}/${fmtTok(tok.out)} tok (E/S)`;
+
+  if (k === 'all') {
+    el.style.borderLeftColor = 'var(--accent)';
+    el.innerHTML = `
+      <div class="pd-title"><h3 class="display">Todos los proyectos</h3><span class="pd-stats">${fmtHM(totalForProject('all'))} · ${activeDaysForSel.length} días · ${tokStr}</span></div>
+      <div class="pd-body">Vista combinada de los ${allProjectKeys.filter(pk => DATA.projectTotals[pk] > 0).length} frentes de trabajo registrados en esta cuenta — elegí uno de la lista para ver de qué se trata y filtrar el resto del panel solo a ese proyecto.</div>
+    `;
+    return;
+  }
+  const meta = DATA.projectMeta[k] || {};
+  el.style.borderLeftColor = meta.color || 'var(--accent)';
+  el.innerHTML = `
+    <div class="pd-title"><h3 class="display">${meta.label || k}</h3><span class="pd-stats">${fmtHM(totalForProject(k))} · ${activeDaysForSel.length} días · ${tokStr}</span></div>
+    <div class="pd-body">${meta.desc || 'Sin descripción.'}</div>
+  `;
+}
+
+function drawDailyChart() {
+  const canvas = document.getElementById('dailyChart');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = contentWidth(canvas.parentElement);
+  const cssH = 190;
+  canvas.width = cssW * dpr; canvas.height = cssH * dpr;
+  canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, cssW, cssH);
+
+  const padL = 38, padR = 4, padT = 8, padB = 6;
+  const plotW = cssW - padL - padR, plotH = cssH - padT - padB;
+
+  const dayValues = sortedDays.map(d => {
+    if (state.selectedProject === 'all') return Object.entries(DATA.dayTotals[d]);
+    return DATA.dayTotals[d][state.selectedProject] ? [[state.selectedProject, DATA.dayTotals[d][state.selectedProject]]] : [];
+  });
+  const dayTotalsArr = dayValues.map(entries => entries.reduce((s,[,v])=>s+v,0));
+  const maxVal = Math.max(...dayTotalsArr, 1);
+  const niceMax = Math.ceil(maxVal / 60) * 60 || 60;
+
+  const borderColor = getComputedStyle(document.body).getPropertyValue('--border');
+  const faintColor = getComputedStyle(document.body).getPropertyValue('--text-faint');
+  ctx.font = '9px "JetBrains Mono", monospace';
+  ctx.textAlign = 'right';
+  const steps = 3;
+  for (let i = 0; i <= steps; i++) {
+    const y = padT + plotH - (plotH * i / steps);
+    ctx.strokeStyle = borderColor; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+    ctx.fillStyle = faintColor;
+    const val = (niceMax * i / steps) / 60;
+    ctx.fillText(val.toFixed(val < 1 && val > 0 ? 1 : 0) + 'h', padL - 6, y + 3);
+  }
+
+  const n = sortedDays.length;
+  const gap = 6;
+  const barW = Math.max(4, (plotW - gap * (n - 1)) / n);
+
+  canvas._bars = [];
+  sortedDays.forEach((day, i) => {
+    const x = padL + i * (barW + gap);
+    let yCursor = padT + plotH;
+    const entries = dayValues[i];
+    entries.forEach(([key, val]) => {
+      const h = (val / niceMax) * plotH;
+      ctx.fillStyle = projectColor(key);
+      ctx.fillRect(Math.round(x), Math.round(yCursor - h), Math.ceil(barW), Math.ceil(h));
+      yCursor -= h;
+    });
+    if (entries.length === 0) {
+      ctx.fillStyle = borderColor;
+      ctx.fillRect(x, padT + plotH - 2, barW, 2);
+    }
+    canvas._bars.push({ x, w: barW, day });
+  });
+}
+
+function renderDayLabels() {
+  const el = document.getElementById('dayLabels');
+  const n = sortedDays.length;
+  const every = n > 20 ? Math.ceil(n / 12) : (n > 10 ? 2 : 1);
+  el.innerHTML = sortedDays.map((d,i) => `<span style="flex:1;text-align:center;visibility:${i % every === 0 ? 'visible':'hidden'}">${fmtDateLabel(d)}</span>`).join('');
+}
+
+function showTooltip(e, text) {
+  const tt = document.getElementById('tooltip');
+  tt.textContent = text;
+  tt.style.left = (e.clientX + 12) + 'px';
+  tt.style.top = (e.clientY + 12) + 'px';
+  tt.style.opacity = '1';
+}
+function hideTooltip() { document.getElementById('tooltip').style.opacity = '0'; }
+
+function renderLogbook() {
+  const body = document.getElementById('logbookBody');
+  const hint = document.getElementById('logbookHint');
+  const visibleDays = sortedDaysDesc.filter(d => state.selectedProject === 'all' || (DATA.dayTotals[d][state.selectedProject] || 0) > 0);
+  hint.textContent = visibleDays.length + ' entrada' + (visibleDays.length===1?'':'s') + ' · más reciente arriba';
+
+  if (!visibleDays.length) { body.innerHTML = '<div class="empty">Sin ventanas para este filtro.</div>'; return; }
+
+  body.innerHTML = visibleDays.map(day => {
+    const dayStartMs = new Date(day + 'T00:00:00Z').getTime() - DATA.tzOffsetHours * 3600 * 1000;
+    const dayEndMs = dayStartMs + 24 * 3600 * 1000;
+    const blocks = DATA.blocks.filter(b => b.day === day && (state.selectedProject === 'all' || b.project === state.selectedProject));
+    const totalMin = blocks.reduce((s,b)=>s+b.durationMin,0);
+
+    const blocksHtml = blocks.length ? blocks.map(b => {
+      const s = Math.max(new Date(b.start).getTime(), dayStartMs);
+      const e = Math.min(new Date(b.end).getTime(), dayEndMs);
+      const leftPct = ((s - dayStartMs) / (dayEndMs - dayStartMs)) * 100;
+      const widthPct = Math.max(0.15, ((e - s) / (dayEndMs - dayStartMs)) * 100);
+      return `<div class="timeline-block" data-tip="${projectLabel(b.project)} · ${fmtTime(b.start, DATA.tzOffsetHours)}–${fmtTime(b.end, DATA.tzOffsetHours)} · ${fmtHM(b.durationMin)}" style="left:${leftPct}%;width:${widthPct}%;background:${projectColor(b.project)}"></div>`;
+    }).join('') : '<div class="timeline-empty">sin actividad</div>';
+
+    return `
+      <div class="logrow" id="day-${day}">
+        <div class="logrow-head">
+          <div class="logrow-date"><span class="dow">${dowOf(day)}</span>${fmtDateLabel(day)}</div>
+          <div class="logrow-total">${totalMin > 0 ? '<b>' + fmtHM(totalMin) + '</b>' : '—'}</div>
+        </div>
+        <div class="timeline-track">${blocksHtml}</div>
+      </div>
+    `;
+  }).join('');
+
+  body.querySelectorAll('.timeline-block[data-tip]').forEach(elBlock => {
+    elBlock.addEventListener('mousemove', (e) => showTooltip(e, elBlock.dataset.tip));
+    elBlock.addEventListener('mouseleave', hideTooltip);
+  });
+}
+
+function drawHourChart() {
+  const canvas = document.getElementById('hourChart');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = contentWidth(canvas.parentElement);
+  const cssH = 130;
+  canvas.width = cssW * dpr; canvas.height = cssH * dpr;
+  canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  const padL = 26, padR = 2, padT = 6, padB = 16;
+  const plotW = cssW - padL - padR, plotH = cssH - padT - padB;
+
+  const hours = new Array(24).fill(0);
+  const keysToSum = state.selectedProject === 'all' ? allProjectKeys : [state.selectedProject];
+  keysToSum.forEach(k => { (DATA.hourHistogram[k] || []).forEach((v,i) => hours[i] += v); });
+  const maxVal = Math.max(...hours, 1);
+
+  const faintColor = getComputedStyle(document.body).getPropertyValue('--text-faint');
+  const accent = getComputedStyle(document.body).getPropertyValue('--accent').trim();
+  ctx.fillStyle = faintColor;
+  ctx.font = '9px "JetBrains Mono", monospace';
+  ctx.textAlign = 'center';
+
+  const barGap = 3;
+  const barW = (plotW - barGap * 23) / 24;
+  for (let h = 0; h < 24; h++) {
+    const x = padL + h * (barW + barGap);
+    const barH = (hours[h] / maxVal) * plotH;
+    ctx.globalAlpha = hours[h] === 0 ? 0.15 : (0.35 + 0.65 * (hours[h] / maxVal));
+    ctx.fillStyle = accent;
+    ctx.fillRect(x, padT + plotH - barH, barW, Math.max(barH, hours[h] === 0 ? 2 : barH));
+    ctx.globalAlpha = 1;
+    if (h % 3 === 0) { ctx.fillStyle = faintColor; ctx.fillText(String(h).padStart(2,'0'), x + barW/2, cssH - 4); }
+  }
+}
+
+function bindDailyChartClick() {
+  const canvas = document.getElementById('dailyChart');
+  canvas.onclick = (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const bar = (canvas._bars || []).find(b => x >= b.x && x <= b.x + b.w);
+    if (!bar) return;
+    const rowEl = document.getElementById('day-' + bar.day);
+    if (!rowEl) return;
+    rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    rowEl.classList.add('flash');
+    setTimeout(() => rowEl.classList.remove('flash'), 900);
+  };
+}
+
+function renderSessionsTable() {
+  const tbody = document.querySelector('#sessionsTable tbody');
+  const rows = DATA.sessions.slice().sort((a,b) => new Date(a.firstEvent) - new Date(b.firstEvent));
+  tbody.innerHTML = rows.map(s => `
+    <tr>
+      <td>${s.sessionId.slice(0,8)}…</td>
+      <td>${new Date(s.firstEvent).toLocaleString('es-CL')}</td>
+      <td>${new Date(s.lastEvent).toLocaleString('es-CL')}</td>
+      <td class="num">${s.eventCount}</td>
+      <td class="num">${fmtHM(s.activeMinutes)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAll() {
+  renderHero();
+  renderProjectNav();
+  renderProjectDesc();
+  drawDailyChart();
+  renderDayLabels();
+  drawHourChart();
+  renderLogbook();
+  bindDailyChartClick();
+}
+
+renderMeta();
+renderSessionsTable();
+renderAll();
+window.addEventListener('resize', () => { drawDailyChart(); drawHourChart(); });
+</script>
+</body>
+</html>

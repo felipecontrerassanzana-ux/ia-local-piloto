@@ -214,6 +214,7 @@ function Obtener-PaginaHtml {
     <div class="resumen">
       <span class="chip-resumen" id="chipResumen">cargando...</span>
       <span class="actualizado" id="actualizado">--</span>
+      <a href="/bitacora" style="color:var(--acento);font-size:11px;text-decoration:none;">Bitácora de horas →</a>
     </div>
   </div>
 
@@ -420,6 +421,23 @@ while ($listener.IsListening) {
             $response.ContentType = "application/json; charset=utf-8"
             $response.ContentLength64 = $bytes.Length
             $response.OutputStream.Write($bytes, 0, $bytes.Length)
+        } elseif ($request.Url.AbsolutePath -eq "/bitacora") {
+            # Sirve el ultimo archivo generado por scripts/bitacora-horas.ps1 -- no lo regenera
+            # en cada request (parsear los .jsonl de sesion puede tardar unos segundos y crece
+            # con el tiempo). Correr ese script a mano cuando se quieran numeros actualizados.
+            $rutaBitacora = Join-Path $PSScriptRoot "..\..\logs\bitacora-horas.html"
+            if (Test-Path $rutaBitacora) {
+                $bytes = [System.IO.File]::ReadAllBytes($rutaBitacora)
+                $response.ContentType = "text/html; charset=utf-8"
+                $response.ContentLength64 = $bytes.Length
+                $response.OutputStream.Write($bytes, 0, $bytes.Length)
+            } else {
+                $mensaje = "<html><body style='font-family:monospace;background:#1E1E1E;color:#D4D4D4;padding:40px'><h2>Todavia no se genero la bitacora</h2><p>Correr <code>scripts\bitacora-horas.ps1</code> (o su .bat) una vez para generar <code>logs\bitacora-horas.html</code>.</p></body></html>"
+                $bytes = [System.Text.Encoding]::UTF8.GetBytes($mensaje)
+                $response.ContentType = "text/html; charset=utf-8"
+                $response.ContentLength64 = $bytes.Length
+                $response.OutputStream.Write($bytes, 0, $bytes.Length)
+            }
         } elseif ($request.Url.AbsolutePath -eq "/") {
             $html = Obtener-PaginaHtml
             $bytes = [System.Text.Encoding]::UTF8.GetBytes($html)

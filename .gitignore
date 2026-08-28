@@ -13,6 +13,11 @@ chroma_data/
 .env
 *.local
 
+# Lista personal de proyectos para la bitácora de horas (scripts/bitacora-horas.ps1) --
+# nombres de otros repos/proyectos de Felipe, no debe quedar hardcodeado en este repo
+# (mismo criterio de independencia que ia-local con Tecnoingeniería). Ver el .example.json.
+scripts/bitacora-proyectos.json
+
 # Logs y reportes generados localmente por los scripts (no son documentación del proyecto)
 logs/
 
