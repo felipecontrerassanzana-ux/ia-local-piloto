@@ -58,7 +58,12 @@ if (-not (Test-Path $ConfigPath)) {
     $ConfigPath = $ejemploPath
 }
 
-$config = Get-Content -Raw -Path $ConfigPath | ConvertFrom-Json
+$utf8SinBom = New-Object System.Text.UTF8Encoding($false)
+# Get-Content -Raw en Windows PowerShell 5.1 NO detecta UTF-8 sin BOM -- lo lee con el codepage
+# del sistema (Windows-1252 en instalaciones en español), corrompiendo cada tilde/ñ/acento
+# ("Bitácora" -> "BitÃ¡cora"). Leer con [System.IO.File]::ReadAllText + encoding explícito evita
+# esto por completo, sin depender del BOM ni de la configuración regional del equipo.
+$config = [System.IO.File]::ReadAllText($ConfigPath, $utf8SinBom) | ConvertFrom-Json
 $umbralHuecoMs = [double]$config.umbralHuecoMinutos * 60000.0
 $offsetHoras = [double]$config.offsetHorasZonaHoraria
 $reglas = @($config.reglas)
@@ -274,7 +279,7 @@ $datos = [ordered]@{
 }
 
 $json = $datos | ConvertTo-Json -Depth 12 -Compress
-$plantilla = Get-Content -Raw -Path "$PSScriptRoot\bitacora-plantilla.html"
+$plantilla = [System.IO.File]::ReadAllText("$PSScriptRoot\bitacora-plantilla.html", $utf8SinBom)
 $html = $plantilla.Replace('__DATA_JSON__', $json)
 
 $carpetaSalida = Split-Path $Salida -Parent
