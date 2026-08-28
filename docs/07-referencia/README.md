@@ -10,5 +10,7 @@ Distinto de las otras carpetas de `docs/`: ahí está **la decisión tomada para
 - **`04-goose.md`** — comandos reales de Goose, y su equivalente a los comandos personalizados de Qwen Code (Recipes).
 - **`05-open-webui.md`** — configuración real de RAG, incluye un hallazgo importante: sin configurar explícitamente, Open WebUI ignoraba a Qdrant/BGE-M3 y usaba sus defaults internos (ya corregido en `07-desplegar-openwebui.ps1`).
 - **`06-qdrant.md`** — conceptos básicos (colecciones, puntos, vectores) y API, para cuando haga falta un pipeline de RAG propio más allá de lo que ya gestiona Open WebUI.
-
-*(en construcción — próximo: Qwen3-VL, ComfyUI, Tailscale/Cloudflare)*
+- **`07-qwen3-vl.md`** — el revisor visual de la capa de diseño: variantes descargables, por qué el contexto grande no es relevante acá, y cómo se invoca desde Qwen Code (`/model --vision`).
+- **`08-comfyui.md`** — el generador de assets: la particularidad de su API (workflow JSON, no texto), cómo generar una imagen por HTTP, y por qué no queda como servicio de fondo.
+- **`09-tailscale.md`** — acceso remoto a los agentes de código: comandos reales, por qué no hace falta `serve`/`funnel` en el camino principal, y el paso que Tailscale por sí solo no resuelve (`OLLAMA_HOST`).
+- **`10-cloudflare.md`** — Tunnel remotely-managed + Access: cómo se agrega una ruta nueva, comandos de servicio en Windows, y Service Tokens para clientes no interactivos.
