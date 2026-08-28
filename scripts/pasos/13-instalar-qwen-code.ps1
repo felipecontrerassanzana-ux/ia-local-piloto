@@ -2,7 +2,7 @@
 .SINOPSIS
   Instala Node.js (si falta) y Qwen Code (github.com/QwenLM/qwen-code) vía npm, y deja
   configurado el proveedor de modelo apuntando al Ollama local de este equipo.
-  Ver docs/herramientas/01-herramientas-trabajo.md § "extensión Qwen para VS Code".
+  Ver docs/03-herramientas/01-herramientas-trabajo.md § "extensión Qwen para VS Code".
 
   IDs/paquetes verificados 2026-08-26: OpenJS.NodeJS.LTS (winget), @qwen-code/qwen-code (npm).
   generationConfig verificado 2026-08-27 contra el ejemplo oficial de la doc de Qwen Code para
@@ -39,7 +39,7 @@ New-Item -ItemType Directory -Force -Path $configDir | Out-Null
 
 if (Test-Path $configPath) {
     Write-Host "Ya existe $configPath — no se sobrescribe automáticamente." -ForegroundColor Yellow
-    Write-Host "Agregar a mano el bloque 'modelProviders' de docs/herramientas/01-herramientas-trabajo.md si no está." -ForegroundColor Yellow
+    Write-Host "Agregar a mano el bloque 'modelProviders' de docs/03-herramientas/01-herramientas-trabajo.md si no está." -ForegroundColor Yellow
 } else {
     $config = @{
         env           = @{ OLLAMA_API_KEY = "ollama" }

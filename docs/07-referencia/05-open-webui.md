@@ -1,6 +1,6 @@
 # Open WebUI — referencia completa
 
-La interfaz web de este piloto (ver `../herramientas/04-motor-alternativas.md` para la decisión). Este documento cubre la configuración real de RAG — y un hallazgo importante: **tal como estaba el script de instalación, Open WebUI nunca quedaba conectado a Qdrant ni a BGE-M3**, ya corregido. Verificado contra la documentación oficial (`docs.openwebui.com/reference/env-configuration`), 2026-08-27.
+La interfaz web de este piloto (ver `../03-herramientas/04-motor-alternativas.md` para la decisión). Este documento cubre la configuración real de RAG — y un hallazgo importante: **tal como estaba el script de instalación, Open WebUI nunca quedaba conectado a Qdrant ni a BGE-M3**, ya corregido. Verificado contra la documentación oficial (`docs.openwebui.com/reference/env-configuration`), 2026-08-27.
 
 ## Hallazgo real: el RAG corría con los defaults de fábrica, no con lo que este piloto instala
 
@@ -29,10 +29,10 @@ RAG_OLLAMA_BASE_URL=http://localhost:11434
 | Variable | Para qué |
 |---|---|
 | `OLLAMA_BASE_URL` | Default ya correcto para uso nativo: `http://localhost:11434` — no hace falta tocarla (el default de Docker sería distinto, `host.docker.internal`, pero acá no aplica). |
-| `DATA_DIR` | Dónde vive la base de datos de usuarios/chats y los archivos subidos — ya configurado por el script a `C:\OpenWebUIData` (ver `../arquitectura/04-almacenamiento.md`). |
+| `DATA_DIR` | Dónde vive la base de datos de usuarios/chats y los archivos subidos — ya configurado por el script a `C:\OpenWebUIData` (ver `../01-arquitectura/04-almacenamiento.md`). |
 | `RAG_TOP_K` | Cuántos resultados trae la búsqueda por similitud para inyectar en el prompt — default `3`. Ajustar si las respuestas de RAG se sienten con poco contexto recuperado. |
-| `WEBUI_SECRET_KEY` | Clave para firmar sesiones — la propia doc recomienda "siempre fijarla a un valor seguro en producción". No crítico para un solo usuario local, pero vale la pena fijarla si se expone por Cloudflare Tunnel (ver `../operacion/02-acceso-remoto.md`). |
-| `DATABASE_URL` | Permite usar Postgres en vez de SQLite — no aplica a este piloto (un solo usuario, SQLite alcanza, ver `../herramientas/03-como-funcionan-los-agentes.md` § SQLite). |
+| `WEBUI_SECRET_KEY` | Clave para firmar sesiones — la propia doc recomienda "siempre fijarla a un valor seguro en producción". No crítico para un solo usuario local, pero vale la pena fijarla si se expone por Cloudflare Tunnel (ver `../06-operacion/02-acceso-remoto.md`). |
+| `DATABASE_URL` | Permite usar Postgres en vez de SQLite — no aplica a este piloto (un solo usuario, SQLite alcanza, ver `../03-herramientas/03-como-funcionan-los-agentes.md` § SQLite). |
 
 ## Fuentes consultadas (2026-08-27)
 

@@ -1,6 +1,6 @@
 ﻿<#
 .SINOPSIS
-  Verificación inicial del equipo antes de instalar nada (Paso 0 de docs/instalacion/01-plan-instalacion.md).
+  Verificación inicial del equipo antes de instalar nada (Paso 0 de docs/04-instalacion/01-plan-instalacion.md).
   No instala ni cambia nada — solo reporta el estado real del equipo.
 #>
 

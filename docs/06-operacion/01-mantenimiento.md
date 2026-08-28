@@ -20,7 +20,7 @@ Formulado a pedido explícito de Felipe ("tiene que estar todo en orden y actual
 
 **Destino confirmado:** una carpeta de Google Drive personal (de Felipe, no un Drive del trabajo — este es un proyecto personal, ver `README.md`).
 
-**Qué respaldar (lo que no está en git, ver `../arquitectura/01-arquitectura-piloto.md` punto 4):**
+**Qué respaldar (lo que no está en git, ver `../01-arquitectura/01-arquitectura-piloto.md` punto 4):**
 - Base de datos de Open WebUI (cuentas, historial de conversaciones, API keys).
 - Índice de Qdrant (colecciones del RAG).
 - `.continue/rules` una vez que tenga contenido real (aunque esto podría además versionarse en este mismo repo git si se quiere).
@@ -32,7 +32,7 @@ Formulado a pedido explícito de Felipe ("tiene que estar todo en orden y actual
 Revisión mensual (ej. el primer fin de semana de cada mes), checklist fijo:
 
 - [ ] **Ollama:** revisar versión instalada vs. la última disponible, actualizar si hay una nueva.
-- [ ] **Modelo (Qwen 2.5 Coder):** revisar en `../ia-local/docs/02-modelos.md` o directamente en Ollama/Hugging Face si salió una versión nueva de la familia Qwen Coder — la familia se actualiza seguido (ver historia en `../modelo/01-fundamentacion-modelo.md`), vale la pena revisar aunque no se migre de inmediato.
+- [ ] **Modelo (Qwen 2.5 Coder):** revisar en `../ia-local/docs/02-modelos.md` o directamente en Ollama/Hugging Face si salió una versión nueva de la familia Qwen Coder — la familia se actualiza seguido (ver historia en `../02-modelo/01-fundamentacion-modelo.md`), vale la pena revisar aunque no se migre de inmediato.
 - [ ] **Goose:** revisar cambios (`goose-docs.ai` tiene changelog) y actualizar.
 - [ ] **Continue.dev:** se actualiza solo como cualquier extensión de VS Code, solo confirmar que no quedó desactivada la actualización automática.
 - [ ] **cloudflared:** revisar versión, actualizar (Cloudflare publica actualizaciones de seguridad con cierta frecuencia).
@@ -44,7 +44,7 @@ Revisión mensual (ej. el primer fin de semana de cada mes), checklist fijo:
 
 ## 4. Costos — confirmado que toda la estructura es gratuita (2026-08-26)
 
-A pedido explícito de Felipe, se revisó cada pieza del stack (ver `../arquitectura/01-arquitectura-piloto.md` para el diagrama completo):
+A pedido explícito de Felipe, se revisó cada pieza del stack (ver `../01-arquitectura/01-arquitectura-piloto.md` para el diagrama completo):
 
 | Pieza | Costo | Nota |
 |---|---|---|
@@ -63,7 +63,7 @@ A pedido explícito de Felipe, se revisó cada pieza del stack (ver `../arquitec
 | Stable Diffusion 1.5 | Gratis, pesos abiertos (mirror de Comfy-Org) | Checkpoint de generación de imágenes |
 | **Cloudflare Tunnel** | **Gratis**, sin costo aparte | Verificado 2026-08-26, incluido en cualquier cuenta de Cloudflare |
 | **Cloudflare Access** | **Gratis hasta 50 usuarios** | Verificado 2026-08-26 en la página oficial de precios — un solo usuario está muy por debajo del límite |
-| **Tailscale** | **Gratis** (plan Personal) | Verificado 2026-08-27 en la página oficial de precios: hasta 6 usuarios, dispositivos ilimitados — usado para conectar Qwen Code/Goose remotos, ver `../herramientas/02-qwen-code-a-fondo.md` |
+| **Tailscale** | **Gratis** (plan Personal) | Verificado 2026-08-27 en la página oficial de precios: hasta 6 usuarios, dispositivos ilimitados — usado para conectar Qwen Code/Goose remotos, ver `../03-herramientas/02-qwen-code-a-fondo.md` |
 | Monitor de estado | Gratis | PowerShell puro (`System.Net.HttpListener`, parte de .NET/Windows) — sin librería ni servicio de terceros, ver `03-monitor-estado.md` |
 | Dominio propio | Ya lo tiene Felipe (costo hundido, no nuevo) | |
 

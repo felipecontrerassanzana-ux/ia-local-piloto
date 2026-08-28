@@ -27,13 +27,13 @@ Lo que **no** está en `ia-local` y sí vive acá: las specs exactas de este equ
 
 | Carpeta | Qué contiene |
 |---|---|
-| [`docs/arquitectura/`](docs/arquitectura/README.md) | El esquema completo del stack, por qué no hay Docker, dónde vive cada cosa en disco, y la capa de diseño visual. |
-| [`docs/modelo/`](docs/modelo/README.md) | Por qué Qwen 2.5 Coder 7B, su historia, y las specs del equipo cruzadas contra qué modelo cabe. |
-| [`docs/herramientas/`](docs/herramientas/README.md) | Goose, Qwen Code, Continue.dev/Aider, cómo funcionan por dentro, y alternativas a Ollama. |
-| [`docs/instalacion/`](docs/instalacion/README.md) | Los pasos concretos y qué hace cada script por dentro. |
-| [`docs/pruebas/`](docs/pruebas/README.md) | Protocolo de evaluación de calidad y de rendimiento real. |
-| [`docs/operacion/`](docs/operacion/README.md) | Continuidad, backup, actualizaciones, y acceso remoto por navegador. |
-| [`docs/referencia/`](docs/referencia/README.md) *(próximamente)* | Manual por herramienta/modelo — comandos, API, mejores prácticas, para tener dominio completo de cada pieza del stack. |
+| [`docs/01-arquitectura/`](docs/01-arquitectura/README.md) | El esquema completo del stack, por qué no hay Docker, dónde vive cada cosa en disco, y la capa de diseño visual. |
+| [`docs/02-modelo/`](docs/02-modelo/README.md) | Por qué Qwen 2.5 Coder 7B, su historia, y las specs del equipo cruzadas contra qué modelo cabe. |
+| [`docs/03-herramientas/`](docs/03-herramientas/README.md) | Goose, Qwen Code, Continue.dev/Aider, cómo funcionan por dentro, y alternativas a Ollama. |
+| [`docs/04-instalacion/`](docs/04-instalacion/README.md) | Los pasos concretos y qué hace cada script por dentro. |
+| [`docs/05-pruebas/`](docs/05-pruebas/README.md) | Protocolo de evaluación de calidad y de rendimiento real. |
+| [`docs/06-operacion/`](docs/06-operacion/README.md) | Continuidad, backup, actualizaciones, y acceso remoto por navegador. |
+| [`docs/07-referencia/`](docs/07-referencia/README.md) *(próximamente)* | Manual por herramienta/modelo — comandos, API, mejores prácticas, para tener dominio completo de cada pieza del stack. |
 
 Fuera de `docs/`:
 
@@ -44,4 +44,4 @@ Fuera de `docs/`:
 
 ## Estado actual
 
-Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Instalador recomendado: `scripts/instalar-todo.bat`. Ver `docs/instalacion/01-plan-instalacion.md` para el detalle paso a paso y `scripts/README.md` para cómo correr cualquiera de los dos.
+Documentación y scripts de instalación completos — **ningún script se ha ejecutado todavía en el equipo real**. Instalador recomendado: `scripts/instalar-todo.bat`. Ver `docs/04-instalacion/01-plan-instalacion.md` para el detalle paso a paso y `scripts/README.md` para cómo correr cualquiera de los dos.

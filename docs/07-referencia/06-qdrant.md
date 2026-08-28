@@ -1,6 +1,6 @@
 # Qdrant — referencia completa
 
-La base vectorial de este piloto (ver `../arquitectura/03-docker-y-recursos.md` para la decisión de correrlo nativo). Este documento cubre los conceptos básicos y la API — útil sobre todo si en algún momento se arma un pipeline de RAG propio además de lo que ya usa Open WebUI. Verificado contra `qdrant.tech/documentation`, 2026-08-27.
+La base vectorial de este piloto (ver `../01-arquitectura/03-docker-y-recursos.md` para la decisión de correrlo nativo). Este documento cubre los conceptos básicos y la API — útil sobre todo si en algún momento se arma un pipeline de RAG propio además de lo que ya usa Open WebUI. Verificado contra `qdrant.tech/documentation`, 2026-08-27.
 
 ## Conceptos básicos
 

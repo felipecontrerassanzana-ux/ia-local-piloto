@@ -52,7 +52,7 @@ La idea original era "¿se puede armar un dashboard como Artifact?" — la respu
 Reutiliza los dos mecanismos de acceso remoto que este proyecto ya decidió, no agrega un tercero:
 
 1. **Local, en el mismo equipo:** `http://localhost:8090/` — funciona apenas se instala el paso 16, sin configurar nada más.
-2. **Remoto por Tailscale** (ver `../herramientas/02-qwen-code-a-fondo.md`): `http://<IP-de-Tailscale-del-equipo>:8090/` — funciona apenas Tailscale esté conectado (Paso 3.5 de `../instalacion/01-plan-instalacion.md`), sin pasar por Cloudflare ni por internet.
+2. **Remoto por Tailscale** (ver `../03-herramientas/02-qwen-code-a-fondo.md`): `http://<IP-de-Tailscale-del-equipo>:8090/` — funciona apenas Tailscale esté conectado (Paso 3.5 de `../04-instalacion/01-plan-instalacion.md`), sin pasar por Cloudflare ni por internet.
 3. **Remoto público, opcional** (ver `02-acceso-remoto.md`): agregar una segunda "Public Hostname" al mismo túnel de Cloudflare que ya se crea para Open WebUI (Paso 3), apuntando a `http://localhost:8090` — queda protegido por el mismo Cloudflare Access (el correo de Felipe), sin crear un túnel nuevo ni una cuenta nueva.
 
 ## El detalle no obvio: el firewall de Windows

@@ -1,6 +1,6 @@
 # Reglas de diseño para cualquier app generada en este equipo
 
-Este archivo define cómo debe verse el frontend de cualquier app que se construya con Qwen Code/Goose en este equipo — la idea es que el "look" quede consistente y de calidad desde el primer prompt, sin que cada proyecto nuevo invente su propio estilo. Ver `docs/arquitectura/02-capa-diseno.md` para el razonamiento completo detrás de esto.
+Este archivo define cómo debe verse el frontend de cualquier app que se construya con Qwen Code/Goose en este equipo — la idea es que el "look" quede consistente y de calidad desde el primer prompt, sin que cada proyecto nuevo invente su propio estilo. Ver `docs/01-arquitectura/02-capa-diseno.md` para el razonamiento completo detrás de esto.
 
 ## Regla principal
 
@@ -20,7 +20,7 @@ Este archivo define cómo debe verse el frontend de cualquier app que se constru
 
 ## Revisión visual antes de dar por terminado
 
-Cualquier pantalla nueva generada debe pasar por el loop de revisión con `qwen3-vl:4b` antes de darse por lista — screenshot del resultado renderizado, comparado contra estas reglas. Ver `docs/arquitectura/02-capa-diseno.md` § "El loop generar → revisar → corregir" para el procedimiento exacto.
+Cualquier pantalla nueva generada debe pasar por el loop de revisión con `qwen3-vl:4b` antes de darse por lista — screenshot del resultado renderizado, comparado contra estas reglas. Ver `docs/01-arquitectura/02-capa-diseno.md` § "El loop generar → revisar → corregir" para el procedimiento exacto.
 
 ## Generación de assets custom (íconos, ilustraciones)
 

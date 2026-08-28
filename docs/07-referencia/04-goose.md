@@ -1,6 +1,6 @@
 # Goose — referencia completa
 
-El agente general de este piloto (ver `../herramientas/01-herramientas-trabajo.md` para la decisión). Cubre el CLI completo y, en particular, el equivalente de Goose a los "comandos personalizados" de Qwen Code — para poder formalizar el mismo procedimiento (ej. el loop de revisión de diseño) en las dos herramientas, no solo en una. Verificado contra `goose-docs.ai`, 2026-08-27.
+El agente general de este piloto (ver `../03-herramientas/01-herramientas-trabajo.md` para la decisión). Cubre el CLI completo y, en particular, el equivalente de Goose a los "comandos personalizados" de Qwen Code — para poder formalizar el mismo procedimiento (ej. el loop de revisión de diseño) en las dos herramientas, no solo en una. Verificado contra `goose-docs.ai`, 2026-08-27.
 
 ## Comandos principales
 

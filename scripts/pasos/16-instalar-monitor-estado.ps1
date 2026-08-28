@@ -5,12 +5,12 @@
   el estado del piloto en tiempo real: GET /estado (JSON) y GET / (dashboard visual, mismo
   tema oscuro que el instalador).
 
-  Pensado para dos usos, sin infraestructura nueva (ver docs/operacion/03-monitor-estado.md):
+  Pensado para dos usos, sin infraestructura nueva (ver docs/06-operacion/03-monitor-estado.md):
     - Local, en el mismo equipo: http://localhost:8090/
     - Remoto por Tailscale (Paso 14, ya instalado): http://<IP-de-Tailscale>:8090/
     - Remoto público (opcional, manual): agregar una segunda "Public Hostname" al mismo túnel
       de Cloudflare del Paso 08, apuntando a http://localhost:8090 -- protegida por el mismo
-      Cloudflare Access, ver docs/operacion/02-acceso-remoto.md.
+      Cloudflare Access, ver docs/06-operacion/02-acceso-remoto.md.
 
 .PARAMETER Puerto
   Puerto donde escucha el monitor. Default 8090 (no choca con Ollama 11434, Qdrant 6333,
@@ -63,4 +63,4 @@ try {
 Write-Host ""
 Write-Host "Para verlo desde otro dispositivo por Tailscale: http://<IP-de-Tailscale-de-este-equipo>:$Puerto/" -ForegroundColor Cyan
 Write-Host "Para verlo desde internet: agregar una segunda 'Public Hostname' al túnel de Cloudflare del Paso 08," -ForegroundColor Cyan
-Write-Host "apuntando a http://localhost:$Puerto (ver docs/operacion/02-acceso-remoto.md)." -ForegroundColor Cyan
+Write-Host "apuntando a http://localhost:$Puerto (ver docs/06-operacion/02-acceso-remoto.md)." -ForegroundColor Cyan

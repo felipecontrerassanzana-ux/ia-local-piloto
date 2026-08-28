@@ -1,6 +1,6 @@
 ﻿<#
 .SINOPSIS
-  Chequeo integral post-instalación (Paso 5 de docs/instalacion/01-plan-instalacion.md). No instala ni cambia nada,
+  Chequeo integral post-instalación (Paso 5 de docs/04-instalacion/01-plan-instalacion.md). No instala ni cambia nada,
   solo reporta qué está bien y qué falta.
 #>
 
@@ -49,7 +49,7 @@ if ($ollamaCmd) {
 $nvidiaSmi = Get-Command nvidia-smi -ErrorAction SilentlyContinue
 Check "Drivers NVIDIA / nvidia-smi disponible" ($null -ne $nvidiaSmi)
 
-# Qdrant y Open WebUI — nativos vía Tareas Programadas desde 2026-08-27 (ver docs/arquitectura/03-docker-y-recursos.md)
+# Qdrant y Open WebUI — nativos vía Tareas Programadas desde 2026-08-27 (ver docs/01-arquitectura/03-docker-y-recursos.md)
 $qdrantTarea = Get-ScheduledTask -TaskName "Qdrant-Local" -ErrorAction SilentlyContinue
 Check "Tarea 'Qdrant-Local' configurada" ($null -ne $qdrantTarea)
 try {
@@ -69,7 +69,7 @@ try {
 }
 
 # Sin esto configurado, Open WebUI usa sus defaults internos (ChromaDB + otro modelo de
-# embeddings) en vez de Qdrant/BGE-M3 -- ver docs/referencia/05-open-webui.md
+# embeddings) en vez de Qdrant/BGE-M3 -- ver docs/07-referencia/05-open-webui.md
 $vectorDb = [Environment]::GetEnvironmentVariable("VECTOR_DB", "Machine")
 Check "Open WebUI configurado para usar Qdrant (VECTOR_DB=qdrant)" ($vectorDb -eq "qdrant") "(valor actual: $vectorDb)"
 $embeddingModel = [Environment]::GetEnvironmentVariable("RAG_EMBEDDING_MODEL", "Machine")
@@ -110,7 +110,7 @@ if ($tailscaleCmd) {
         Write-Host "[INFO] Tailscale instalado pero sin autenticar — correr 'tailscale up'." -ForegroundColor Gray
     }
 } else {
-    Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/herramientas/02-qwen-code-a-fondo.md)." -ForegroundColor Gray
+    Write-Host "[INFO] Tailscale no instalado (opcional — solo hace falta para Qwen Code/Goose remotos, ver docs/03-herramientas/02-qwen-code-a-fondo.md)." -ForegroundColor Gray
 }
 
 # Capa de diseño: qwen3-vl (vía Ollama) y ComfyUI (app aparte, no auto-inicia)
@@ -120,9 +120,9 @@ if ($ollamaCmd -and $respuesta) {
 }
 $comfyPath = "C:\ComfyUI\run_nvidia_gpu.bat"
 if (Test-Path $comfyPath) {
-    Write-Host "[INFO] ComfyUI instalado en C:\ComfyUI — se abre a mano, no corre como servicio (ver docs/arquitectura/02-capa-diseno.md)." -ForegroundColor Gray
+    Write-Host "[INFO] ComfyUI instalado en C:\ComfyUI — se abre a mano, no corre como servicio (ver docs/01-arquitectura/02-capa-diseno.md)." -ForegroundColor Gray
 } else {
-    Write-Host "[INFO] ComfyUI no instalado (opcional — solo hace falta para generar assets de diseño, ver docs/arquitectura/02-capa-diseno.md)." -ForegroundColor Gray
+    Write-Host "[INFO] ComfyUI no instalado (opcional — solo hace falta para generar assets de diseño, ver docs/01-arquitectura/02-capa-diseno.md)." -ForegroundColor Gray
 }
 
 # Tarea de backup
