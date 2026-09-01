@@ -43,14 +43,14 @@ Por defecto, **un modelo queda cargado en VRAM 5 minutos después de la última 
 
 ## Variables de entorno de rendimiento — no cubiertas en otros documentos del proyecto
 
-Encontradas al investigar esto a fondo (2026-08-27) — relevantes directamente para la duda abierta de si el contexto real de 100K es alcanzable en la práctica (ver `../02-modelo/02-modelo-elegido.md`):
+Encontradas al investigar esto a fondo (2026-08-27) — relevantes directamente para sostener de forma eficiente los **32K reales de entrenamiento** de este modelo en 12GB de VRAM (ver `../02-modelo/02-modelo-elegido.md`; los 100K/131K originales quedaron descartados como meta salvo que se active YaRN, no expuesto por Ollama todavía):
 
-- **`OLLAMA_FLASH_ATTENTION=1`** — Ollama la activa sola si el modelo/hardware la soportan, pero se puede forzar. Reduce el uso de memoria a medida que crece el contexto — directamente relevante para intentar sostener 100K de contexto en 12GB.
+- **`OLLAMA_FLASH_ATTENTION=1`** — Ollama la activa sola si el modelo/hardware la soportan, pero se puede forzar. Reduce el uso de memoria a medida que crece el contexto — directamente relevante para sostener los 32K sin agotar VRAM.
 - **`OLLAMA_KV_CACHE_TYPE`** — cuantización de la caché KV (contexto), default `f16`. `q8_0` usa la mitad de memoria que `f16` "con una pérdida de precisión muy pequeña, normalmente sin impacto notable en la calidad" (textual de la doc oficial). `q4_0` usa un cuarto, con más pérdida. **Advertencia textual de la propia doc: "modelos con un conteo de GQA alto (ej. Qwen2) pueden ver un impacto mayor en precisión por la cuantización"** — Qwen está nombrado explícitamente como una familia sensible a esto, así que conviene probar `q8_0` primero (no `q4_0` de entrada) y verificar calidad antes de confiar en él para el contexto largo.
 - **`OLLAMA_MAX_LOADED_MODELS`** (default: 3× GPUs) y **`OLLAMA_NUM_PARALLEL`** (default: 1) — controlan cuántos modelos pueden estar cargados a la vez y cuántas consultas paralelas procesa cada uno. Relevante si en algún momento dos personas usan el equipo a la vez (ver la restricción ya documentada de "uso compartido" en `AGENTS.md`).
 - **`OLLAMA_ORIGINS`** — qué orígenes web pueden llamar a la API sin CORS — relevante solo si se construye algo propio en el navegador que hable directo con Ollama (no aplica al uso actual vía Open WebUI/Qwen Code/Goose).
 
-**Pendiente de aplicar en la práctica:** agregar `OLLAMA_FLASH_ATTENTION=1` y probar `OLLAMA_KV_CACHE_TYPE=q8_0` como parte de `11-prueba-estres.ps1`, para ver si mueven la aguja en si 100K de contexto es sostenible — no confirmado todavía, nada se ha ejecutado en el equipo real.
+**Pendiente de aplicar en la práctica:** agregar `OLLAMA_FLASH_ATTENTION=1` y probar `OLLAMA_KV_CACHE_TYPE=q8_0` como parte de `11-prueba-estres.ps1`, para ver si ayudan a sostener los 32K de contexto real sin perder calidad — no confirmado todavía, nada se ha ejecutado en el equipo real.
 
 ## Modelfile — crear una variante propia en vez de repetir parámetros
 
@@ -58,7 +58,7 @@ Un `Modelfile` es un archivo de texto que define un modelo personalizado a parti
 
 ```
 FROM qwen2.5-coder:7b
-PARAMETER num_ctx 100000
+PARAMETER num_ctx 32000
 PARAMETER temperature 0.7
 SYSTEM Sos un asistente de programación local, respondé en español salvo que el código lo requiera en inglés.
 ```

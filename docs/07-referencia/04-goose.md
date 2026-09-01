@@ -48,6 +48,13 @@ Corre un recipe en un horario definido (`add`, `list`, `remove`, `run-now`). **R
 
 **`/mode`** es el equivalente de Goose al `/approval-mode` de Qwen Code (ver `03-qwen-code.md`) — cuánta autonomía darle al agente antes de pedir aprobación. Misma recomendación que ahí: no usar el modo más autónomo en este equipo compartido.
 
+## Instalador usado por `04-instalar-goose.ps1`
+
+El script descarga `https://raw.githubusercontent.com/aaif-goose/goose/main/download_cli.ps1`
+— el repo real de Goose bajo la gobernanza de la Agentic AI Foundation (ver
+`decisiones.md`), no citado hasta ahora en ningún doc de referencia. Verificado
+2026-09-01 que la URL responde 200 OK.
+
 ## Fuentes consultadas (2026-08-27)
 
 - [CLI Commands — Goose Docs](https://goose-docs.ai/docs/guides/goose-cli-commands/)
