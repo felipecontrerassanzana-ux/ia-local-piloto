@@ -16,6 +16,7 @@ Cloudflare distingue dos formas de administrar un túnel:
 Zero Trust dashboard → Networks → Tunnels → (el túnel de este piloto) → pestaña **Public Hostname** → *Add a public hostname* → subdominio elegido + servicio local (`http://localhost:PUERTO`). Cloudflare crea sola el registro DNS (`CNAME` hacia `<uuid-del-túnel>.cfargotunnel.com`) — no hay que tocar el DNS a mano.
 
 Ya usado así dos veces en este piloto (mismo túnel, dos rutas — no hace falta un túnel por servicio):
+
 - Open WebUI → `http://localhost:8080` (ver `../06-operacion/02-acceso-remoto.md`).
 - Monitor de estado → `http://localhost:8090` (ver `../06-operacion/03-monitor-estado.md`), paso opcional.
 

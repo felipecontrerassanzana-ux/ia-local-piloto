@@ -59,13 +59,13 @@ Un notebook conectado al mismo Wi-Fi/cable que el equipo servidor puede apuntar 
 
 ### Escenario C — fuera de la red de casa, dos opciones reales
 
-**C1 — Tailscale (recomendada para este caso específico)**
+#### C1 — Tailscale (recomendada para este caso específico)
 
 Tailscale ya estaba documentado como respaldo en `../06-operacion/02-acceso-remoto.md` (Opción C) para el acceso por navegador — acá se le da un uso distinto y, para este caso puntual, mejor encaje: crea una red privada tipo VPN entre los dispositivos de Felipe (cifrada, punto a punto, verificado oficialmente como "Personal plan": **gratis para siempre, hasta 6 usuarios, dispositivos ilimitados**, `tailscale.com/pricing`, 2026-08-27). Con Tailscale instalado en el equipo de casa y en el notebook remoto, ambos quedan en la misma red privada aunque estén geográficamente lejos — Qwen Code apunta a la IP de Tailscale del equipo (`http://100.x.y.z:11434/v1`) exactamente igual que en el Escenario A, solo cambiando `localhost` por esa IP. **No hace falta ninguna capa de autenticación HTTP adicional** — Tailscale ya autentica el dispositivo antes de que el tráfico llegue, y nada de esto queda expuesto a internet público (a diferencia de Cloudflare Tunnel, que sí publica una URL pública).
 
 **Por qué esto no contradice la decisión ya cerrada de "no exponer el puerto crudo de Ollama"** (`../06-operacion/02-acceso-remoto.md`, línea 37): esa decisión era específicamente sobre **exposición pública** vía Cloudflare Tunnel — un desconocido en internet no debe poder llegar directo a Ollama. Tailscale es una red privada cerrada entre los propios dispositivos de Felipe, no expone nada a internet — es una situación distinta, no una que se esté revirtiendo.
 
-**C2 — Reutilizar el Cloudflare Tunnel ya planeado (alternativa, más piezas)**
+#### C2 — Reutilizar el Cloudflare Tunnel ya planeado (alternativa, más piezas)
 
 En vez de exponer Ollama, Qwen Code se conecta al **endpoint OpenAI-compatible que Open WebUI ya expone** (`/api/chat/completions`, confirmado en `docs.openwebui.com`) — el mismo túnel y el mismo Cloudflare Access que ya se planeaba instalar para el navegador, sin exponer nada nuevo:
 

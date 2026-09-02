@@ -19,6 +19,7 @@ Establece un número de referencia (tok/s) en condiciones ideales (poco contexto
 El mismo prompt, veinte veces seguidas sin pausa. El objetivo es detectar **degradación**: si el equipo (compartido, sin gabinete de servidor, con refrigeración de PC de escritorio normal) sufre de acumulación de calor bajo uso sostenido, el tok/s de la corrida #20 debería ser notablemente menor que el de la #1.
 
 **Cómo interpretar:**
+
 - Si el tok/s se mantiene estable (variación menor a ~10%): el equipo aguanta uso sostenido sin problema térmico.
 - Si cae progresivamente: revisar la temperatura de GPU registrada en el archivo de resumen (capturada antes/después con `nvidia-smi`) — sobre ~83-85°C en una GPU NVIDIA moderna suele activar throttling automático (reducción de velocidad para no sobrecalentarse). Si se confirma esto, es un dato real para decidir si hace falta mejorar la ventilación del gabinete antes de darle uso diario pesado.
 
@@ -29,6 +30,7 @@ Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 
 **Actualizado 2026-08-27 — esta prueba ya no responde toda la pregunta por sí sola.** Investigado a fondo (ver `../07-referencia/02-qwen-2.5-coder-7b.md`): el `config.json` real del modelo confirma que **32K es el contexto con el que fue entrenado** (`max_position_embeddings: 32768`), no un default arbitrario de Ollama — para llegar a 128K/131K hace falta activar YaRN explícitamente, algo que Ollama todavía no expone de forma completa. Esto significa que "no tira error" y "sostiene el contexto sin perder calidad" son dos preguntas distintas:
 
 **Cómo interpretar el resultado, con esta distinción en mente:**
+
 - Si la prueba de `Contexto-x1200` o `Contexto-x2000` (los tamaños más grandes) se completa **sin error**: solo confirma que Ollama acepta la configuración — **no confirma que la calidad se mantenga**. No asumir automáticamente que "sostiene el contexto en la práctica" solo por no fallar.
 - Si el script falla o corta en un tamaño específico: eso sí es un límite duro real, documentar como tal.
 - **El paso que falta y que esta prueba no cubre:** evaluar si el resumen generado a 64K/100K+ es tan bueno como el de 8K/32K — eso es una pregunta de calidad, no de estrés técnico. Agregar ese caso a `01-plan-pruebas.md` con una persona revisando si el modelo realmente "recordó" el contenido lejano del texto largo, no solo si respondió algo. Registrar ambos resultados (técnico y de calidad) en `resultados.md`.
@@ -36,6 +38,7 @@ Envía textos sintéticos cada vez más largos (apuntando aproximadamente a 1K, 
 ## Qué hacer con los resultados
 
 Cada corrida genera dos archivos en `logs/` (no versionados en git, ver `.gitignore`):
+
 - `prueba-estres-<fecha>.csv` — el detalle fila por fila, para abrir en Excel/Sheets y graficar si se quiere (ej. tok/s a lo largo de la carga sostenida).
 - `prueba-estres-<fecha>-resumen.txt` — el resumen legible, con las lecturas de GPU.
 

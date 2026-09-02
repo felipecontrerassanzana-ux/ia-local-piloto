@@ -4,7 +4,7 @@ Este documento junta en un solo lugar todas las decisiones ya tomadas y dispersa
 
 ## Diagrama del stack completo
 
-```
+```text
                                     ┌─────────────────────────────┐
                                     │   Usuario (Felipe, remoto)   │
                                     │   navegador o celular        │

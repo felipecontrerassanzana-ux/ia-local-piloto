@@ -13,6 +13,7 @@ Es un proyecto **independiente y autocontenido** — no depende de nada externo 
 ## Qué usa de `ia-local` (sin duplicar)
 
 Este proyecto parte de la base teórica ya construida en el repo hermano `../ia-local/` (orden ascendente, mismo criterio de numeración que el resto de la documentación):
+
 - `../ia-local/docs/01-conceptos-fundamentales.md` — teoría de cuantización, VRAM, RAG, etc.
 - `../ia-local/docs/02-modelos.md` — catálogo de modelos y su VRAM real.
 - `../ia-local/docs/03-hardware.md` — contexto de hardware y precios.

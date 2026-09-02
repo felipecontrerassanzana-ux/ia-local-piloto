@@ -1,0 +1,9 @@
+{
+  // MD013 (largo de linea) y MD060 (espaciado de tablas) desactivadas: la
+  // documentacion de este repo se escribe en prosa de parrafo largo y con
+  // tablas ya legibles, no es un error de formato - decision de estilo.
+  "config": {
+    "MD013": false,
+    "MD060": false
+  }
+}

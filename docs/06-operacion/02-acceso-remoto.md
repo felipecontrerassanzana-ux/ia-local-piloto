@@ -52,6 +52,7 @@ Importante distinguir dos cosas que quedaron mezcladas en la pregunta: **Goose**
 Felipe confirmó que la conexión remota es para su propio uso — no espera otras personas conectadas de forma persistente. Esto simplifica la lista de correos autorizados en Cloudflare Access a **un solo correo** (el de Felipe), no una lista a mantener.
 
 **Verificado directamente en la página oficial de precios de Cloudflare (2026-08-26):**
+
 - **Cloudflare Access: plan gratis hasta 50 usuarios, "$0 forever"** — un solo usuario está muy por debajo de ese límite, no hay riesgo de necesitar el plan pago (que recién aplica sobre 50 asientos, a US$7/usuario/mes).
 - **Cloudflare Tunnel: sin costo aparte** — no es un producto separado con su propio precio, es una función incluida en cualquier cuenta de Cloudflare (incluida la gratuita), sin límite de túneles ni de tráfico asociado a su uso.
 

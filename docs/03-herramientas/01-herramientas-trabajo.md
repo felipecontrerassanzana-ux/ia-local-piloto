@@ -88,6 +88,7 @@ El usuario preguntó específicamente por algo como esta misma herramienta (Clau
 Extensión de VS Code (también JetBrains) para programar con un asistente de IA — el rol que Cursor/Copilot cumplen con modelos cerrados, pero funcionando 100% local con Ollama. Sirve mejor para trabajar *dentro* de un proyecto ya iniciado (autocompletar, editar, explicar) que para arrancar uno desde cero — para eso ver Goose arriba.
 
 **Confirmado en la documentación oficial (docs.continue.dev):**
+
 - Soporte directo y ya empaquetado para este modelo exacto: `ollama/qwen2.5-coder-7b` es un bloque de configuración pre-armado en su guía oficial de Ollama.
 - Modos: **Agent** (puede editar archivos, ejecutar acciones con varios pasos), **Chat**, **Autocomplete**, **Edit** — no es solo un chat, es un asistente que interactúa con el proyecto.
 - **Rules** (`.continue/rules`): archivos de reglas/convenciones del proyecto que el agente respeta siempre — versionables junto al código. Esto es lo más parecido a "memoria" que trae de fábrica, pero es **estático** (lo escribe la persona, no se actualiza solo) — ver sección de memoria más abajo.
@@ -101,9 +102,10 @@ Asistente de programación por terminal, consciente de git (arma commits automá
 
 **Gotcha crítico — aplica a cualquier herramienta que use Ollama, no solo Aider (verificado y corregido 2026-08-26 contra el repo oficial de Ollama, más actualizado que la mención inicial de la documentación de Aider):**
 
-Ollama **no usa el contexto completo del modelo por defecto** — el límite depende de la VRAM de la tarjeta: menos de 24GB de VRAM (el caso de esta RTX 5070 12GB) usa solo **4K de contexto por defecto**. Muy por debajo de los 100K de contexto seguro que se confirmó que esta GPU puede manejar con Qwen 2.5 Coder 7B (ver `../02-modelo/02-modelo-elegido.md`) — **si no se configura explícitamente, se pierde la ventaja de contexto largo que fue justamente el criterio principal de elección del modelo.**
+Ollama **no usa el contexto completo del modelo por defecto** — el límite depende de la VRAM de la tarjeta: menos de 24GB de VRAM (el caso de esta RTX 5070 12GB) usa solo **4K de contexto por defecto**. Muy por debajo de los **32K con los que Qwen 2.5 Coder 7B fue realmente entrenado** (ver `../02-modelo/02-modelo-elegido.md` y `../07-referencia/02-qwen-2.5-coder-7b.md` — la VRAM de esta GPU permitiría hasta 100K, pero eso es capacidad de memoria, no un límite de calidad verificado más allá de los 32K nativos) — **si no se configura explícitamente al menos hasta 32K, se pierde la ventaja de contexto largo que fue justamente el criterio principal de elección del modelo.**
 
 Se resuelve de dos formas (documentación oficial de Ollama, `context-length.mdx`):
+
 - **App de Ollama:** mover el slider de "Context length" en la configuración a lo deseado.
 - **CLI/servicio:** variable de entorno `OLLAMA_CONTEXT_LENGTH=64000 ollama serve` (o el valor que corresponda).
 
@@ -116,6 +118,7 @@ El usuario preguntó si para este piloto existen herramientas tipo conector a Gi
 **Punto clave: `gh` (GitHub CLI) no es una herramienta exclusiva de Claude Code — es un programa de línea de comandos normal**, igual que `git`. Cualquier agente que pueda ejecutar comandos de terminal en el equipo (y Goose lo hace, con su extensión **Developer**, "built-in developer tools for file editing and **shell command execution**") puede usarlo exactamente igual que se usa acá. No hace falta un "conector especial" — hace falta que `git` y `gh` estén instalados en el equipo y autenticados una vez, y de ahí en adelante Goose puede correr `git commit`, `git push`, `gh repo create`, `gh pr create`, etc. tal cual como se hizo con este mismo repo (`ia-local-piloto`).
 
 **Instalación confirmada (winget, IDs verificados en este equipo, 2026-08-26):**
+
 - `git`: paquete `Git.Git`
 - `gh` (GitHub CLI): paquete `GitHub.cli`
 
@@ -125,7 +128,7 @@ El usuario preguntó si para este piloto existen herramientas tipo conector a Gi
 
 Además de shell + `gh` CLI, Goose tiene una **extensión dedicada de GitHub** en su directorio oficial (goose-docs.ai/extensions, 32.5k estrellas en GitHub — es el servidor MCP oficial de GitHub, alojado por la propia GitHub, no algo de terceros). Se conecta así:
 
-```
+```bash
 goose session --with-streamable-http-extension "https://api.githubcopilot.com/mcp/"
 ```
 

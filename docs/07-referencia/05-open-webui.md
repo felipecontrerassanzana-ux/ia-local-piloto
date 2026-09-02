@@ -14,7 +14,7 @@ Open WebUI trae más de 200 variables de entorno — sin configurarlas explícit
 
 **Corregido:** `07-desplegar-openwebui.ps1` ahora fija estas variables a nivel de sistema antes de (re)iniciar el servicio:
 
-```
+```text
 VECTOR_DB=qdrant
 QDRANT_URI=http://localhost:6333
 RAG_EMBEDDING_ENGINE=ollama

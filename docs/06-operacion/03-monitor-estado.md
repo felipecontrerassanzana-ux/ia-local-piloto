@@ -12,6 +12,7 @@ Expone dos rutas:
 - **`GET /`** — un dashboard visual (HTML/CSS/JS/Canvas autocontenido, sin librerías externas), con el mismo tema oscuro del instalador (`instalar-todo.ps1`), que hace `fetch('/estado')` cada 10 segundos.
 
 **Rediseño del dashboard (2026-08-27, mismo día):** la primera versión era una lista apilada de filas con un punto de color — Felipe la encontró desordenada y pidió algo con gráficos, "un dashboard, no un esquema de semáforos". Rediseñado en 3 secciones:
+
 - **Actividad en tiempo real** — gráficos de línea (Canvas, con relleno de área y punto final destacado) de CPU%, uso de GPU% y VRAM%, con hasta 5 minutos de historial guardado en memoria del navegador (30 muestras a 10s cada una) — así se ve la tendencia, no solo el número del momento.
 - **Capacidad** — barras de VRAM, RAM y cada disco, coloreadas por umbral (verde <70%, ámbar 70-90%, rojo >90%) en vez de un simple "libre/total" en texto.
 - **Servicios** — tarjetas con una píldora de estado (OK/SIN RESPUESTA/INFO) en vez del punto de semáforo, agrupadas en una grilla.
@@ -42,6 +43,7 @@ La idea original era "¿se puede armar un dashboard como Artifact?" — la respu
 | CPU/RAM | % de uso de CPU, RAM usada/total |
 
 **Dos agregados tras revisar con Felipe si esto ya mostraba lo que hace falta (2026-08-27, mismo día):**
+
 - **Temperatura de GPU** — agregada como cuarto gráfico de tendencia (junto a CPU/GPU%/VRAM%). En un equipo compartido con la GPU trabajando seguido, es una señal temprana de un problema térmico, no solo un dato curioso.
 - **Backup atrasado** — el backup corre semanal (domingos 3am, ver `01-mantenimiento.md`); antes, la tarjeta de Backup mostraba la fecha de la última corrida tal cual, sin importar si fue ayer o hace un mes. Ahora `Obtener-Estado` calcula `atrasado` (más de 8 días sin corrida, con 1 día de margen) y la tarjeta pasa a una píldora roja "ATRASADO" — sin esto, una tarea de backup rota en silencio se veía igual que una sana.
 

@@ -13,6 +13,7 @@ Cubre bien: servir un modelo de texto (chat/código) vía API compatible OpenAI,
 **Verificado en localai.io:** open-source, licencia MIT, un solo binario con **API compatible con OpenAI, Anthropic, Ollama y ElevenLabs** — herramientas ya configuradas para Ollama pueden apuntar acá con solo cambiar la URL. El motor detrás de la API es intercambiable (llama.cpp, vLLM, MLX, SGLang) según lo que pida cada modelo, sin que el cliente note la diferencia.
 
 Funciones que cubre, todas desde el mismo runtime:
+
 - **REASON** — modelos de lenguaje, tool calling, salida estructurada (esto es lo que hoy cubre Ollama).
 - **LISTEN** — voz en tiempo real, transcripción, diarización (whisper, parakeet).
 - **SPEAK** — síntesis de voz y clonación de voz (piper, moss-tts).

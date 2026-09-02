@@ -56,7 +56,7 @@ Encontradas al investigar esto a fondo (2026-08-27) — relevantes directamente 
 
 Un `Modelfile` es un archivo de texto que define un modelo personalizado a partir de uno base — útil para no tener que pasar los mismos parámetros cada vez (contexto, temperatura, system prompt):
 
-```
+```text
 FROM qwen2.5-coder:7b
 PARAMETER num_ctx 32000
 PARAMETER temperature 0.7

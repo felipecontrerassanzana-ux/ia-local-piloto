@@ -28,7 +28,7 @@ Qwen2.5-Coder **no es un experimento aislado** — es una línea especializada c
 
 ## Esquema de la decisión — cómo se llegó a Qwen 2.5 Coder 7B para este equipo
 
-```
+```text
 Universo de modelos open-weight disponibles en 2026
         │
         ▼

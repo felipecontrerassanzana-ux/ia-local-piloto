@@ -21,6 +21,7 @@ Formulado a pedido explícito de Felipe ("tiene que estar todo en orden y actual
 **Destino confirmado:** una carpeta de Google Drive personal (de Felipe, no un Drive del trabajo — este es un proyecto personal, ver `README.md`).
 
 **Qué respaldar (lo que no está en git, ver `../01-arquitectura/01-arquitectura-piloto.md` punto 4):**
+
 - Base de datos de Open WebUI (cuentas, historial de conversaciones, API keys).
 - Índice de Qdrant (colecciones del RAG).
 - `.continue/rules` una vez que tenga contenido real (aunque esto podría además versionarse en este mismo repo git si se quiere).
